@@ -72,7 +72,7 @@ Why this fits CS348K
 
 This project is about system design for interactive mechanics. The contribution is not only a game mod or a set of cards, but a framework for specifying constraints, simulating outcomes, and evaluating design choices quantitatively. It treats game mechanics as composable components and studies what makes that composition successful.
 
-Expected Deliverables
+# Expected Deliverables
 simulator code
 mechanic definitions
 bot policies
@@ -80,7 +80,8 @@ experiment scripts
 plots/tables of evaluation results
 short writeup of findings
 optional mod implementation
-Repo Structure
+
+# Repo Structure
 .
 ├── README.md
 ├── src/
@@ -96,7 +97,8 @@ Repo Structure
 ├── results/
 ├── docs/
 └── mod/   # optional stretch goal
-Milestones
+
+# Milestones
 Milestone 1
 
 Define the simplified game state and implement the core simulation loop.
