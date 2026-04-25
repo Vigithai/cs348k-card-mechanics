@@ -82,21 +82,17 @@ short writeup of findings
 optional mod implementation
 
 # Repo Structure
-.
-├── README.md
-├── src/
-│   ├── game_state.py
-│   ├── rules.py
-│   ├── mechanics.py
-│   ├── agents.py
-│   └── simulate.py
-├── experiments/
-│   ├── configs/
-│   ├── run_experiments.py
-│   └── analysis.ipynb
-├── results/
-├── docs/
-└── mod/   # optional stretch goal
+README.md — project overview, goals, setup, and progress
+src/game_state.py — core game-state representation
+src/rules.py — game rules and scoring logic
+src/mechanics.py — definitions for new mechanics/components
+src/agents.py — bot policies and choice heuristics
+src/simulate.py — simulation loop for running games
+experiments/run_experiments.py — batch experiment runner
+experiments/configs/ — experiment configurations
+results/ — saved outputs, plots, and tables
+docs/ — proposal notes and writeups
+mod/ — optional stretch-goal mod implementation
 
 # Milestones
 Milestone 1
