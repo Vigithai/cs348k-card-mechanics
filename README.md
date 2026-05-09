@@ -188,7 +188,7 @@ A possible later extension that chases a preferred hand family, such as flushes 
 ## Repo Structure
 
 * `README.md` — project overview and current MVP spec summary
-* `SPEC.md` — detailed implementation spec for the environment and bots
+* `cs_348_k_balatro_mvp_spec.md` — detailed implementation spec for the environment and bots
 * `src/` — simulator, environment, scoring, and agent code
 * `tests/` — unit tests
 * `experiments/` — experiment scripts and configs
