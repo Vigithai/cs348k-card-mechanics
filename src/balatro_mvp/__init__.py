@@ -5,7 +5,10 @@ from .environment import (
     BalatroMVPEnvironment,
     Card,
     GameState,
+    HAND_SCORES,
+    classify_poker_hand,
     create_standard_deck,
+    score_cards,
 )
 
 __all__ = [
@@ -13,5 +16,8 @@ __all__ = [
     "BalatroMVPEnvironment",
     "Card",
     "GameState",
+    "HAND_SCORES",
+    "classify_poker_hand",
     "create_standard_deck",
+    "score_cards",
 ]

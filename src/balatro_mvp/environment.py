@@ -20,9 +20,28 @@ RANK_TO_CHIP_VALUE: dict[str, int] = {
 }
 RANK_TO_SORT_INDEX: dict[str, int] = {rank: index for index, rank in enumerate(RANKS)}
 SUIT_TO_SORT_INDEX: dict[str, int] = {suit: index for index, suit in enumerate(SUITS)}
+RANK_TO_STRAIGHT_VALUE: dict[str, int] = {
+    **{str(rank): rank for rank in range(2, 11)},
+    "J": 10,
+    "Q": 10,
+    "K": 10,
+    "A": 11,
+}
 ROUND_CHIP_TARGETS: dict[int, int] = {
     1: 300,
     2: 500,
+}
+HAND_SCORES: dict[str, tuple[int, int]] = {
+    "high_card": (5, 1),
+    "pair": (10, 2),
+    "two_pair": (20, 2),
+    "three_of_a_kind": (30, 3),
+    "straight": (30, 4),
+    "flush": (35, 4),
+    "full_house": (40, 4),
+    "four_of_a_kind": (60, 7),
+    "straight_flush": (100, 8),
+    "royal_flush": (100, 8),
 }
 
 
@@ -98,6 +117,59 @@ def _card_sort_key(card: Card) -> tuple[int, int]:
     return (RANK_TO_SORT_INDEX[card.rank], SUIT_TO_SORT_INDEX[card.suit])
 
 
+def classify_poker_hand(cards: list[Card] | tuple[Card, ...]) -> str:
+    """Classify the selected cards using the MVP poker-hand rules."""
+    if not cards:
+        raise ValueError("At least one card is required to classify a hand.")
+    if len(cards) > 5:
+        raise ValueError("At most five cards can be classified in the MVP.")
+
+    rank_counts = Counter(card.rank for card in cards)
+    sorted_count_values = sorted(rank_counts.values(), reverse=True)
+    is_flush = len(cards) == 5 and len({card.suit for card in cards}) == 1
+    is_straight = _is_straight(cards)
+    rank_set = {card.rank for card in cards}
+
+    if len(cards) == 5 and is_flush and rank_set == {"10", "J", "Q", "K", "A"}:
+        return "royal_flush"
+    if len(cards) == 5 and is_flush and is_straight:
+        return "straight_flush"
+    if sorted_count_values == [4, 1] or sorted_count_values == [4]:
+        return "four_of_a_kind"
+    if len(cards) == 5 and sorted_count_values == [3, 2]:
+        return "full_house"
+    if len(cards) == 5 and is_flush:
+        return "flush"
+    if len(cards) == 5 and is_straight:
+        return "straight"
+    if 3 in rank_counts.values():
+        return "three_of_a_kind"
+    if sorted_count_values.count(2) == 2:
+        return "two_pair"
+    if 2 in rank_counts.values():
+        return "pair"
+    return "high_card"
+
+
+def score_cards(cards: list[Card] | tuple[Card, ...]) -> tuple[str, int]:
+    """Return the MVP hand category and chips gained for the selected cards."""
+    hand_category = classify_poker_hand(cards)
+    base_chips, multiplier = HAND_SCORES[hand_category]
+    return hand_category, base_chips * multiplier
+
+
+def _is_straight(cards: list[Card] | tuple[Card, ...]) -> bool:
+    if len(cards) != 5:
+        return False
+
+    values = sorted({RANK_TO_STRAIGHT_VALUE[card.rank] for card in cards})
+    if len(values) != 5:
+        return False
+    if values == [2, 3, 4, 5, 14]:
+        return True
+    return values[-1] - values[0] == 4
+
+
 class BalatroMVPEnvironment:
     """Environment slice requested for the Balatro MVP.
 
@@ -106,6 +178,8 @@ class BalatroMVPEnvironment:
     - seeded round initialization
     - observation generation that hides unseen draw order
     - legal action enumeration
+    - poker-hand classification and lookup-table scoring
+    - play/discard state transitions across rounds
     """
 
     def __init__(
@@ -210,13 +284,107 @@ class BalatroMVPEnvironment:
         return legal_actions
 
     def step(self, action: Action) -> tuple[dict[str, Any], int, bool, dict[str, Any]]:
-        """Placeholder for later scoring and transition work."""
-        raise NotImplementedError("step() is not implemented yet for this MVP slice.")
+        """Apply a play or discard action and return the next environment interface tuple."""
+        state = self._require_state()
+        if state.is_terminal:
+            raise RuntimeError("Cannot step a terminal environment.")
+        if not isinstance(action, Action):
+            raise TypeError("step() expects an Action instance.")
+
+        selected_indices = self._validate_action(action, state)
+        selected_cards = tuple(state.hand[index] for index in selected_indices)
+        reward = 0
+        hand_category: str | None = None
+        round_ended = False
+        round_result: str | None = None
+        run_result: str | None = None
+        next_round_started = False
+
+        self._move_selected_cards_to_discard(state, selected_indices)
+
+        if action.type == "play":
+            hand_category, reward = score_cards(selected_cards)
+            state.hands_left -= 1
+            state.chips_scored += reward
+
+            if state.chips_scored >= state.chips_needed:
+                round_ended = True
+                round_result = "round_win"
+                if state.round_index >= state.max_rounds_to_win:
+                    state.is_terminal = True
+                    state.result = "run_win"
+                    run_result = "run_win"
+                else:
+                    next_round_started = True
+                    next_round_index = state.round_index + 1
+                    self._validate_state(state)
+                    self.start_round(next_round_index)
+            elif state.hands_left == 0:
+                round_ended = True
+                round_result = "round_loss"
+                state.is_terminal = True
+                state.result = "run_loss"
+                run_result = "run_loss"
+            else:
+                self._redraw_to_target(state, selected_count=len(selected_cards))
+                state.result = None
+        else:
+            state.discards_left -= 1
+            self._redraw_to_target(state, selected_count=len(selected_cards))
+            state.result = None
+
+        if not next_round_started:
+            self._validate_state(state)
+
+        current_state = self._require_state()
+        info = {
+            "action_type": action.type,
+            "selected_cards": selected_cards,
+            "chips_gained": reward,
+            "hand_category": hand_category,
+            "round_ended": round_ended,
+            "round_result": round_result,
+            "run_result": run_result,
+            "next_round_started": next_round_started,
+        }
+        return self.get_observation(), reward, current_state.is_terminal, info
 
     def _require_state(self) -> GameState:
         if self.state is None:
             raise RuntimeError("Environment state is not initialized.")
         return self.state
+
+    def _validate_action(self, action: Action, state: GameState) -> tuple[int, ...]:
+        if action.type == "play" and state.hands_left <= 0:
+            raise ValueError("Play actions require hands_left > 0.")
+        if action.type == "discard" and state.discards_left <= 0:
+            raise ValueError("Discard actions require discards_left > 0.")
+
+        hand_size = len(state.hand)
+        if any(index >= hand_size for index in action.card_indices):
+            raise ValueError("Action indices must refer to the current hand.")
+
+        return tuple(sorted(action.card_indices))
+
+    def _move_selected_cards_to_discard(
+        self, state: GameState, selected_indices: tuple[int, ...]
+    ) -> None:
+        moved_cards: list[Card] = []
+        for index in selected_indices:
+            moved_cards.append(state.hand[index])
+        for index in sorted(selected_indices, reverse=True):
+            del state.hand[index]
+        state.discard_pile.extend(moved_cards)
+
+    def _redraw_to_target(self, state: GameState, *, selected_count: int) -> None:
+        cards_needed = max(0, state.target_hand_size - len(state.hand))
+        draw_count = min(selected_count, cards_needed, len(state.unseen_deck))
+        if draw_count <= 0:
+            return
+
+        drawn_cards = state.unseen_deck[:draw_count]
+        del state.unseen_deck[:draw_count]
+        state.hand.extend(drawn_cards)
 
     def _validate_full_deck(self) -> None:
         if len(self.full_deck) != 52:
