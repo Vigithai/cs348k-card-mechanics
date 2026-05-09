@@ -1,133 +1,222 @@
 # cs348k-card-mechanics
 
-# Draft:
-Overview
+## Overview
 
-This project studies how to design small sets of card-game mechanics that compose into interesting gameplay. Inspired by games like Balatro and Slay the Spire, I will build a lightweight simulation framework for a Balatro-style card game, define a constrained mechanic space, and evaluate candidate mechanic sets using automated bot play rather than relying only on subjective playtesting.
+This project builds a simplified Balatro-like environment in Python for testing baseline agents and analyzing strategy traces. The immediate goal is to create a reproducible simulator where bots can play under a fixed ruleset, so I can compare policies, inspect their decisions, and learn useful strategies and synergies from successful runs.
 
-The main goal is not just to add content, but to build a system for reasoning about game design choices quantitatively. If feasible, I will also implement the resulting mechanics as a mod, but the simulator and evaluation framework are the primary deliverables.
+The broader idea is to use the bot as a teacher. Rather than relying only on subjective playtesting, I want a framework where strategies can be evaluated quantitatively through repeated simulation.
 
-Problem
+## Problem
 
-Games with highly composable mechanics can create rich strategy spaces, but designing those mechanics is difficult because interactions are hard to reason about and playtesting is expensive. This project asks:
+I want to get better at Balatro while staying within the game rules and without cheating. The challenge is that it is hard to reason systematically about what decisions are actually strong, what strategies are robust, and what synergies are worth pursuing across many possible runs.
 
-How can we define and evaluate a small space of card-game mechanics so that we can measure whether they produce interesting, balanced, and varied gameplay?
+## MVP Goal
 
-Project Idea
+Build a simplified Balatro-like environment that supports interchangeable agents. The first milestone is to run simple baseline bots in a reproducible simulator. A secondary goal is to analyze successful traces to learn useful strategies and patterns.
 
-I will design a small family of new mechanics for a Balatro-style card game and evaluate them in a simplified simulator. The simulator will include:
+## MVP Rules and Modeling Choices
 
-a barebones game-state representation
-a rules engine for card and mechanic interactions
-bot agents with explicit choice heuristics
-seeded simulation runs for reproducibility
-metrics for comparing mechanic sets
+- Use a standard 52-card deck.
+- The agent can always see the full multiset of undrawn cards.
+- The agent cannot see the future draw order.
+- The game is turn-based and represented as discrete states.
+- Legal actions are non-empty plays or discards of 1 to 5 cards.
+- A round can end only after a play action, never after a discard.
+- Redraw happens only if the round continues.
+- Scoring is based on a simplified poker-hand lookup table.
 
-If time permits, I will additionally implement the best mechanic subset as a mod in an existing game environment.
+## Environment State
 
-Planned System
-1. Simplified game model
+Each round maintains three mutually exclusive subsets whose union is the current playing deck:
 
-I will create a minimal but expressive state representation that captures the core parts of the game needed for strategic decision-making, such as hand state, score state, deck progression, and active mechanic effects.
+- `hand`
+- `unseen_deck`
+- `discard_pile`
 
-2. Mechanic space
+The environment also tracks:
 
-I will define a constrained set of new mechanics, likely centered on a few interaction themes rather than a large number of unrelated effects. The goal is to make the design space small enough to evaluate carefully while still allowing interesting combinations.
+- `chips_needed`
+- `chips_scored`
+- `hands_left`
+- `discards_left`
+- `round_index`
 
-3. Bot harness
+For the MVP:
+- hand size starts at 7
+- each round starts with `hands_left = 4`
+- each round starts with `discards_left = 4`
+- round 1 target is `300`
+- round 2 target is `500`
+- passing round 2 wins the run
 
-I will implement bots that choose actions according to defendable heuristics. This will allow repeated experiments over many random seeds and will act as a substitute for large-scale playtesting in the early evaluation phase.
+Each new round starts fresh from the same fixed 52-card deck, with a fresh opening hand and reset counters.
 
-4. Evaluation framework
+## Core Datatypes
 
-I will compare mechanic sets using repeated simulations and quantitative metrics.
+```python
+from dataclasses import dataclass
+from typing import Literal
 
-Evaluation
+@dataclass(frozen=True)
+class Card:
+    rank: str        # "2"-"10", "J", "Q", "K", "A"
+    suit: str        # "club", "spade", "heart", "diamond"
+    chip_value: int  # kept for MVP even though scoring uses lookup-table hand values
 
-I plan to evaluate mechanic sets using some combination of the following:
+@dataclass(frozen=True)
+class Action:
+    type: Literal["play", "discard"]
+    card_indices: tuple[int, ...]   # indices into current hand, length 1-5
+````
 
-win rate across seeds
-score distribution and variance
-run length / game length
-build diversity, such as how many distinct strategies appear
-stability / robustness across random seeds
-sensitivity to bot policy choices
-evidence of dominant or degenerate strategies
+## Bot API
 
-The goal is to argue not just that a mechanic is strong, but whether it creates a healthy and interesting interaction space.
+The environment owns game logic. Agents only inspect the observation and choose one action from the legal action list.
 
-Success Criteria
+```python
+obs = env.get_observation()
+legal_actions = env.get_legal_actions()
+action = agent.act(obs, legal_actions)
+next_obs, reward, done, info = env.step(action)
+```
 
-A successful project will produce:
+## Scoring
 
-A working simulator for a Balatro-style card game loop
-A small, clearly defined mechanic design space
-A reproducible bot-play evaluation harness
-Quantitative comparisons between mechanic sets
-A clear argument for which mechanics compose well and why
+For the MVP, played cards are classified into poker-hand categories and scored with a fixed lookup table.
 
-A stretch goal is to implement the best mechanic subset as a playable mod.
+```python
+HAND_SCORES = {
+    "high_card": (5, 1),
+    "pair": (10, 2),
+    "two_pair": (20, 2),
+    "three_of_a_kind": (30, 3),
+    "straight": (30, 4),
+    "flush": (35, 4),
+    "full_house": (40, 4),
+    "four_of_a_kind": (60, 7),
+    "straight_flush": (100, 8),
+    "royal_flush": (100, 8),
+}
+```
 
-Why this fits CS348K
+For the MVP, score is:
 
-This project is about system design for interactive mechanics. The contribution is not only a game mod or a set of cards, but a framework for specifying constraints, simulating outcomes, and evaluating design choices quantitatively. It treats game mechanics as composable components and studies what makes that composition successful.
+```python
+score = base_chips * mult
+```
 
-# Expected Deliverables
-simulator code
-mechanic definitions
-bot policies
-experiment scripts
-plots/tables of evaluation results
-short writeup of findings
-optional mod implementation
+This is intentionally simpler than full Balatro scoring.
 
-# Repo Structure
-README.md — project overview, goals, setup, and progress
-src/game_state.py — core game-state representation
-src/rules.py — game rules and scoring logic
-src/mechanics.py — definitions for new mechanics/components
-src/agents.py — bot policies and choice heuristics
-src/simulate.py — simulation loop for running games
-experiments/run_experiments.py — batch experiment runner
-experiments/configs/ — experiment configurations
-results/ — saved outputs, plots, and tables
-docs/ — proposal notes and writeups
-mod/ — optional stretch-goal mod implementation
+## Transition Rules
 
-# Milestones
-Milestone 1
+### Play
 
-Define the simplified game state and implement the core simulation loop.
+A play action:
 
-Milestone 2
+1. validates the selected indices
+2. resolves the selected cards
+3. scores the selected hand
+4. moves played cards to the discard pile
+5. decrements `hands_left`
+6. adds the resulting score to `chips_scored`
+7. checks round win/loss conditions
+8. redraws only if the round continues
 
-Implement an initial mechanic family and baseline bot policies.
+### Discard
 
-Milestone 3
+A discard action:
 
-Run seeded experiments and collect evaluation metrics.
+1. validates the selected indices
+2. moves selected cards to the discard pile
+3. decrements `discards_left`
+4. redraws from `unseen_deck`
+5. never ends the round directly
 
-Milestone 4
+## Reward Convention
 
-Refine mechanic designs and analyze tradeoffs.
+For the naive MVP:
 
-Milestone 5
+```python
+reward = chips_gained_from_action
+```
 
-Optional: implement the strongest mechanic subset as a mod.
+This aligns naturally with immediate-score baseline policies and makes debugging easier.
 
-Current Status
+## Baseline Bots
 
-Proposal stage. Initial design work is focused on:
+### RandomBot
 
-defining the game state
-identifying the mechanic space
-deciding what metrics best capture "interesting" gameplay
-defining bot choice heuristics and constraints
-Notes
+Chooses uniformly from legal actions. This is mainly for sanity-checking the environment.
 
-This repo may evolve in one of two directions:
+### StimBot
 
-a standalone simulator only
-a simulator plus a mod implementation
+A strict immediate-score heuristic bot.
 
-The simulator and evaluation framework are the core project regardless of whether the mod is completed.
+* considers only legal play actions
+* never discards
+* scores each legal play using the current lookup table
+* chooses the highest-scoring play
+* if the best current play is a pair, it plays only those two cards
+* tie-break 1: prefer fewer cards played
+* tie-break 2: if still tied, break ties randomly
+
+### ArchetypeBot
+
+A possible later extension that chases a preferred hand family, such as flushes or pairs.
+
+## Evaluation Plan
+
+### Performance Metrics
+
+* win rate
+* average rounds passed
+* average final chips scored
+* variance across random seeds
+
+### Strategy Metrics
+
+* histogram of hand types scored
+* frequency of different action sizes
+* evidence of dominant or degenerate strategies
+
+### First Outputs
+
+1. table of win rate and average rounds passed by bot
+2. histogram of hand types used by each bot
+3. sample successful traces with short annotations
+
+## Repo Structure
+
+* `README.md` — project overview and current MVP spec summary
+* `SPEC.md` — detailed implementation spec for the environment and bots
+* `src/` — simulator, environment, scoring, and agent code
+* `tests/` — unit tests
+* `experiments/` — experiment scripts and configs
+* `results/` — saved outputs, plots, and tables
+
+## Suggested Implementation Order
+
+1. Implement `Card`, `Action`, and `GameState`
+2. Implement deck creation and round initialization
+3. Implement `get_observation()`
+4. Implement legal-action enumeration
+5. Implement poker-hand classification and scoring lookup
+6. Implement `step(action)` for play and discard
+7. Implement `RandomBot`
+8. Implement `StimBot`
+9. Run seeded simulations and log traces
+10. Add analysis scripts for metrics and plots
+
+## Current Status
+
+The project is currently in MVP implementation planning. The main focus is now on:
+
+* building the core environment
+* defining legal actions cleanly
+* implementing the scoring logic
+* adding baseline bots
+* producing trace-based evaluation outputs
+
+## Notes
+
+This repository is focused first on the simplified simulator and evaluation harness. More advanced mechanics, richer scoring, or LLM-based agents can be added later, but the current priority is a clean, reproducible MVP.
