@@ -20,13 +20,21 @@ RANK_TO_CHIP_VALUE: dict[str, int] = {
 }
 RANK_TO_SORT_INDEX: dict[str, int] = {rank: index for index, rank in enumerate(RANKS)}
 SUIT_TO_SORT_INDEX: dict[str, int] = {suit: index for index, suit in enumerate(SUITS)}
-RANK_TO_STRAIGHT_VALUE: dict[str, int] = {
-    **{str(rank): rank for rank in range(2, 11)},
-    "J": 10,
-    "Q": 10,
-    "K": 10,
-    "A": 11,
-}
+STRAIGHT_RANK_SETS: frozenset[frozenset[str]] = frozenset(
+    frozenset(rank_sequence)
+    for rank_sequence in (
+        ("A", "2", "3", "4", "5"),
+        ("2", "3", "4", "5", "6"),
+        ("3", "4", "5", "6", "7"),
+        ("4", "5", "6", "7", "8"),
+        ("5", "6", "7", "8", "9"),
+        ("6", "7", "8", "9", "10"),
+        ("7", "8", "9", "10", "J"),
+        ("8", "9", "10", "J", "Q"),
+        ("9", "10", "J", "Q", "K"),
+        ("10", "J", "Q", "K", "A"),
+    )
+)
 ROUND_CHIP_TARGETS: dict[int, int] = {
     1: 300,
     2: 500,
@@ -162,12 +170,10 @@ def _is_straight(cards: list[Card] | tuple[Card, ...]) -> bool:
     if len(cards) != 5:
         return False
 
-    values = sorted({RANK_TO_STRAIGHT_VALUE[card.rank] for card in cards})
-    if len(values) != 5:
+    rank_set = frozenset(card.rank for card in cards)
+    if len(rank_set) != 5:
         return False
-    if values == [2, 3, 4, 5, 14]:
-        return True
-    return values[-1] - values[0] == 4
+    return rank_set in STRAIGHT_RANK_SETS
 
 
 class BalatroMVPEnvironment:

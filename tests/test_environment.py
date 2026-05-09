@@ -206,6 +206,18 @@ class PokerScoringTests(unittest.TestCase):
             ("straight", HAND_SCORES["straight"][0] * HAND_SCORES["straight"][1]),
         )
 
+    def test_broadway_straight_classification_and_score(self) -> None:
+        cards = build_cards(
+            self.deck,
+            [("10", "club"), ("J", "heart"), ("Q", "spade"), ("K", "diamond"), ("A", "club")],
+        )
+
+        self.assertEqual(classify_poker_hand(cards), "straight")
+        self.assertEqual(
+            score_cards(cards),
+            ("straight", HAND_SCORES["straight"][0] * HAND_SCORES["straight"][1]),
+        )
+
     def test_flush_classification_and_score(self) -> None:
         cards = build_cards(
             self.deck,
