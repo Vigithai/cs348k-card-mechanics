@@ -67,6 +67,36 @@
       },
       "num_games": 100,
       "win_rate": 0.23
+    },
+    {
+      "average_final_chips_scored": 185.85,
+      "average_rounds_passed": 1.06,
+      "bot_name": "PrunedSampledLookaheadBot",
+      "decision_debug_summary": {
+        "average_pruned_discard_candidate_count": 6.229411764705882,
+        "average_raw_legal_discard_count": 76.4,
+        "average_redraw_sample_count_used": 15.347899159663866,
+        "chosen_discard_size_counts": {
+          "0": 523,
+          "1": 228,
+          "2": 341,
+          "3": 98
+        }
+      },
+      "final_chips_std_dev": 115.50553017063729,
+      "hand_type_counts": {
+        "flush": 81,
+        "four_of_a_kind": 2,
+        "full_house": 44,
+        "high_card": 92,
+        "pair": 154,
+        "straight": 52,
+        "straight_flush": 3,
+        "three_of_a_kind": 12,
+        "two_pair": 83
+      },
+      "num_games": 100,
+      "win_rate": 0.26
     }
   ],
   "num_games": 100,

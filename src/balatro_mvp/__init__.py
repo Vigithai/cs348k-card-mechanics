@@ -1,6 +1,13 @@
 """Public package interface for the Balatro MVP environment."""
 
-from .agents import Agent, DiscardLowestChipBot, LookaheadDiscardBot, RandomBot, StimBot
+from .agents import (
+    Agent,
+    DiscardLowestChipBot,
+    LookaheadDiscardBot,
+    PrunedSampledLookaheadBot,
+    RandomBot,
+    StimBot,
+)
 from .environment import (
     Action,
     BalatroMVPEnvironment,
@@ -33,6 +40,7 @@ __all__ = [
     "GameState",
     "HAND_SCORES",
     "LookaheadDiscardBot",
+    "PrunedSampledLookaheadBot",
     "RandomBot",
     "ROUND_CHIP_TARGETS",
     "ROUND_TARGET_PRESETS",

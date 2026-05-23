@@ -1,0 +1,369 @@
+{
+  "bot_name": "PrunedSampledLookaheadBot",
+  "preset": "hard",
+  "round_chip_targets": {
+    "1": 300,
+    "2": 500
+  },
+  "seed": 0,
+  "trace": [
+    {
+      "agent_debug": {
+        "best_discard_value": 70.0,
+        "best_play_value": 40.0,
+        "chosen_discard_size": 1,
+        "discard_margin": 10.0,
+        "four_of_a_kind_short_circuited": false,
+        "pruned_discard_candidate_count": 15,
+        "raw_legal_discard_count": 119,
+        "redraw_sample_count_used": 24,
+        "sampled_discard_candidate_count": 15
+      },
+      "chips_needed": 300,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          6
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 7,
+            "rank": "7",
+            "suit": "club"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 1,
+      "scored_hand_type": null,
+      "turn_index": 0
+    },
+    {
+      "agent_debug": {
+        "best_discard_value": 68.33333333333333,
+        "best_play_value": 40.0,
+        "chosen_discard_size": 2,
+        "discard_margin": 10.0,
+        "four_of_a_kind_short_circuited": false,
+        "pruned_discard_candidate_count": 7,
+        "raw_legal_discard_count": 119,
+        "redraw_sample_count_used": 24,
+        "sampled_discard_candidate_count": 7
+      },
+      "chips_needed": 300,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          2,
+          5
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 8,
+            "rank": "8",
+            "suit": "spade"
+          },
+          {
+            "chip_value": 9,
+            "rank": "9",
+            "suit": "club"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 1,
+      "scored_hand_type": null,
+      "turn_index": 1
+    },
+    {
+      "agent_debug": {
+        "best_discard_value": 55.0,
+        "best_play_value": 40.0,
+        "chosen_discard_size": 1,
+        "discard_margin": 10.0,
+        "four_of_a_kind_short_circuited": false,
+        "pruned_discard_candidate_count": 8,
+        "raw_legal_discard_count": 119,
+        "redraw_sample_count_used": 24,
+        "sampled_discard_candidate_count": 8
+      },
+      "chips_needed": 300,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          6
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 10,
+            "rank": "Q",
+            "suit": "spade"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 1,
+      "scored_hand_type": null,
+      "turn_index": 2
+    },
+    {
+      "agent_debug": {
+        "best_discard_value": 66.66666666666667,
+        "best_play_value": 40.0,
+        "chosen_discard_size": 1,
+        "discard_margin": 10.0,
+        "four_of_a_kind_short_circuited": false,
+        "pruned_discard_candidate_count": 10,
+        "raw_legal_discard_count": 119,
+        "redraw_sample_count_used": 24,
+        "sampled_discard_candidate_count": 10
+      },
+      "chips_needed": 300,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          5
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 3,
+            "rank": "3",
+            "suit": "club"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 1,
+      "scored_hand_type": null,
+      "turn_index": 3
+    },
+    {
+      "agent_debug": {
+        "best_discard_value": null,
+        "best_play_value": 40.0,
+        "chosen_discard_size": 0,
+        "discard_margin": 10.0,
+        "four_of_a_kind_short_circuited": false,
+        "pruned_discard_candidate_count": 0,
+        "raw_legal_discard_count": 0,
+        "redraw_sample_count_used": 0,
+        "sampled_discard_candidate_count": 0
+      },
+      "chips_needed": 300,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "play"
+      },
+      "info": {
+        "action_type": "play",
+        "chips_gained": 40,
+        "hand_category": "two_pair",
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 4,
+            "rank": "4",
+            "suit": "heart"
+          },
+          {
+            "chip_value": 11,
+            "rank": "A",
+            "suit": "club"
+          },
+          {
+            "chip_value": 4,
+            "rank": "4",
+            "suit": "spade"
+          },
+          {
+            "chip_value": 11,
+            "rank": "A",
+            "suit": "heart"
+          }
+        ]
+      },
+      "reward": 40,
+      "round_index": 1,
+      "scored_hand_type": "two_pair",
+      "turn_index": 4
+    },
+    {
+      "agent_debug": {
+        "best_discard_value": null,
+        "best_play_value": 20.0,
+        "chosen_discard_size": 0,
+        "discard_margin": 10.0,
+        "four_of_a_kind_short_circuited": false,
+        "pruned_discard_candidate_count": 0,
+        "raw_legal_discard_count": 0,
+        "redraw_sample_count_used": 0,
+        "sampled_discard_candidate_count": 0
+      },
+      "chips_needed": 300,
+      "chips_scored_before_action": 40,
+      "chosen_action": {
+        "card_indices": [
+          1,
+          5
+        ],
+        "type": "play"
+      },
+      "info": {
+        "action_type": "play",
+        "chips_gained": 20,
+        "hand_category": "pair",
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 9,
+            "rank": "9",
+            "suit": "heart"
+          },
+          {
+            "chip_value": 9,
+            "rank": "9",
+            "suit": "diamond"
+          }
+        ]
+      },
+      "reward": 20,
+      "round_index": 1,
+      "scored_hand_type": "pair",
+      "turn_index": 5
+    },
+    {
+      "agent_debug": {
+        "best_discard_value": null,
+        "best_play_value": 5.0,
+        "chosen_discard_size": 0,
+        "discard_margin": 10.0,
+        "four_of_a_kind_short_circuited": false,
+        "pruned_discard_candidate_count": 0,
+        "raw_legal_discard_count": 0,
+        "redraw_sample_count_used": 0,
+        "sampled_discard_candidate_count": 0
+      },
+      "chips_needed": 300,
+      "chips_scored_before_action": 60,
+      "chosen_action": {
+        "card_indices": [
+          5
+        ],
+        "type": "play"
+      },
+      "info": {
+        "action_type": "play",
+        "chips_gained": 5,
+        "hand_category": "high_card",
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 11,
+            "rank": "A",
+            "suit": "spade"
+          }
+        ]
+      },
+      "reward": 5,
+      "round_index": 1,
+      "scored_hand_type": "high_card",
+      "turn_index": 6
+    },
+    {
+      "agent_debug": {
+        "best_discard_value": null,
+        "best_play_value": 5.0,
+        "chosen_discard_size": 0,
+        "discard_margin": 10.0,
+        "four_of_a_kind_short_circuited": false,
+        "pruned_discard_candidate_count": 0,
+        "raw_legal_discard_count": 0,
+        "redraw_sample_count_used": 0,
+        "sampled_discard_candidate_count": 0
+      },
+      "chips_needed": 300,
+      "chips_scored_before_action": 65,
+      "chosen_action": {
+        "card_indices": [
+          4
+        ],
+        "type": "play"
+      },
+      "info": {
+        "action_type": "play",
+        "chips_gained": 5,
+        "hand_category": "high_card",
+        "next_round_started": false,
+        "round_ended": true,
+        "round_result": "round_loss",
+        "run_result": "run_loss",
+        "selected_cards": [
+          {
+            "chip_value": 3,
+            "rank": "3",
+            "suit": "diamond"
+          }
+        ]
+      },
+      "reward": 5,
+      "round_index": 1,
+      "scored_hand_type": "high_card",
+      "turn_index": 7
+    }
+  ]
+}

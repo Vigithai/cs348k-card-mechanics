@@ -26,6 +26,7 @@ from balatro_mvp import (
     DEFAULT_ROUND_TARGET_PRESET,
     DiscardLowestChipBot,
     LookaheadDiscardBot,
+    PrunedSampledLookaheadBot,
     ROUND_TARGET_PRESETS,
     RandomBot,
     StimBot,
@@ -58,6 +59,7 @@ def evaluate_bot(
     total_rounds_passed = 0
     hand_type_counts: Counter[str] = Counter()
     final_chip_scores: list[int] = []
+    decision_debug_records: list[dict[str, Any]] = []
 
     for game_index in range(num_games):
         seed = base_seed + game_index
@@ -74,6 +76,7 @@ def evaluate_bot(
             observation = env.get_observation()
             legal_actions = env.get_legal_actions()
             action = bot.act(observation, legal_actions)
+            agent_debug = bot.get_last_decision_info() if hasattr(bot, "get_last_decision_info") else None
             _, reward, done, info = env.step(action)
 
             if should_save_trace:
@@ -86,9 +89,13 @@ def evaluate_bot(
                         "chosen_action": serialize_action(action),
                         "scored_hand_type": info.get("hand_category"),
                         "reward": reward,
+                        "agent_debug": serialize_value(agent_debug),
                         "info": serialize_value(info),
                     }
                 )
+
+            if agent_debug is not None:
+                decision_debug_records.append(serialize_value(agent_debug))
 
             hand_category = info.get("hand_category")
             if hand_category is not None:
@@ -119,7 +126,7 @@ def evaluate_bot(
     average_final_chips = sum(final_chip_scores) / num_games
     final_chips_std_dev = statistics.pstdev(final_chip_scores) if len(final_chip_scores) > 1 else 0.0
 
-    return {
+    bot_summary = {
         "bot_name": bot_name,
         "num_games": num_games,
         "win_rate": wins / num_games,
@@ -128,6 +135,9 @@ def evaluate_bot(
         "final_chips_std_dev": final_chips_std_dev,
         "hand_type_counts": dict(sorted(hand_type_counts.items())),
     }
+    if decision_debug_records:
+        bot_summary["decision_debug_summary"] = summarize_decision_debug_records(decision_debug_records)
+    return bot_summary
 
 
 def print_summary_table(
@@ -222,6 +232,38 @@ def save_trace(
         json.dump(trace_payload, trace_file, indent=2, sort_keys=True)
 
 
+def summarize_decision_debug_records(decision_debug_records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Aggregate optional bot decision debug info into a compact summary."""
+    chosen_discard_size_counts: Counter[str] = Counter()
+    raw_legal_discard_counts: list[int] = []
+    pruned_discard_candidate_counts: list[int] = []
+    redraw_sample_counts: list[int] = []
+
+    for record in decision_debug_records:
+        chosen_discard_size_counts[str(record.get("chosen_discard_size", 0))] += 1
+        if "raw_legal_discard_count" in record:
+            raw_legal_discard_counts.append(int(record["raw_legal_discard_count"]))
+        if "pruned_discard_candidate_count" in record:
+            pruned_discard_candidate_counts.append(int(record["pruned_discard_candidate_count"]))
+        if "redraw_sample_count_used" in record:
+            redraw_sample_counts.append(int(record["redraw_sample_count_used"]))
+
+    return {
+        "average_raw_legal_discard_count": (
+            sum(raw_legal_discard_counts) / len(raw_legal_discard_counts) if raw_legal_discard_counts else 0.0
+        ),
+        "average_pruned_discard_candidate_count": (
+            sum(pruned_discard_candidate_counts) / len(pruned_discard_candidate_counts)
+            if pruned_discard_candidate_counts
+            else 0.0
+        ),
+        "average_redraw_sample_count_used": (
+            sum(redraw_sample_counts) / len(redraw_sample_counts) if redraw_sample_counts else 0.0
+        ),
+        "chosen_discard_size_counts": dict(sorted(chosen_discard_size_counts.items())),
+    }
+
+
 def serialize_action(action: Action) -> dict[str, Any]:
     """Convert an Action into a JSON-friendly representation."""
     return {
@@ -276,7 +318,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--trace-bot",
-        default="LookaheadDiscardBot",
+        default="PrunedSampledLookaheadBot",
         help="Bot name for sample trace output when --save-traces is enabled.",
     )
     parser.add_argument(
@@ -285,12 +327,34 @@ def main() -> None:
         default=3,
         help="Maximum number of sample traces to save for the trace bot.",
     )
+    parser.add_argument(
+        "--pruned-sample-count",
+        type=int,
+        default=24,
+        help="Redraw sample count for PrunedSampledLookaheadBot discard evaluation.",
+    )
+    parser.add_argument(
+        "--pruned-discard-margin",
+        type=float,
+        default=10.0,
+        help="Required discard-value margin over the best immediate play.",
+    )
+    parser.add_argument(
+        "--pruned-candidate-pool-size",
+        type=int,
+        default=5,
+        help="How many of the most discardable cards seed the pruned subset search.",
+    )
     args = parser.parse_args()
 
     if args.games <= 0:
         raise ValueError("--games must be positive.")
     if args.trace_limit < 0:
         raise ValueError("--trace-limit cannot be negative.")
+    if args.pruned_sample_count <= 0:
+        raise ValueError("--pruned-sample-count must be positive.")
+    if args.pruned_candidate_pool_size <= 0:
+        raise ValueError("--pruned-candidate-pool-size must be positive.")
 
     round_chip_targets = dict(ROUND_TARGET_PRESETS[args.preset])
     output_path = args.output if args.output is not None else default_output_path_for_preset(args.preset)
@@ -300,6 +364,15 @@ def main() -> None:
         ("StimBot", lambda rng: StimBot(rng=rng)),
         ("DiscardLowestChipBot", lambda rng: DiscardLowestChipBot(rng=rng)),
         ("LookaheadDiscardBot", lambda rng: LookaheadDiscardBot(rng=rng)),
+        (
+            "PrunedSampledLookaheadBot",
+            lambda rng: PrunedSampledLookaheadBot(
+                rng=rng,
+                sample_count=args.pruned_sample_count,
+                discard_margin=args.pruned_discard_margin,
+                pruning_candidate_pool_size=args.pruned_candidate_pool_size,
+            ),
+        ),
     ]
 
     bot_results = []
