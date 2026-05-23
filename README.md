@@ -1,5 +1,58 @@
 # cs348k-card-mechanics
 
+## Checkpoint 2 Update
+
+For checkpoint 2, I focused on turning the Balatro MVP into a real evaluation pipeline with meaningful intermediate results. The environment now supports seeded simulation, baseline bots, JSON result export, and plotting scripts for summary graphs.
+
+### Current Baselines
+
+The current evaluation compares three baseline policies over 200 seeded games:
+
+- **RandomBot**: selects uniformly from legal actions
+- **StimBot**: evaluates legal play actions and always chooses the highest immediate-scoring play
+- **DiscardLowestChipBot**: extends this with a simple discard heuristic; if no play reaches pair-level value or better, it discards one lowest-chip card and redraws
+
+### Current Results
+
+| Bot | Win Rate | Avg. Rounds Passed | Avg. Final Chips | Std. Dev. Final Chips |
+|---|---:|---:|---:|---:|
+| RandomBot | 0.00% | 0.000 | 36.58 | 20.54 |
+| StimBot | 0.00% | 0.035 | 108.17 | 64.33 |
+| DiscardLowestChipBot | 0.00% | 0.075 | 140.90 | 62.43 |
+
+These results show a clear ranking between the baselines:  
+`DiscardLowestChipBot > StimBot > RandomBot` in average final chips scored.
+
+This suggests that:
+- the environment and evaluation pipeline are sensitive enough to distinguish stronger and weaker policies
+- even a very simple discard-aware heuristic improves performance over pure immediate-greedy play
+
+At the same time, none of the current bots achieves a nonzero win rate under the current round targets. This suggests that the current environment is still too difficult for these simple baselines, or that the difficulty / scoring balance needs further tuning.
+
+### Hand-Type Trends
+
+The hand-type distributions also show clear policy differences:
+
+- **RandomBot** is overwhelmingly dominated by `high_card` results
+- **StimBot** produces many more `pair`, `two_pair`, and some `straight` hands
+- **DiscardLowestChipBot** further shifts the distribution toward stronger structured hands and reduces the number of `high_card` outcomes
+
+This suggests that the bots differ not only in score, but also in the kinds of strategies they realize in the state space.
+
+### Figures
+
+#### Average Final Chips by Bot
+
+![Average final chips by bot](results/figures/average_final_chips_by_bot.png)
+
+#### Hand-Type Distribution by Bot
+
+![Hand-type distribution by bot](results/figures/hand_type_distribution_by_bot.png)
+
+### Next Steps
+
+My next step is to use this evaluation template to test stronger discard-aware heuristics and/or adjust the difficulty calibration so that win-rate differences become visible. That will let me move from “which baseline accumulates more chips?” to “which strategies are actually viable for clearing rounds?”
+
 ## Overview
 
 This project builds a simplified Balatro-like environment in Python for testing baseline agents and analyzing strategy traces. The immediate goal is to create a reproducible simulator where bots can play under a fixed ruleset, so I can compare policies, inspect their decisions, and learn useful strategies and synergies from successful runs.
