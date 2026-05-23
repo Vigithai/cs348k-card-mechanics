@@ -1,6 +1,6 @@
 """Public package interface for the Balatro MVP environment."""
 
-from .agents import Agent, RandomBot, StimBot
+from .agents import Agent, DiscardLowestChipBot, RandomBot, StimBot
 from .environment import (
     Action,
     BalatroMVPEnvironment,
@@ -17,6 +17,7 @@ __all__ = [
     "Action",
     "BalatroMVPEnvironment",
     "Card",
+    "DiscardLowestChipBot",
     "GameState",
     "HAND_SCORES",
     "RandomBot",

@@ -10,7 +10,7 @@ SRC_PATH = Path(__file__).resolve().parents[1] / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from balatro_mvp import Action, Card, RandomBot, StimBot
+from balatro_mvp import Action, Card, DiscardLowestChipBot, RandomBot, StimBot
 
 
 class StubChoiceRng:
@@ -112,6 +112,67 @@ class StimBotTests(unittest.TestCase):
 
         self.assertEqual(first_bot.act(observation, legal_actions), legal_actions[0])
         self.assertEqual(second_bot.act(observation, legal_actions), legal_actions[1])
+
+
+class DiscardLowestChipBotTests(unittest.TestCase):
+    def test_discards_lowest_chip_card_when_no_play_reaches_pair_score(self) -> None:
+        observation = make_observation(
+            (
+                Card(rank="A", suit="heart", chip_value=11),
+                Card(rank="5", suit="spade", chip_value=5),
+                Card(rank="2", suit="club", chip_value=2),
+            )
+        )
+        legal_actions = [
+            Action(type="play", card_indices=(0,)),
+            Action(type="play", card_indices=(1,)),
+            Action(type="discard", card_indices=(0,)),
+            Action(type="discard", card_indices=(1,)),
+            Action(type="discard", card_indices=(2,)),
+        ]
+        bot = DiscardLowestChipBot(rng=random.Random(11))
+
+        chosen_action = bot.act(observation, legal_actions)
+
+        self.assertEqual(chosen_action, Action(type="discard", card_indices=(2,)))
+
+    def test_plays_when_pair_or_better_exists(self) -> None:
+        observation = make_observation(
+            (
+                Card(rank="2", suit="club", chip_value=2),
+                Card(rank="2", suit="heart", chip_value=2),
+                Card(rank="A", suit="spade", chip_value=11),
+            )
+        )
+        legal_actions = [
+            Action(type="play", card_indices=(0,)),
+            Action(type="play", card_indices=(0, 1)),
+            Action(type="discard", card_indices=(2,)),
+        ]
+        bot = DiscardLowestChipBot(rng=random.Random(13))
+
+        chosen_action = bot.act(observation, legal_actions)
+
+        self.assertEqual(chosen_action, Action(type="play", card_indices=(0, 1)))
+
+    def test_lowest_chip_tie_break_uses_earliest_hand_index(self) -> None:
+        observation = make_observation(
+            (
+                Card(rank="2", suit="club", chip_value=2),
+                Card(rank="2", suit="heart", chip_value=2),
+                Card(rank="6", suit="spade", chip_value=6),
+            )
+        )
+        legal_actions = [
+            Action(type="play", card_indices=(2,)),
+            Action(type="discard", card_indices=(0,)),
+            Action(type="discard", card_indices=(1,)),
+        ]
+        bot = DiscardLowestChipBot(rng=random.Random(17))
+
+        chosen_action = bot.act(observation, legal_actions)
+
+        self.assertEqual(chosen_action, Action(type="discard", card_indices=(0,)))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,45 @@
+{
+  "base_seed": 0,
+  "bot_results": [
+    {
+      "average_final_chips_scored": 26.0,
+      "average_rounds_passed": 0.0,
+      "bot_name": "RandomBot",
+      "final_chips_std_dev": 7.3484692283495345,
+      "hand_type_counts": {
+        "high_card": 18,
+        "pair": 2
+      },
+      "num_games": 5,
+      "win_rate": 0.0
+    },
+    {
+      "average_final_chips_scored": 72.0,
+      "average_rounds_passed": 0.0,
+      "bot_name": "StimBot",
+      "final_chips_std_dev": 22.045407685048602,
+      "hand_type_counts": {
+        "high_card": 8,
+        "pair": 8,
+        "two_pair": 4
+      },
+      "num_games": 5,
+      "win_rate": 0.0
+    },
+    {
+      "average_final_chips_scored": 130.0,
+      "average_rounds_passed": 0.0,
+      "bot_name": "DiscardLowestChipBot",
+      "final_chips_std_dev": 62.609903369994115,
+      "hand_type_counts": {
+        "high_card": 2,
+        "pair": 12,
+        "straight": 2,
+        "two_pair": 4
+      },
+      "num_games": 5,
+      "win_rate": 0.0
+    }
+  ],
+  "num_games": 5
+}
