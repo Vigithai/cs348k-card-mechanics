@@ -10,7 +10,14 @@ SRC_PATH = Path(__file__).resolve().parents[1] / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from balatro_mvp import Action, Card, DiscardLowestChipBot, RandomBot, StimBot
+from balatro_mvp import (
+    Action,
+    Card,
+    DiscardLowestChipBot,
+    LookaheadDiscardBot,
+    RandomBot,
+    StimBot,
+)
 
 
 class StubChoiceRng:
@@ -19,7 +26,7 @@ class StubChoiceRng:
     def __init__(self, choice_index: int) -> None:
         self.choice_index = choice_index
 
-    def choice(self, items: list[Action]) -> Action:
+    def choice(self, items: list[object]) -> object:
         return items[self.choice_index]
 
 
@@ -173,6 +180,118 @@ class DiscardLowestChipBotTests(unittest.TestCase):
         chosen_action = bot.act(observation, legal_actions)
 
         self.assertEqual(chosen_action, Action(type="discard", card_indices=(0,)))
+
+
+class LookaheadDiscardBotTests(unittest.TestCase):
+    def test_chooses_discard_one_when_expected_next_play_value_is_better(self) -> None:
+        observation = {
+            **make_observation(
+                (
+                    Card(rank="9", suit="club", chip_value=9),
+                    Card(rank="K", suit="heart", chip_value=10),
+                    Card(rank="A", suit="spade", chip_value=11),
+                )
+            ),
+            "unseen_deck": (
+                Card(rank="9", suit="diamond", chip_value=9),
+                Card(rank="9", suit="heart", chip_value=9),
+            ),
+        }
+        legal_actions = [
+            Action(type="play", card_indices=(0,)),
+            Action(type="play", card_indices=(1,)),
+            Action(type="play", card_indices=(2,)),
+            Action(type="discard", card_indices=(1,)),
+        ]
+        bot = LookaheadDiscardBot(rng=random.Random(19))
+
+        chosen_action = bot.act(observation, legal_actions)
+
+        self.assertEqual(chosen_action, Action(type="discard", card_indices=(1,)))
+
+    def test_chooses_play_when_immediate_play_is_better(self) -> None:
+        observation = {
+            **make_observation(
+                (
+                    Card(rank="2", suit="club", chip_value=2),
+                    Card(rank="2", suit="heart", chip_value=2),
+                    Card(rank="A", suit="spade", chip_value=11),
+                )
+            ),
+            "unseen_deck": (
+                Card(rank="4", suit="club", chip_value=4),
+                Card(rank="5", suit="diamond", chip_value=5),
+            ),
+        }
+        legal_actions = [
+            Action(type="play", card_indices=(0,)),
+            Action(type="play", card_indices=(0, 1)),
+            Action(type="discard", card_indices=(0,)),
+        ]
+        bot = LookaheadDiscardBot(rng=random.Random(23))
+
+        chosen_action = bot.act(observation, legal_actions)
+
+        self.assertEqual(chosen_action, Action(type="play", card_indices=(0, 1)))
+
+    def test_prefers_play_over_discard_when_values_tie(self) -> None:
+        observation = {
+            **make_observation(
+                (
+                    Card(rank="2", suit="club", chip_value=2),
+                    Card(rank="7", suit="heart", chip_value=7),
+                    Card(rank="A", suit="spade", chip_value=11),
+                )
+            ),
+            "unseen_deck": (Card(rank="3", suit="diamond", chip_value=3),),
+        }
+        legal_actions = [
+            Action(type="play", card_indices=(0,)),
+            Action(type="discard", card_indices=(2,)),
+        ]
+        bot = LookaheadDiscardBot(rng=random.Random(29))
+
+        chosen_action = bot.act(observation, legal_actions)
+
+        self.assertEqual(chosen_action, Action(type="play", card_indices=(0,)))
+
+    def test_prefers_fewer_cards_when_equal_value_play_options_tie(self) -> None:
+        observation = make_observation(
+            (
+                Card(rank="2", suit="club", chip_value=2),
+                Card(rank="2", suit="heart", chip_value=2),
+                Card(rank="5", suit="spade", chip_value=5),
+            )
+        )
+        legal_actions = [
+            Action(type="play", card_indices=(0, 1, 2)),
+            Action(type="play", card_indices=(0, 1)),
+        ]
+        bot = LookaheadDiscardBot(rng=random.Random(31))
+
+        chosen_action = bot.act(observation, legal_actions)
+
+        self.assertEqual(chosen_action, Action(type="play", card_indices=(0, 1)))
+
+    def test_uses_rng_for_equal_value_equal_type_equal_size_ties(self) -> None:
+        observation = make_observation(
+            (
+                Card(rank="2", suit="club", chip_value=2),
+                Card(rank="2", suit="heart", chip_value=2),
+                Card(rank="3", suit="club", chip_value=3),
+                Card(rank="3", suit="heart", chip_value=3),
+            )
+        )
+        legal_actions = [
+            Action(type="play", card_indices=(0, 1)),
+            Action(type="play", card_indices=(2, 3)),
+        ]
+
+        first_bot = LookaheadDiscardBot(rng=StubChoiceRng(choice_index=0))
+        second_bot = LookaheadDiscardBot(rng=StubChoiceRng(choice_index=1))
+
+        self.assertEqual(first_bot.act(observation, legal_actions), legal_actions[0])
+        self.assertEqual(second_bot.act(observation, legal_actions), legal_actions[1])
 
 
 if __name__ == "__main__":

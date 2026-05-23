@@ -1,0 +1,467 @@
+{
+  "bot_name": "LookaheadDiscardBot",
+  "preset": "easy",
+  "round_chip_targets": {
+    "1": 150,
+    "2": 250
+  },
+  "seed": 1,
+  "trace": [
+    {
+      "chips_needed": 150,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          4
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 4,
+            "rank": "4",
+            "suit": "club"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 1,
+      "scored_hand_type": null,
+      "turn_index": 0
+    },
+    {
+      "chips_needed": 150,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          5
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 8,
+            "rank": "8",
+            "suit": "diamond"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 1,
+      "scored_hand_type": null,
+      "turn_index": 1
+    },
+    {
+      "chips_needed": 150,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          4
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 11,
+            "rank": "A",
+            "suit": "heart"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 1,
+      "scored_hand_type": null,
+      "turn_index": 2
+    },
+    {
+      "chips_needed": 150,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          0
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 10,
+            "rank": "Q",
+            "suit": "spade"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 1,
+      "scored_hand_type": null,
+      "turn_index": 3
+    },
+    {
+      "chips_needed": 150,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "type": "play"
+      },
+      "info": {
+        "action_type": "play",
+        "chips_gained": 160,
+        "hand_category": "full_house",
+        "next_round_started": true,
+        "round_ended": true,
+        "round_result": "round_win",
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 10,
+            "rank": "J",
+            "suit": "club"
+          },
+          {
+            "chip_value": 10,
+            "rank": "K",
+            "suit": "heart"
+          },
+          {
+            "chip_value": 10,
+            "rank": "J",
+            "suit": "diamond"
+          },
+          {
+            "chip_value": 10,
+            "rank": "K",
+            "suit": "club"
+          },
+          {
+            "chip_value": 10,
+            "rank": "J",
+            "suit": "heart"
+          }
+        ]
+      },
+      "reward": 160,
+      "round_index": 1,
+      "scored_hand_type": "full_house",
+      "turn_index": 4
+    },
+    {
+      "chips_needed": 250,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          0
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 2,
+            "rank": "2",
+            "suit": "spade"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 2,
+      "scored_hand_type": null,
+      "turn_index": 5
+    },
+    {
+      "chips_needed": 250,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          5
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 9,
+            "rank": "9",
+            "suit": "diamond"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 2,
+      "scored_hand_type": null,
+      "turn_index": 6
+    },
+    {
+      "chips_needed": 250,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          6
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 6,
+            "rank": "6",
+            "suit": "club"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 2,
+      "scored_hand_type": null,
+      "turn_index": 7
+    },
+    {
+      "chips_needed": 250,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          6
+        ],
+        "type": "discard"
+      },
+      "info": {
+        "action_type": "discard",
+        "chips_gained": 0,
+        "hand_category": null,
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 10,
+            "rank": "Q",
+            "suit": "heart"
+          }
+        ]
+      },
+      "reward": 0,
+      "round_index": 2,
+      "scored_hand_type": null,
+      "turn_index": 8
+    },
+    {
+      "chips_needed": 250,
+      "chips_scored_before_action": 0,
+      "chosen_action": {
+        "card_indices": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "type": "play"
+      },
+      "info": {
+        "action_type": "play",
+        "chips_gained": 140,
+        "hand_category": "flush",
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 10,
+            "rank": "J",
+            "suit": "club"
+          },
+          {
+            "chip_value": 10,
+            "rank": "10",
+            "suit": "club"
+          },
+          {
+            "chip_value": 10,
+            "rank": "Q",
+            "suit": "club"
+          },
+          {
+            "chip_value": 3,
+            "rank": "3",
+            "suit": "club"
+          },
+          {
+            "chip_value": 8,
+            "rank": "8",
+            "suit": "club"
+          }
+        ]
+      },
+      "reward": 140,
+      "round_index": 2,
+      "scored_hand_type": "flush",
+      "turn_index": 9
+    },
+    {
+      "chips_needed": 250,
+      "chips_scored_before_action": 140,
+      "chosen_action": {
+        "card_indices": [
+          2,
+          5
+        ],
+        "type": "play"
+      },
+      "info": {
+        "action_type": "play",
+        "chips_gained": 20,
+        "hand_category": "pair",
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 2,
+            "rank": "2",
+            "suit": "club"
+          },
+          {
+            "chip_value": 2,
+            "rank": "2",
+            "suit": "heart"
+          }
+        ]
+      },
+      "reward": 20,
+      "round_index": 2,
+      "scored_hand_type": "pair",
+      "turn_index": 10
+    },
+    {
+      "chips_needed": 250,
+      "chips_scored_before_action": 160,
+      "chosen_action": {
+        "card_indices": [
+          4,
+          6
+        ],
+        "type": "play"
+      },
+      "info": {
+        "action_type": "play",
+        "chips_gained": 20,
+        "hand_category": "pair",
+        "next_round_started": false,
+        "round_ended": false,
+        "round_result": null,
+        "run_result": null,
+        "selected_cards": [
+          {
+            "chip_value": 4,
+            "rank": "4",
+            "suit": "spade"
+          },
+          {
+            "chip_value": 4,
+            "rank": "4",
+            "suit": "heart"
+          }
+        ]
+      },
+      "reward": 20,
+      "round_index": 2,
+      "scored_hand_type": "pair",
+      "turn_index": 11
+    },
+    {
+      "chips_needed": 250,
+      "chips_scored_before_action": 180,
+      "chosen_action": {
+        "card_indices": [
+          5,
+          6
+        ],
+        "type": "play"
+      },
+      "info": {
+        "action_type": "play",
+        "chips_gained": 20,
+        "hand_category": "pair",
+        "next_round_started": false,
+        "round_ended": true,
+        "round_result": "round_loss",
+        "run_result": "run_loss",
+        "selected_cards": [
+          {
+            "chip_value": 5,
+            "rank": "5",
+            "suit": "club"
+          },
+          {
+            "chip_value": 5,
+            "rank": "5",
+            "suit": "diamond"
+          }
+        ]
+      },
+      "reward": 20,
+      "round_index": 2,
+      "scored_hand_type": "pair",
+      "turn_index": 12
+    }
+  ]
+}

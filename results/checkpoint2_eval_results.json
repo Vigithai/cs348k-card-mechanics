@@ -2,44 +2,53 @@
   "base_seed": 0,
   "bot_results": [
     {
-      "average_final_chips_scored": 26.0,
+      "average_final_chips_scored": 36.575,
       "average_rounds_passed": 0.0,
       "bot_name": "RandomBot",
-      "final_chips_std_dev": 7.3484692283495345,
+      "final_chips_std_dev": 20.540067551008686,
       "hand_type_counts": {
-        "high_card": 18,
-        "pair": 2
+        "high_card": 617,
+        "pair": 172,
+        "three_of_a_kind": 7,
+        "two_pair": 4
       },
-      "num_games": 5,
+      "num_games": 200,
       "win_rate": 0.0
     },
     {
-      "average_final_chips_scored": 72.0,
-      "average_rounds_passed": 0.0,
+      "average_final_chips_scored": 108.175,
+      "average_rounds_passed": 0.035,
       "bot_name": "StimBot",
-      "final_chips_std_dev": 22.045407685048602,
+      "final_chips_std_dev": 64.33151929653147,
       "hand_type_counts": {
-        "high_card": 8,
-        "pair": 8,
-        "two_pair": 4
+        "flush": 18,
+        "full_house": 7,
+        "high_card": 237,
+        "pair": 379,
+        "straight": 44,
+        "three_of_a_kind": 13,
+        "two_pair": 123
       },
-      "num_games": 5,
+      "num_games": 200,
       "win_rate": 0.0
     },
     {
-      "average_final_chips_scored": 130.0,
-      "average_rounds_passed": 0.0,
+      "average_final_chips_scored": 140.9,
+      "average_rounds_passed": 0.075,
       "bot_name": "DiscardLowestChipBot",
-      "final_chips_std_dev": 62.609903369994115,
+      "final_chips_std_dev": 62.42948021568016,
       "hand_type_counts": {
-        "high_card": 2,
-        "pair": 12,
-        "straight": 2,
-        "two_pair": 4
+        "flush": 28,
+        "full_house": 7,
+        "high_card": 38,
+        "pair": 543,
+        "straight": 80,
+        "three_of_a_kind": 17,
+        "two_pair": 139
       },
-      "num_games": 5,
+      "num_games": 200,
       "win_rate": 0.0
     }
   ],
-  "num_games": 5
+  "num_games": 200
 }

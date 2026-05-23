@@ -1,4 +1,4 @@
-"""Run checkpoint-2 seeded simulations for the baseline Balatro MVP bots."""
+"""Run preset-based seeded simulations for the Balatro MVP baseline bots."""
 
 from __future__ import annotations
 
@@ -13,15 +13,31 @@ from typing import Any, Callable
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+RESULTS_DIR = REPO_ROOT / "results"
+TRACE_RESULTS_DIR = RESULTS_DIR / "traces"
 SRC_PATH = REPO_ROOT / "src"
-DEFAULT_RESULTS_PATH = REPO_ROOT / "results" / "checkpoint2_eval_results.json"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from balatro_mvp import BalatroMVPEnvironment, DiscardLowestChipBot, RandomBot, StimBot
+from balatro_mvp import (
+    Action,
+    BalatroMVPEnvironment,
+    Card,
+    DEFAULT_ROUND_TARGET_PRESET,
+    DiscardLowestChipBot,
+    LookaheadDiscardBot,
+    ROUND_TARGET_PRESETS,
+    RandomBot,
+    StimBot,
+)
 
 
 BotFactory = Callable[[random.Random], object]
+
+
+def default_output_path_for_preset(preset_name: str) -> Path:
+    """Return the default JSON results path for one preset."""
+    return RESULTS_DIR / f"{preset_name}_eval_results.json"
 
 
 def evaluate_bot(
@@ -30,6 +46,12 @@ def evaluate_bot(
     *,
     num_games: int,
     base_seed: int,
+    preset_name: str,
+    round_chip_targets: dict[int, int],
+    save_traces: bool,
+    trace_limit: int,
+    trace_bot_name: str,
+    trace_output_dir: Path,
 ) -> dict[str, Any]:
     """Run repeated seeded games for one bot and return summary metrics."""
     wins = 0
@@ -39,16 +61,34 @@ def evaluate_bot(
 
     for game_index in range(num_games):
         seed = base_seed + game_index
-        env = BalatroMVPEnvironment(seed=seed)
+        env = BalatroMVPEnvironment(seed=seed, round_chip_targets=round_chip_targets)
         bot = bot_factory(random.Random(seed))
 
+        should_save_trace = save_traces and bot_name == trace_bot_name and game_index < trace_limit
+        trace_records: list[dict[str, Any]] = []
         done = False
         rounds_passed = 0
+        turn_index = 0
+
         while not done:
             observation = env.get_observation()
             legal_actions = env.get_legal_actions()
             action = bot.act(observation, legal_actions)
-            _, _, done, info = env.step(action)
+            _, reward, done, info = env.step(action)
+
+            if should_save_trace:
+                trace_records.append(
+                    {
+                        "round_index": observation["round_index"],
+                        "turn_index": turn_index,
+                        "chips_needed": observation["chips_needed"],
+                        "chips_scored_before_action": observation["chips_scored"],
+                        "chosen_action": serialize_action(action),
+                        "scored_hand_type": info.get("hand_category"),
+                        "reward": reward,
+                        "info": serialize_value(info),
+                    }
+                )
 
             hand_category = info.get("hand_category")
             if hand_category is not None:
@@ -56,8 +96,20 @@ def evaluate_bot(
             if info.get("round_result") == "round_win":
                 rounds_passed += 1
 
+            turn_index += 1
+
         if env.state is None:
             raise RuntimeError("Environment state unexpectedly missing after simulation.")
+
+        if should_save_trace:
+            save_trace(
+                trace_output_dir=trace_output_dir,
+                preset_name=preset_name,
+                bot_name=bot_name,
+                seed=seed,
+                trace_records=trace_records,
+                round_chip_targets=round_chip_targets,
+            )
 
         if env.state.result == "run_win":
             wins += 1
@@ -78,8 +130,18 @@ def evaluate_bot(
     }
 
 
-def print_summary_table(bot_results: list[dict[str, Any]]) -> None:
+def print_summary_table(
+    bot_results: list[dict[str, Any]],
+    *,
+    preset_name: str,
+    round_chip_targets: dict[int, int],
+) -> None:
     """Print a compact summary table for the evaluated bots."""
+    round_targets_text = ", ".join(
+        f"round {round_index}={target}" for round_index, target in sorted(round_chip_targets.items())
+    )
+    print(f"Preset: {preset_name} ({round_targets_text})")
+
     headers = [
         "Bot",
         "Win Rate",
@@ -116,13 +178,17 @@ def print_summary_table(bot_results: list[dict[str, Any]]) -> None:
 def save_results(
     *,
     output_path: Path,
+    preset_name: str,
+    round_chip_targets: dict[int, int],
     num_games: int,
     base_seed: int,
     bot_results: list[dict[str, Any]],
 ) -> None:
-    """Write checkpoint evaluation results to a machine-readable JSON file."""
+    """Write evaluation results to a machine-readable JSON file."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     results_payload = {
+        "preset": preset_name,
+        "round_chip_targets": round_chip_targets,
         "num_games": num_games,
         "base_seed": base_seed,
         "bot_results": bot_results,
@@ -132,37 +198,132 @@ def save_results(
     print(f"\nSaved results to {output_path}")
 
 
+def save_trace(
+    *,
+    trace_output_dir: Path,
+    preset_name: str,
+    bot_name: str,
+    seed: int,
+    trace_records: list[dict[str, Any]],
+    round_chip_targets: dict[int, int],
+) -> None:
+    """Write one sample run trace to JSON."""
+    preset_trace_dir = trace_output_dir / preset_name
+    preset_trace_dir.mkdir(parents=True, exist_ok=True)
+    trace_path = preset_trace_dir / f"{bot_name}_seed_{seed}.json"
+    trace_payload = {
+        "preset": preset_name,
+        "bot_name": bot_name,
+        "seed": seed,
+        "round_chip_targets": round_chip_targets,
+        "trace": trace_records,
+    }
+    with trace_path.open("w", encoding="utf-8") as trace_file:
+        json.dump(trace_payload, trace_file, indent=2, sort_keys=True)
+
+
+def serialize_action(action: Action) -> dict[str, Any]:
+    """Convert an Action into a JSON-friendly representation."""
+    return {
+        "type": action.type,
+        "card_indices": list(action.card_indices),
+    }
+
+
+def serialize_card(card: Card) -> dict[str, Any]:
+    """Convert a Card into a JSON-friendly representation."""
+    return {
+        "rank": card.rank,
+        "suit": card.suit,
+        "chip_value": card.chip_value,
+    }
+
+
+def serialize_value(value: Any) -> Any:
+    """Recursively convert values into JSON-friendly data."""
+    if isinstance(value, Card):
+        return serialize_card(value)
+    if isinstance(value, Action):
+        return serialize_action(value)
+    if isinstance(value, dict):
+        return {str(key): serialize_value(inner_value) for key, inner_value in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [serialize_value(item) for item in value]
+    return value
+
+
 def main() -> None:
-    """Parse arguments and run the checkpoint-2 baseline bot simulations."""
+    """Parse arguments and run preset-based baseline bot simulations."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--games", type=int, default=25, help="Number of seeded games to run per bot.")
     parser.add_argument("--base-seed", type=int, default=0, help="Starting seed for simulation runs.")
     parser.add_argument(
+        "--preset",
+        choices=sorted(ROUND_TARGET_PRESETS),
+        default=DEFAULT_ROUND_TARGET_PRESET,
+        help="Named round-target preset to evaluate.",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
-        default=DEFAULT_RESULTS_PATH,
-        help="Path to the JSON file where summary results should be saved.",
+        default=None,
+        help="Optional output JSON path. Defaults to results/<preset>_eval_results.json.",
+    )
+    parser.add_argument(
+        "--save-traces",
+        action="store_true",
+        help="Save a few sample traces for the configured trace bot.",
+    )
+    parser.add_argument(
+        "--trace-bot",
+        default="LookaheadDiscardBot",
+        help="Bot name for sample trace output when --save-traces is enabled.",
+    )
+    parser.add_argument(
+        "--trace-limit",
+        type=int,
+        default=3,
+        help="Maximum number of sample traces to save for the trace bot.",
     )
     args = parser.parse_args()
 
     if args.games <= 0:
         raise ValueError("--games must be positive.")
+    if args.trace_limit < 0:
+        raise ValueError("--trace-limit cannot be negative.")
+
+    round_chip_targets = dict(ROUND_TARGET_PRESETS[args.preset])
+    output_path = args.output if args.output is not None else default_output_path_for_preset(args.preset)
 
     bot_factories: list[tuple[str, BotFactory]] = [
         ("RandomBot", lambda rng: RandomBot(rng=rng)),
         ("StimBot", lambda rng: StimBot(rng=rng)),
         ("DiscardLowestChipBot", lambda rng: DiscardLowestChipBot(rng=rng)),
+        ("LookaheadDiscardBot", lambda rng: LookaheadDiscardBot(rng=rng)),
     ]
 
     bot_results = []
     for bot_name, bot_factory in bot_factories:
         bot_results.append(
-            evaluate_bot(bot_name, bot_factory, num_games=args.games, base_seed=args.base_seed)
+            evaluate_bot(
+                bot_name,
+                bot_factory,
+                num_games=args.games,
+                base_seed=args.base_seed,
+                preset_name=args.preset,
+                round_chip_targets=round_chip_targets,
+                save_traces=args.save_traces,
+                trace_limit=args.trace_limit,
+                trace_bot_name=args.trace_bot,
+                trace_output_dir=TRACE_RESULTS_DIR,
+            )
         )
 
-    print_summary_table(bot_results)
+    print_summary_table(bot_results, preset_name=args.preset, round_chip_targets=round_chip_targets)
     save_results(
-        output_path=args.output,
+        output_path=output_path,
+        preset_name=args.preset,
+        round_chip_targets=round_chip_targets,
         num_games=args.games,
         base_seed=args.base_seed,
         bot_results=bot_results,

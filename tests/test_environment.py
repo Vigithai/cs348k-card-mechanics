@@ -18,6 +18,7 @@ from balatro_mvp import (
     Card,
     GameState,
     HAND_SCORES,
+    ROUND_TARGET_PRESETS,
     classify_poker_hand,
     create_standard_deck,
     score_cards,
@@ -141,6 +142,17 @@ class RoundInitializationTests(unittest.TestCase):
         self.assertEqual(len(observation["unseen_deck"]), 45)
         self.assertIsInstance(observation["hand"], tuple)
         self.assertIsInstance(observation["unseen_deck"], tuple)
+
+    def test_round_initialization_accepts_easy_round_target_preset(self) -> None:
+        env = BalatroMVPEnvironment(seed=19, round_chip_targets=ROUND_TARGET_PRESETS["easy"])
+
+        round_one_state = env.state
+        self.assertIsNotNone(round_one_state)
+        assert round_one_state is not None
+        self.assertEqual(round_one_state.chips_needed, 150)
+
+        round_two_state = env.start_round(2)
+        self.assertEqual(round_two_state.chips_needed, 250)
 
 
 class LegalActionEnumerationTests(unittest.TestCase):

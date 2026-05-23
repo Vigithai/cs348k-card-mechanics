@@ -1,0 +1,77 @@
+{
+  "base_seed": 0,
+  "bot_results": [
+    {
+      "average_final_chips_scored": 38.3,
+      "average_rounds_passed": 0.0,
+      "bot_name": "RandomBot",
+      "final_chips_std_dev": 22.685017081765665,
+      "hand_type_counts": {
+        "high_card": 302,
+        "pair": 90,
+        "three_of_a_kind": 4,
+        "two_pair": 4
+      },
+      "num_games": 100,
+      "win_rate": 0.0
+    },
+    {
+      "average_final_chips_scored": 115.0,
+      "average_rounds_passed": 0.02,
+      "bot_name": "StimBot",
+      "final_chips_std_dev": 66.68208155119335,
+      "hand_type_counts": {
+        "flush": 10,
+        "full_house": 3,
+        "high_card": 112,
+        "pair": 184,
+        "straight": 23,
+        "three_of_a_kind": 6,
+        "two_pair": 68
+      },
+      "num_games": 100,
+      "win_rate": 0.0
+    },
+    {
+      "average_final_chips_scored": 149.0,
+      "average_rounds_passed": 0.06,
+      "bot_name": "DiscardLowestChipBot",
+      "final_chips_std_dev": 61.6076293976647,
+      "hand_type_counts": {
+        "flush": 17,
+        "full_house": 3,
+        "high_card": 12,
+        "pair": 266,
+        "straight": 40,
+        "three_of_a_kind": 8,
+        "two_pair": 75
+      },
+      "num_games": 100,
+      "win_rate": 0.0
+    },
+    {
+      "average_final_chips_scored": 174.6,
+      "average_rounds_passed": 0.21,
+      "bot_name": "LookaheadDiscardBot",
+      "final_chips_std_dev": 77.21295228133684,
+      "hand_type_counts": {
+        "flush": 39,
+        "four_of_a_kind": 1,
+        "full_house": 27,
+        "high_card": 74,
+        "pair": 162,
+        "straight": 41,
+        "three_of_a_kind": 21,
+        "two_pair": 104
+      },
+      "num_games": 100,
+      "win_rate": 0.0
+    }
+  ],
+  "num_games": 100,
+  "preset": "hard",
+  "round_chip_targets": {
+    "1": 300,
+    "2": 500
+  }
+}

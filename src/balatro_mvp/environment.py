@@ -35,10 +35,18 @@ STRAIGHT_RANK_SETS: frozenset[frozenset[str]] = frozenset(
         ("10", "J", "Q", "K", "A"),
     )
 )
-ROUND_CHIP_TARGETS: dict[int, int] = {
-    1: 300,
-    2: 500,
+DEFAULT_ROUND_TARGET_PRESET: str = "hard"
+ROUND_TARGET_PRESETS: dict[str, dict[int, int]] = {
+    "hard": {
+        1: 300,
+        2: 500,
+    },
+    "easy": {
+        1: 150,
+        2: 250,
+    },
 }
+ROUND_CHIP_TARGETS: dict[int, int] = dict(ROUND_TARGET_PRESETS[DEFAULT_ROUND_TARGET_PRESET])
 HAND_SCORES: dict[str, tuple[int, int]] = {
     "high_card": (5, 1),
     "pair": (10, 2),
@@ -193,6 +201,7 @@ class BalatroMVPEnvironment:
         *,
         seed: int | None = None,
         full_deck: tuple[Card, ...] | None = None,
+        round_chip_targets: dict[int, int] | None = None,
         target_hand_size: int = 7,
         hands_per_round: int = 4,
         discards_per_round: int = 4,
@@ -200,6 +209,9 @@ class BalatroMVPEnvironment:
     ) -> None:
         self._rng = random.Random(seed)
         self.full_deck = tuple(full_deck) if full_deck is not None else create_standard_deck()
+        self.round_chip_targets = (
+            dict(round_chip_targets) if round_chip_targets is not None else dict(ROUND_CHIP_TARGETS)
+        )
         self.target_hand_size = target_hand_size
         self.hands_per_round = hands_per_round
         self.discards_per_round = discards_per_round
@@ -216,9 +228,9 @@ class BalatroMVPEnvironment:
 
     def start_round(self, round_index: int) -> GameState:
         """Initialize a fresh round from the same fixed 52-card deck."""
-        if round_index not in ROUND_CHIP_TARGETS:
+        if round_index not in self.round_chip_targets:
             raise ValueError(
-                f"Unsupported round_index {round_index}. Supported rounds: {sorted(ROUND_CHIP_TARGETS)}"
+                f"Unsupported round_index {round_index}. Supported rounds: {sorted(self.round_chip_targets)}"
             )
         if round_index > self.max_rounds_to_win:
             raise ValueError(
@@ -235,7 +247,7 @@ class BalatroMVPEnvironment:
             hand=hand,
             unseen_deck=unseen_deck,
             discard_pile=[],
-            chips_needed=ROUND_CHIP_TARGETS[round_index],
+            chips_needed=self.round_chip_targets[round_index],
             chips_scored=0,
             hands_left=self.hands_per_round,
             discards_left=self.discards_per_round,
@@ -407,6 +419,14 @@ class BalatroMVPEnvironment:
             raise ValueError("discards_per_round cannot be negative")
         if self.max_rounds_to_win < 1:
             raise ValueError("max_rounds_to_win must be at least 1")
+        required_rounds = set(range(1, self.max_rounds_to_win + 1))
+        available_rounds = set(self.round_chip_targets)
+        if not required_rounds.issubset(available_rounds):
+            raise ValueError(
+                f"round_chip_targets must define rounds {sorted(required_rounds)}, got {sorted(available_rounds)}"
+            )
+        if any(target <= 0 for target in self.round_chip_targets.values()):
+            raise ValueError("round chip targets must be positive")
 
     def _validate_state(self, state: GameState) -> None:
         hand_set = set(state.hand)
