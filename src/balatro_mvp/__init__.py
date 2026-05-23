@@ -14,6 +14,13 @@ from .environment import (
     create_standard_deck,
     score_cards,
 )
+from .pruning import (
+    DiscardPruningAnalysis,
+    analyze_pruned_discard_candidates,
+    compute_keep_scores_by_index,
+    find_best_immediate_play,
+    rank_discardable_indices,
+)
 
 __all__ = [
     "Agent",
@@ -22,6 +29,7 @@ __all__ = [
     "Card",
     "DEFAULT_ROUND_TARGET_PRESET",
     "DiscardLowestChipBot",
+    "DiscardPruningAnalysis",
     "GameState",
     "HAND_SCORES",
     "LookaheadDiscardBot",
@@ -29,7 +37,11 @@ __all__ = [
     "ROUND_CHIP_TARGETS",
     "ROUND_TARGET_PRESETS",
     "StimBot",
+    "analyze_pruned_discard_candidates",
     "classify_poker_hand",
+    "compute_keep_scores_by_index",
     "create_standard_deck",
+    "find_best_immediate_play",
+    "rank_discardable_indices",
     "score_cards",
 ]
