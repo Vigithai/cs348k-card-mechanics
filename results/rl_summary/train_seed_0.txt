@@ -1,0 +1,7 @@
+Training preset: easy
+Episodes: 500
+Output directory: /Users/vigith/Downloads/cs348k-card-mechanics/results/rl/easy/seed_0
+Final checkpoint: /Users/vigith/Downloads/cs348k-card-mechanics/results/rl/easy/seed_0/checkpoints/episode_0500.pt
+Last eval win rate: 45.00%
+Last eval avg rounds passed: 1.25
+Last eval avg final chips: 209.50

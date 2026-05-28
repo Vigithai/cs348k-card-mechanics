@@ -1,0 +1,13 @@
+preset,bot,num_seeds,seeds,mean_win_rate_pct,std_win_rate_pct,mean_avg_rounds,std_avg_rounds,mean_avg_final_chips,std_avg_final_chips
+easy,RandomBot,3,"0,1,2",0.0,0.0,0.0,0.0,38.3,0.0
+easy,StimBot,3,"0,1,2",5.0,0.0,0.4,0.0,88.95,0.0
+easy,DiscardLowestChipBot,3,"0,1,2",8.0,0.0,0.6,0.0,124.85,0.0
+easy,LookaheadDiscardBot,3,"0,1,2",23.0,0.0,0.92,0.0,172.7,0.0
+easy,PrunedSampledLookaheadBot,3,"0,1,2",26.0,0.0,1.06,0.0,185.85,0.0
+easy,RLQBot,3,"0,1,2",54.0,14.730919862656235,1.41,0.23388031127052994,228.95,17.53147170091548
+hard,RandomBot,3,"0,1,2",0.0,0.0,0.0,0.0,38.3,0.0
+hard,StimBot,3,"0,1,2",0.0,0.0,0.02,0.0,115.0,0.0
+hard,DiscardLowestChipBot,3,"0,1,2",0.0,0.0,0.06,0.0,149.0,0.0
+hard,LookaheadDiscardBot,3,"0,1,2",0.0,0.0,0.21,0.0,174.6,0.0
+hard,PrunedSampledLookaheadBot,3,"0,1,2",3.0,0.0,0.36,0.0,204.85,0.0
+hard,RLQBot,3,"0,1,2",2.3333333333333335,1.1547005383792515,0.39333333333333337,0.1096965511460289,234.51666666666668,24.72935165614605

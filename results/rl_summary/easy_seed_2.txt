@@ -1,0 +1,11 @@
+Preset: easy (round 1=150, round 2=250)
+Bot                       | Win Rate | Avg Rounds | Avg Final Chips | Std Final Chips | Hand Types                                                                                                                                                     
+--------------------------+----------+------------+-----------------+-----------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+RandomBot                 | 0.00%    | 0.00       | 38.30           | 22.69           | {"high_card": 302, "pair": 90, "three_of_a_kind": 4, "two_pair": 4}                                                                                            
+StimBot                   | 5.00%    | 0.40       | 88.95           | 59.56           | {"flush": 16, "full_house": 2, "high_card": 140, "pair": 230, "straight": 28, "three_of_a_kind": 11, "two_pair": 76}                                           
+DiscardLowestChipBot      | 8.00%    | 0.60       | 124.85          | 62.08           | {"flush": 25, "full_house": 2, "high_card": 12, "pair": 353, "straight": 49, "three_of_a_kind": 14, "two_pair": 97}                                            
+LookaheadDiscardBot       | 23.00%   | 0.92       | 172.70          | 105.59          | {"flush": 63, "four_of_a_kind": 2, "full_house": 36, "high_card": 86, "pair": 157, "straight": 45, "straight_flush": 1, "three_of_a_kind": 16, "two_pair": 115}
+PrunedSampledLookaheadBot | 26.00%   | 1.06       | 185.85          | 115.51          | {"flush": 81, "four_of_a_kind": 2, "full_house": 44, "high_card": 92, "pair": 154, "straight": 52, "straight_flush": 3, "three_of_a_kind": 12, "two_pair": 83} 
+RLQBot                    | 71.00%   | 1.68       | 249.15          | 72.16           | {"flush": 164, "full_house": 23, "high_card": 63, "pair": 74, "straight": 53, "straight_flush": 1, "three_of_a_kind": 59, "two_pair": 98}                      
+
+Saved results to /Users/vigith/Downloads/cs348k-card-mechanics/results/rl/easy_comparison.json
