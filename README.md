@@ -1,57 +1,46 @@
 # cs348k-card-mechanics
 
-## Checkpoint 2 Update
+## Current Status
 
-For checkpoint 2, I focused on turning the Balatro MVP into a real evaluation pipeline with meaningful intermediate results. The environment now supports seeded simulation, baseline bots, JSON result export, and plotting scripts for summary graphs.
+A simplified Balatro-like simulator with a full agent ladder from random play to DQN-trained RL, plus tooling to generate and analyze per-step win traces.
 
-### Current Baselines
+### Agent Ladder — Easy Preset (rounds: 150 / 250)
 
-The current evaluation compares three baseline policies over 200 seeded games:
+| Bot | Win Rate | Avg. Final Chips |
+|---|---:|---:|
+| RandomBot | 0% | — |
+| StimBot | 5% | — |
+| DiscardLowestChipBot | 8% | — |
+| LookaheadDiscardBot | 23% | — |
+| PrunedSampledLookaheadBot | 26% | 185.9 |
+| **RLQBot** | **54%** | **229.0** |
 
-- **RandomBot**: selects uniformly from legal actions
-- **StimBot**: evaluates legal play actions and always chooses the highest immediate-scoring play
-- **DiscardLowestChipBot**: extends this with a simple discard heuristic; if no play reaches pair-level value or better, it discards one lowest-chip card and redraws
+### Agent Ladder — Hard Preset (rounds: 300 / 500)
 
-### Current Results
+| Bot | Win Rate | Avg. Final Chips |
+|---|---:|---:|
+| PrunedSampledLookaheadBot | 3.0% | 204.9 |
+| RLQBot (unshaved reward) | 2.3% | 234.5 |
+| **RLQBot (reward-shaped)** | **3.3%** | **195.5** |
 
-| Bot | Win Rate | Avg. Rounds Passed | Avg. Final Chips | Std. Dev. Final Chips |
-|---|---:|---:|---:|---:|
-| RandomBot | 0.00% | 0.000 | 36.58 | 20.54 |
-| StimBot | 0.00% | 0.035 | 108.17 | 64.33 |
-| DiscardLowestChipBot | 0.00% | 0.075 | 140.90 | 62.43 |
+RLQBot is trained with a DQN-style Q-network (128→64 MLP) over 500 episodes × 3 seeds. On easy mode it clearly dominates. On hard mode the unshaned agent chip-farms but fails to clear round targets; adding a round-win bonus (+300) and round-loss penalty (−75) to the reward function corrects the objective misalignment and lifts win rate above the scripted best.
 
-These results show a clear ranking between the baselines:  
-`DiscardLowestChipBot > StimBot > RandomBot` in average final chips scored.
+### Trace Analysis
 
-This suggests that:
-- the environment and evaluation pipeline are sensitive enough to distinguish stronger and weaker policies
-- even a very simple discard-aware heuristic improves performance over pure immediate-greedy play
+`scripts/generate_rl_win_traces.py` runs RLQBot and saves rich per-step traces for winning games. `scripts/analyze_rl_traces.py` scores games for instructiveness by detecting “hunt” sequences — consecutive discards followed by a play reveal what the agent was building toward. Across 78 easy-preset wins the dominant pattern is premium-hand hunting: the agent frequently burns 2–3 discards to assemble flushes or straights that score 3–4× more than a safe pair play.
 
-At the same time, none of the current bots achieves a nonzero win rate under the current round targets. This suggests that the current environment is still too difficult for these simple baselines, or that the difficulty / scoring balance needs further tuning.
+### Key Files
 
-### Hand-Type Trends
-
-The hand-type distributions also show clear policy differences:
-
-- **RandomBot** is overwhelmingly dominated by `high_card` results
-- **StimBot** produces many more `pair`, `two_pair`, and some `straight` hands
-- **DiscardLowestChipBot** further shifts the distribution toward stronger structured hands and reduces the number of `high_card` outcomes
-
-This suggests that the bots differ not only in score, but also in the kinds of strategies they realize in the state space.
-
-### Figures
-
-#### Average Final Chips by Bot
-
-![Average final chips by bot](results/figures/average_final_chips_by_bot.png)
-
-#### Hand-Type Distribution by Bot
-
-![Hand-type distribution by bot](results/figures/hand_type_distribution_by_bot.png)
-
-### Next Steps
-
-My next step is to use this evaluation template to test stronger discard-aware heuristics and/or adjust the difficulty calibration so that win-rate differences become visible. That will let me move from “which baseline accumulates more chips?” to “which strategies are actually viable for clearing rounds?”
+| Path | Purpose |
+|---|---|
+| `src/balatro_mvp/environment.py` | Core simulator |
+| `src/balatro_mvp/agents.py` | All scripted bots |
+| `src/balatro_mvp/rl_training.py` | DQN trainer + reward shaping config |
+| `scripts/train_rl_qbot.py` | Training entry point |
+| `scripts/generate_rl_win_traces.py` | Win trace generator |
+| `scripts/analyze_rl_traces.py` | Trace analyzer + HTML report |
+| `results/rl_summary/seed_summary.csv` | Per-seed eval results |
+| `results/rl_shaped/` | Reward-shaped hard-mode checkpoints |
 
 ## Overview
 
