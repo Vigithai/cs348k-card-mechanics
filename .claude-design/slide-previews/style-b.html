@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style B — Electric Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0a0a0a;
+    overflow: hidden;
+    font-family: 'Manrope', sans-serif;
+  }
+
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: grid;
+    grid-template-rows: 58% 42%;
+    position: relative;
+  }
+
+  /* Top panel — white */
+  .panel-top {
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(24px, 4vw, 56px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .panel-top::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 4px;
+    background: #4361ee;
+  }
+
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .course-tag {
+    font-size: clamp(0.65rem, 1vw, 0.8rem);
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #4361ee;
+    border: 1.5px solid #4361ee;
+    padding: 5px 12px;
+    border-radius: 2px;
+  }
+
+  .slide-label {
+    font-size: clamp(0.6rem, 0.9vw, 0.75rem);
+    font-weight: 500;
+    color: rgba(0,0,0,0.3);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    align-self: center;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 6vw, 5.5rem);
+    font-weight: 800;
+    color: #0a0a0a;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    opacity: 0;
+    animation: reveal 0.6s ease forwards 0.1s;
+  }
+
+  /* Bottom panel — dark blue */
+  .panel-bottom {
+    background: #0f1535;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    position: relative;
+  }
+
+  .panel-bottom::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(67, 97, 238, 0.08);
+    pointer-events: none;
+  }
+
+  .stat-cell {
+    padding: clamp(20px, 3.5vh, 40px) clamp(24px, 3vw, 44px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid rgba(255,255,255,0.07);
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards;
+  }
+  .stat-cell:nth-child(1) { animation-delay: 0.25s; }
+  .stat-cell:nth-child(2) { animation-delay: 0.35s; }
+  .stat-cell:nth-child(3) { animation-delay: 0.45s; border-right: none; }
+
+  .stat-value {
+    font-size: clamp(1.8rem, 4vw, 3.6rem);
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-value em {
+    color: #4361ee;
+    font-style: normal;
+  }
+
+  .stat-label {
+    font-size: clamp(0.65rem, 1vw, 0.8rem);
+    font-weight: 500;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .accent-bar {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: #4361ee;
+  }
+
+  @keyframes reveal {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    h1, .stat-cell { animation: none; opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="panel-top">
+    <div class="top-row">
+      <div class="course-tag">CS348K · Final Project</div>
+      <div class="slide-label">Style B — Electric Studio</div>
+    </div>
+    <h1>Learning<br>to Play<br>Balatro</h1>
+  </div>
+
+  <div class="panel-bottom">
+    <div class="accent-bar"></div>
+    <div class="stat-cell">
+      <div class="stat-value"><em>54%</em></div>
+      <div class="stat-label">RLQBot win rate (easy)</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Agents compared</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-value">2×</div>
+      <div class="stat-label">Over best scripted bot</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

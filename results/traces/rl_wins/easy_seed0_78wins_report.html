@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RLQBot Win Trace Analysis — easy preset</title>
+
+<style>
+  :root {
+    --bg: #0f0f0f; --bg2: #161616; --bg3: #1e1e1e;
+    --text: #e8e4df; --text2: #9a9590; --text3: #555;
+    --gold: #d4a574; --pink: #e8b4b8; --green: #7ec8a0;
+    --red: #e07070;
+    --font: 'IBM Plex Sans', sans-serif;
+    --serif: 'Cormorant', serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font);
+         font-size: 14px; line-height: 1.5; }
+  a { color: var(--gold); text-decoration: none; }
+
+  /* Layout */
+  .page-wrap { max-width: 1100px; margin: 0 auto; padding: 40px 24px 80px; }
+
+  /* Header */
+  .page-header { margin-bottom: 40px; border-bottom: 1px solid rgba(212,165,116,0.15); padding-bottom: 24px; }
+  .page-header h1 { font-family: var(--serif); font-size: 2.4rem; font-weight: 400;
+                    color: var(--text); letter-spacing: -0.01em; }
+  .page-header h1 em { font-style: italic; color: var(--gold); }
+  .page-header p { color: var(--text2); font-size: 0.85rem; margin-top: 6px; font-weight: 300; }
+
+  /* Summary stats bar */
+  .stats-bar { display: flex; gap: 32px; margin-bottom: 36px; flex-wrap: wrap; }
+  .stat-box { background: var(--bg2); border: 1px solid rgba(232,228,223,0.07);
+               border-radius: 4px; padding: 14px 20px; min-width: 120px; }
+  .stat-val { font-family: var(--serif); font-size: 1.8rem; font-weight: 600; color: var(--text); line-height: 1; }
+  .stat-val em { color: var(--gold); font-style: normal; font-size: 0.65em; vertical-align: super; }
+  .stat-lbl { font-size: 0.65rem; font-weight: 300; letter-spacing: 0.15em;
+               text-transform: uppercase; color: var(--text2); margin-top: 4px; }
+
+  /* Pattern frequency table */
+  .pattern-freq { margin-bottom: 40px; }
+  .pattern-freq h2 { font-family: var(--serif); font-size: 1.3rem; font-weight: 400;
+                      color: var(--text); margin-bottom: 12px; }
+  .freq-table { border-collapse: collapse; width: 100%; }
+  .freq-table th { text-align: left; font-size: 0.65rem; letter-spacing: 0.15em;
+                    text-transform: uppercase; color: var(--text2); font-weight: 300;
+                    padding: 6px 12px; border-bottom: 1px solid rgba(232,228,223,0.07); }
+  .freq-table td { padding: 7px 12px; border-bottom: 1px solid rgba(232,228,223,0.04);
+                    font-size: 0.82rem; color: var(--text2); }
+  .freq-table td:first-child { color: var(--text); }
+  .freq-bar-cell { width: 200px; }
+  .freq-bar-wrap { background: rgba(232,228,223,0.05); border-radius: 2px; height: 4px; }
+  .freq-bar-fill { background: var(--gold); border-radius: 2px; height: 4px; }
+
+  /* Index */
+  .index-section { margin-bottom: 40px; }
+  .index-section h2 { font-family: var(--serif); font-size: 1.3rem; font-weight: 400;
+                        color: var(--text); margin-bottom: 12px; }
+  .index-grid { display: flex; flex-direction: column; gap: 4px; }
+  .index-row { display: flex; gap: 12px; align-items: baseline; padding: 5px 0;
+                border-bottom: 1px solid rgba(232,228,223,0.04); font-size: 0.82rem; }
+  .index-rank { color: var(--gold); font-family: var(--serif); font-style: italic;
+                 font-size: 1rem; min-width: 28px; }
+  .index-link { color: var(--text); }
+  .index-link:hover { color: var(--gold); }
+  .index-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .index-score { margin-left: auto; color: var(--text3); font-size: 0.75rem; }
+
+  /* Game cards */
+  .game-card { background: var(--bg2); border: 1px solid rgba(232,228,223,0.07);
+                border-radius: 6px; margin-bottom: 32px; overflow: hidden; }
+  .game-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+                  padding: 14px 20px; border-bottom: 1px solid rgba(232,228,223,0.07);
+                  background: var(--bg3); }
+  .game-rank { font-family: var(--serif); font-style: italic; font-size: 1.3rem;
+                color: var(--gold); min-width: 28px; }
+  .game-title { font-weight: 400; color: var(--text); }
+  .game-meta { color: var(--text2); font-size: 0.8rem; }
+  .game-score { margin-left: auto; font-size: 0.75rem; color: var(--text3);
+                 border: 1px solid rgba(232,228,223,0.1); border-radius: 12px; padding: 2px 10px; }
+  .speed-badge { font-size: 0.75rem; color: var(--gold); }
+
+  /* Pattern pills */
+  .pattern-row { padding: 10px 20px; display: flex; gap: 8px; flex-wrap: wrap;
+                  border-bottom: 1px solid rgba(232,228,223,0.06); }
+  .pattern-pill { font-size: 0.75rem; padding: 3px 10px; border-radius: 12px;
+                   background: rgba(212,165,116,0.1); border: 1px solid rgba(212,165,116,0.2);
+                   color: var(--text2); }
+  .pattern-pill em { font-style: normal; color: var(--text3); margin-left: 4px; }
+  .pattern-pill.plain { background: rgba(232,228,223,0.04); border-color: rgba(232,228,223,0.08); }
+
+  /* Round blocks */
+  .round-block { padding: 16px 20px 12px; }
+  .round-block + .round-block { border-top: 1px solid rgba(232,228,223,0.06); }
+  .round-header { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+                   color: var(--text2); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .result-win  { color: var(--green); }
+  .result-loss { color: var(--red); }
+
+  /* Step table */
+  .step-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .step-table th { text-align: left; font-size: 0.62rem; letter-spacing: 0.14em;
+                    text-transform: uppercase; color: var(--text3); font-weight: 300;
+                    padding: 4px 8px; border-bottom: 1px solid rgba(232,228,223,0.06); }
+  .step-row td { padding: 7px 8px; border-bottom: 1px solid rgba(232,228,223,0.04);
+                  vertical-align: top; }
+  .step-row.row-highlight { background: rgba(212,165,116,0.05); }
+  .step-row.row-highlight td { border-bottom-color: rgba(212,165,116,0.08); }
+
+  .turn-cell    { color: var(--text3); width: 28px; }
+  .action-cell  { width: 64px; }
+  .cards-cell   { }
+  .hand-type-cell { width: 120px; }
+  .chips-cell   { width: 140px; }
+  .pattern-cell { font-size: 0.72rem; color: var(--gold); white-space: nowrap; }
+
+  .action-play    { color: var(--green); font-weight: 400; }
+  .action-discard { color: var(--text2); }
+
+  .card-red   { color: #e07070; font-weight: 400; }
+  .card-black { color: var(--text); font-weight: 400; }
+
+  .drawn { font-size: 0.72rem; color: var(--text3); margin-top: 3px; }
+
+  /* Hand type tags */
+  .tag { font-size: 0.68rem; padding: 2px 7px; border-radius: 10px; white-space: nowrap; }
+  .tag-premium { background: rgba(212,165,116,0.15); border: 1px solid rgba(212,165,116,0.25); color: var(--gold); }
+  .tag-strong  { background: rgba(126,200,160,0.1);  border: 1px solid rgba(126,200,160,0.2);  color: var(--green); }
+  .tag-plain   { background: rgba(232,228,223,0.06); border: 1px solid rgba(232,228,223,0.1);  color: var(--text2); }
+
+  /* Chip progress */
+  .chips-gained  { color: var(--green); font-weight: 400; }
+  .progress-wrap { background: rgba(232,228,223,0.06); border-radius: 2px; height: 3px;
+                    margin: 3px 0; width: 100%; }
+  .progress-bar  { background: var(--gold); border-radius: 2px; height: 3px; }
+  .chips-total   { font-size: 0.7rem; color: var(--text3); }
+
+  /* Hand before */
+  .hand-before { font-size: 0.72rem; color: var(--text3); margin-bottom: 2px; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+</head>
+<body>
+<div class="page-wrap">
+
+  <div class="page-header">
+    <h1>RLQBot Win Trace Analysis — <em>easy</em></h1>
+    <p>
+      78 winning games · 200 total games · win rate 39.0% ·
+      checkpoint: episode_0500.pt ·
+      base seed 0
+    </p>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-box">
+      <div class="stat-val">78</div>
+      <div class="stat-lbl">Winning games</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">39%</div>
+      <div class="stat-lbl">Win rate</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">171</div>
+      <div class="stat-lbl">Patterns detected</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val">10</div>
+      <div class="stat-lbl">Games shown (top)</div>
+    </div>
+  </div>
+
+  <div class="pattern-freq">
+    <h2>Strategy pattern frequency</h2>
+    <table class="freq-table">
+      <thead><tr><th>Pattern</th><th>Count</th><th>% of wins</th><th>Frequency</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>premium hand</td>
+          <td>128</td>
+          <td>164% of wins</td>
+          <td class="freq-bar-cell">
+            <div class="freq-bar-wrap"><div class="freq-bar-fill" style="width:100%"></div></div>
+          </td>
+        </tr>
+        <tr>
+          <td>straight hunt</td>
+          <td>19</td>
+          <td>24% of wins</td>
+          <td class="freq-bar-cell">
+            <div class="freq-bar-wrap"><div class="freq-bar-fill" style="width:15%"></div></div>
+          </td>
+        </tr>
+        <tr>
+          <td>flush hunt</td>
+          <td>11</td>
+          <td>14% of wins</td>
+          <td class="freq-bar-cell">
+            <div class="freq-bar-wrap"><div class="freq-bar-fill" style="width:9%"></div></div>
+          </td>
+        </tr>
+        <tr>
+          <td>full house build</td>
+          <td>10</td>
+          <td>13% of wins</td>
+          <td class="freq-bar-cell">
+            <div class="freq-bar-wrap"><div class="freq-bar-fill" style="width:8%"></div></div>
+          </td>
+        </tr>
+        <tr>
+          <td>quads hunt</td>
+          <td>3</td>
+          <td>4% of wins</td>
+          <td class="freq-bar-cell">
+            <div class="freq-bar-wrap"><div class="freq-bar-fill" style="width:2%"></div></div>
+          </td>
+        </tr></tbody>
+    </table>
+  </div>
+
+  <div class="index-section">
+    <h2>Top 10 most instructive games</h2>
+    <div class="index-grid">
+        <div class="index-row">
+          <span class="index-rank">1</span>
+          <a href="#game-98" class="index-link">
+            Game 98 · seed 98 · 9 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">✨ Full House</span> <span class="tag tag-premium">➡ Straight hunt</span> <span class="tag tag-premium">🎴 Flush hunt</span></span>
+          <span class="index-score">score 15</span>
+        </div>
+        <div class="index-row">
+          <span class="index-rank">2</span>
+          <a href="#game-178" class="index-link">
+            Game 178 · seed 178 · 12 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">⚡ Quads!</span> <span class="tag tag-premium">✨ Straight</span> <span class="tag tag-premium">➡ Straight hunt</span></span>
+          <span class="index-score">score 14</span>
+        </div>
+        <div class="index-row">
+          <span class="index-rank">3</span>
+          <a href="#game-179" class="index-link">
+            Game 179 · seed 179 · 8 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">➡ Straight hunt</span> <span class="tag tag-premium">✨ Straight</span> <span class="tag tag-premium">✨ Flush</span></span>
+          <span class="index-score">score 14</span>
+        </div>
+        <div class="index-row">
+          <span class="index-rank">4</span>
+          <a href="#game-68" class="index-link">
+            Game 68 · seed 68 · 9 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">✨ Straight</span> <span class="tag tag-premium">✨ Full House</span> <span class="tag tag-premium">➡ Straight hunt</span> <span class="tag tag-premium">✨ Flush</span></span>
+          <span class="index-score">score 13</span>
+        </div>
+        <div class="index-row">
+          <span class="index-rank">5</span>
+          <a href="#game-102" class="index-link">
+            Game 102 · seed 102 · 9 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">🎴 Flush hunt</span> <span class="tag tag-premium">✨ Straight</span> <span class="tag tag-premium">✨ Straight</span></span>
+          <span class="index-score">score 13</span>
+        </div>
+        <div class="index-row">
+          <span class="index-rank">6</span>
+          <a href="#game-63" class="index-link">
+            Game 63 · seed 63 · 14 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">🎴 Flush hunt</span> <span class="tag tag-premium">✨ Full House</span> <span class="tag tag-premium">✨ Flush</span></span>
+          <span class="index-score">score 12</span>
+        </div>
+        <div class="index-row">
+          <span class="index-rank">7</span>
+          <a href="#game-76" class="index-link">
+            Game 76 · seed 76 · 10 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">✨ Flush</span> <span class="tag tag-premium">✨ Straight</span> <span class="tag tag-premium">➡ Straight hunt</span></span>
+          <span class="index-score">score 12</span>
+        </div>
+        <div class="index-row">
+          <span class="index-rank">8</span>
+          <a href="#game-85" class="index-link">
+            Game 85 · seed 85 · 10 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">✨ Straight</span> <span class="tag tag-premium">➡ Straight hunt</span> <span class="tag tag-premium">✨ Full House</span></span>
+          <span class="index-score">score 12</span>
+        </div>
+        <div class="index-row">
+          <span class="index-rank">9</span>
+          <a href="#game-97" class="index-link">
+            Game 97 · seed 97 · 13 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">➡ Straight hunt</span> <span class="tag tag-premium">➡ Straight hunt</span></span>
+          <span class="index-score">score 12</span>
+        </div>
+        <div class="index-row">
+          <span class="index-rank">10</span>
+          <a href="#game-148" class="index-link">
+            Game 148 · seed 148 · 8 steps
+          </a>
+          <span class="index-pills"><span class="tag tag-premium">✨ Straight</span> <span class="tag tag-premium">⚡ Quads!</span></span>
+          <span class="index-score">score 12</span>
+        </div></div>
+  </div>
+
+  
+    <div class="game-card" id="game-98">
+      <div class="game-header">
+        <span class="game-rank">#1</span>
+        <span class="game-title">Game 98 &nbsp;·&nbsp; seed 98</span>
+        <span class="game-meta">9 steps · 260 final chips</span>
+        <span class="game-score">score 15</span>
+        
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">✨ Full House <em>Scored a full house without setup discards (+160 chips).</em></span><span class="pattern-pill">➡ Straight hunt <em>Discarded 2× to build a straight (+120 chips).</em></span><span class="pattern-pill">🎴 Flush hunt <em>Discarded 2× to build a flush (+140 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">3♠</span> <span class="card-red">10♥</span> <span class="card-black">10♠</span> <span class="card-red">3♥</span> <span class="card-black">Q♣</span>
+        <div class="drawn">drew: <span class="card-red">K♥</span> <span class="card-black">8♠</span> <span class="card-red">2♦</span> <span class="card-red">5♥</span> <span class="card-black">K♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:27%"></div>
+        </div>
+        <span class="chips-total">40/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">J♣</span> <span class="card-red">K♥</span> <span class="card-red">2♦</span> <span class="card-red">5♥</span> <span class="card-black">K♣</span>
+        <div class="drawn">drew: <span class="card-red">3♦</span> <span class="card-red">9♥</span> <span class="card-black">9♠</span> <span class="card-black">4♠</span> <span class="card-red">8♥</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:27%"></div>
+        </div>
+        <span class="chips-total">40/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">9♣</span> <span class="card-black">8♠</span> <span class="card-red">9♥</span> <span class="card-black">9♠</span> <span class="card-red">8♥</span>
+        <div class="drawn">drew: <span class="card-black">J♠</span> <span class="card-black">A♠</span> <span class="card-red">2♥</span> <span class="card-red">8♥</span> <span class="card-black">9♣</span> <span class="card-red">6♥</span> <span class="card-black">5♠</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">full house</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+160</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">200/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">J♠</span> <span class="card-black">A♠</span> <span class="card-red">2♥</span> <span class="card-red">6♥</span> <span class="card-black">5♠</span>
+        <div class="drawn">drew: <span class="card-black">4♠</span> <span class="card-red">K♦</span> <span class="card-red">5♥</span> <span class="card-black">J♣</span> <span class="card-black">7♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">4♠</span> <span class="card-red">K♦</span> <span class="card-red">5♥</span> <span class="card-black">J♣</span>
+        <div class="drawn">drew: <span class="card-black">3♠</span> <span class="card-red">10♦</span> <span class="card-red">6♦</span> <span class="card-black">8♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">9♣</span> <span class="card-black">7♣</span> <span class="card-red">10♦</span> <span class="card-red">6♦</span> <span class="card-black">8♣</span>
+        <div class="drawn">drew: <span class="card-black">K♠</span> <span class="card-black">Q♣</span> <span class="card-black">10♣</span> <span class="card-black">A♣</span> <span class="card-black">8♠</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">3♠</span> <span class="card-black">K♠</span> <span class="card-black">Q♣</span> <span class="card-black">10♣</span> <span class="card-black">A♣</span>
+        <div class="drawn">drew: <span class="card-red">A♦</span> <span class="card-black">10♠</span> <span class="card-red">4♦</span> <span class="card-red">J♦</span> <span class="card-black">6♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">A♦</span> <span class="card-black">10♠</span> <span class="card-red">4♦</span> <span class="card-red">J♦</span> <span class="card-black">6♠</span>
+        <div class="drawn">drew: <span class="card-red">Q♥</span> <span class="card-black">3♣</span> <span class="card-red">3♥</span> <span class="card-red">K♥</span> <span class="card-red">A♥</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">5</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">8♥</span> <span class="card-red">Q♥</span> <span class="card-red">3♥</span> <span class="card-red">K♥</span> <span class="card-red">A♥</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">flush</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+140</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">260/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div class="game-card" id="game-178">
+      <div class="game-header">
+        <span class="game-rank">#2</span>
+        <span class="game-title">Game 178 &nbsp;·&nbsp; seed 178</span>
+        <span class="game-meta">12 steps · 280 final chips</span>
+        <span class="game-score">score 14</span>
+        
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">⚡ Quads! <em>Discarded 3× and landed four of a kind (+420 chips).</em></span><span class="pattern-pill">✨ Straight <em>Scored a straight without setup discards (+120 chips).</em></span><span class="pattern-pill">➡ Straight hunt <em>Discarded 2× to build a straight (+120 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">A♠</span> <span class="card-red">10♥</span> <span class="card-red">Q♥</span> <span class="card-black">2♠</span> <span class="card-black">6♣</span>
+        <div class="drawn">drew: <span class="card-black">6♠</span> <span class="card-red">7♥</span> <span class="card-red">8♦</span> <span class="card-black">7♠</span> <span class="card-black">3♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">3♥</span> <span class="card-black">6♠</span> <span class="card-red">7♥</span> <span class="card-black">7♠</span> <span class="card-black">3♣</span>
+        <div class="drawn">drew: <span class="card-red">2♥</span> <span class="card-black">J♣</span> <span class="card-red">5♦</span> <span class="card-red">J♦</span> <span class="card-red">2♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:27%"></div>
+        </div>
+        <span class="chips-total">40/150</span>
+      </td>
+      <td class="pattern-cell">✨ Straight</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">2♥</span> <span class="card-black">J♣</span> <span class="card-red">5♦</span> <span class="card-red">J♦</span> <span class="card-red">2♦</span>
+        <div class="drawn">drew: <span class="card-red">K♥</span> <span class="card-black">2♣</span> <span class="card-black">4♣</span> <span class="card-red">9♦</span> <span class="card-black">A♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:53%"></div>
+        </div>
+        <span class="chips-total">80/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">K♥</span> <span class="card-black">2♣</span> <span class="card-black">4♣</span> <span class="card-red">9♦</span> <span class="card-black">A♣</span>
+        <div class="drawn">drew: <span class="card-red">A♦</span> <span class="card-black">10♣</span> <span class="card-black">J♠</span> <span class="card-red">Q♦</span> <span class="card-black">5♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:53%"></div>
+        </div>
+        <span class="chips-total">80/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">A♦</span> <span class="card-black">10♣</span> <span class="card-black">J♠</span> <span class="card-red">Q♦</span> <span class="card-black">5♠</span>
+        <div class="drawn">drew: <span class="card-black">9♠</span> <span class="card-black">Q♠</span> <span class="card-black">5♣</span> <span class="card-red">A♥</span> <span class="card-red">K♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:53%"></div>
+        </div>
+        <span class="chips-total">80/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">5</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">9♠</span> <span class="card-black">Q♠</span> <span class="card-black">5♣</span> <span class="card-red">A♥</span> <span class="card-red">K♦</span>
+        <div class="drawn">drew: <span class="card-red">8♥</span> <span class="card-red">9♥</span> <span class="card-black">Q♣</span> <span class="card-black">3♠</span> <span class="card-black">8♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:53%"></div>
+        </div>
+        <span class="chips-total">80/150</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">6</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">8♣</span> <span class="card-red">8♦</span> <span class="card-red">8♥</span> <span class="card-black">Q♣</span> <span class="card-black">8♠</span>
+        <div class="drawn">drew: <span class="card-black">2♠</span> <span class="card-red">2♥</span> <span class="card-black">9♣</span> <span class="card-black">Q♣</span> <span class="card-black">3♣</span> <span class="card-black">7♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">four of a kind</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+420</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">500/150</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">2♠</span> <span class="card-red">2♥</span> <span class="card-black">Q♣</span> <span class="card-black">3♣</span> <span class="card-black">3♠</span>
+        <div class="drawn">drew: <span class="card-black">2♣</span> <span class="card-red">5♥</span> <span class="card-red">7♥</span> <span class="card-red">8♥</span> <span class="card-black">6♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:16%"></div>
+        </div>
+        <span class="chips-total">40/250</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">9♣</span> <span class="card-black">7♣</span> <span class="card-red">5♥</span> <span class="card-red">8♥</span> <span class="card-black">6♣</span>
+        <div class="drawn">drew: <span class="card-red">A♦</span> <span class="card-black">8♣</span> <span class="card-black">K♠</span> <span class="card-red">3♦</span> <span class="card-red">9♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:64%"></div>
+        </div>
+        <span class="chips-total">160/250</span>
+      </td>
+      <td class="pattern-cell">✨ Straight</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">2♣</span> <span class="card-red">A♦</span> <span class="card-black">K♠</span> <span class="card-red">3♦</span> <span class="card-red">9♦</span>
+        <div class="drawn">drew: <span class="card-black">Q♠</span> <span class="card-black">5♣</span> <span class="card-red">2♦</span> <span class="card-black">10♣</span> <span class="card-red">4♥</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:64%"></div>
+        </div>
+        <span class="chips-total">160/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">Q♠</span> <span class="card-black">5♣</span> <span class="card-red">2♦</span> <span class="card-black">10♣</span> <span class="card-red">4♥</span>
+        <div class="drawn">drew: <span class="card-black">10♠</span> <span class="card-black">A♠</span> <span class="card-red">9♥</span> <span class="card-red">5♦</span> <span class="card-black">J♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:64%"></div>
+        </div>
+        <span class="chips-total">160/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">7♥</span> <span class="card-black">8♣</span> <span class="card-black">10♠</span> <span class="card-red">9♥</span> <span class="card-black">J♣</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">280/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div class="game-card" id="game-179">
+      <div class="game-header">
+        <span class="game-rank">#3</span>
+        <span class="game-title">Game 179 &nbsp;·&nbsp; seed 179</span>
+        <span class="game-meta">8 steps · 260 final chips</span>
+        <span class="game-score">score 14</span>
+        <span class="speed-badge">⚡ Won in just 8 steps.</span>
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">➡ Straight hunt <em>Discarded 3× to build a straight (+120 chips).</em></span><span class="pattern-pill">✨ Straight <em>Scored a straight without setup discards (+120 chips).</em></span><span class="pattern-pill">✨ Flush <em>Scored a flush without setup discards (+140 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">10♠</span> <span class="card-black">8♠</span> <span class="card-black">K♣</span> <span class="card-red">8♥</span> <span class="card-black">K♠</span>
+        <div class="drawn">drew: <span class="card-red">3♥</span> <span class="card-black">Q♠</span> <span class="card-black">A♠</span> <span class="card-red">2♦</span> <span class="card-black">3♠</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:27%"></div>
+        </div>
+        <span class="chips-total">40/150</span>
+      </td>
+      <td class="pattern-cell">✨ Straight</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">2♥</span> <span class="card-red">3♥</span> <span class="card-black">A♠</span> <span class="card-red">2♦</span> <span class="card-black">3♠</span>
+        <div class="drawn">drew: <span class="card-red">10♥</span> <span class="card-black">4♠</span> <span class="card-black">6♠</span> <span class="card-red">J♦</span> <span class="card-red">A♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:53%"></div>
+        </div>
+        <span class="chips-total">80/150</span>
+      </td>
+      <td class="pattern-cell">✨ Flush</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">Q♠</span> <span class="card-black">4♠</span> <span class="card-black">6♠</span> <span class="card-red">J♦</span> <span class="card-red">A♦</span>
+        <div class="drawn">drew: <span class="card-red">A♥</span> <span class="card-red">7♦</span> <span class="card-red">6♦</span> <span class="card-red">Q♦</span> <span class="card-black">7♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:53%"></div>
+        </div>
+        <span class="chips-total">80/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">10♥</span> <span class="card-red">A♥</span> <span class="card-red">6♦</span> <span class="card-red">Q♦</span> <span class="card-black">7♠</span>
+        <div class="drawn">drew: <span class="card-black">2♠</span> <span class="card-black">3♣</span> <span class="card-red">K♦</span> <span class="card-black">2♣</span> <span class="card-black">J♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:53%"></div>
+        </div>
+        <span class="chips-total">80/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">2♠</span> <span class="card-black">3♣</span> <span class="card-red">K♦</span> <span class="card-black">2♣</span> <span class="card-black">J♣</span>
+        <div class="drawn">drew: <span class="card-black">4♣</span> <span class="card-black">8♣</span> <span class="card-red">6♥</span> <span class="card-black">7♣</span> <span class="card-black">5♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:53%"></div>
+        </div>
+        <span class="chips-total">80/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">5</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">7♦</span> <span class="card-black">4♣</span> <span class="card-black">8♣</span> <span class="card-red">6♥</span> <span class="card-black">5♠</span>
+        <div class="drawn">drew: <span class="card-red">Q♦</span> <span class="card-red">7♥</span> <span class="card-black">2♣</span> <span class="card-red">10♥</span> <span class="card-black">6♠</span> <span class="card-black">9♠</span> <span class="card-red">8♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">200/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">7♥</span> <span class="card-red">10♥</span> <span class="card-black">6♠</span> <span class="card-black">9♠</span> <span class="card-red">8♦</span>
+        <div class="drawn">drew: <span class="card-red">5♦</span> <span class="card-red">9♦</span> <span class="card-red">4♦</span> <span class="card-red">10♦</span> <span class="card-red">2♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">✨ Straight</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">Q♦</span> <span class="card-red">5♦</span> <span class="card-red">4♦</span> <span class="card-red">10♦</span> <span class="card-red">2♦</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">flush</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+140</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">260/250</span>
+      </td>
+      <td class="pattern-cell">✨ Flush</td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div class="game-card" id="game-68">
+      <div class="game-header">
+        <span class="game-rank">#4</span>
+        <span class="game-title">Game 68 &nbsp;·&nbsp; seed 68</span>
+        <span class="game-meta">9 steps · 340 final chips</span>
+        <span class="game-score">score 13</span>
+        
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">✨ Straight <em>Scored a straight without setup discards (+120 chips).</em></span><span class="pattern-pill">✨ Full House <em>Scored a full house without setup discards (+160 chips).</em></span><span class="pattern-pill">➡ Straight hunt <em>Discarded 2× to build a straight (+120 chips).</em></span><span class="pattern-pill">✨ Flush <em>Scored a flush without setup discards (+140 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">6♠</span> <span class="card-black">8♠</span> <span class="card-black">5♣</span> <span class="card-red">9♦</span> <span class="card-red">7♦</span>
+        <div class="drawn">drew: <span class="card-red">2♥</span> <span class="card-red">K♦</span> <span class="card-black">J♠</span> <span class="card-black">J♣</span> <span class="card-black">2♠</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:80%"></div>
+        </div>
+        <span class="chips-total">120/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">J♦</span> <span class="card-red">2♥</span> <span class="card-black">J♠</span> <span class="card-black">J♣</span> <span class="card-black">2♠</span>
+        <div class="drawn">drew: <span class="card-black">10♣</span> <span class="card-black">3♣</span> <span class="card-red">K♥</span> <span class="card-black">5♠</span> <span class="card-red">7♦</span> <span class="card-black">3♠</span> <span class="card-black">8♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">full house</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+160</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">280/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">10♣</span> <span class="card-black">3♣</span> <span class="card-red">K♥</span> <span class="card-black">5♠</span> <span class="card-black">3♠</span>
+        <div class="drawn">drew: <span class="card-black">8♠</span> <span class="card-red">J♥</span> <span class="card-red">Q♦</span> <span class="card-red">9♥</span> <span class="card-black">6♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">Q♦</span> <span class="card-black">6♣</span>
+        <div class="drawn">drew: <span class="card-red">10♦</span> <span class="card-red">A♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">7♦</span> <span class="card-black">8♠</span> <span class="card-red">J♥</span> <span class="card-red">9♥</span> <span class="card-red">10♦</span>
+        <div class="drawn">drew: <span class="card-red">2♦</span> <span class="card-black">J♠</span> <span class="card-black">5♣</span> <span class="card-red">A♥</span> <span class="card-red">8♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">8♣</span> <span class="card-red">A♦</span> <span class="card-red">2♦</span> <span class="card-red">A♥</span> <span class="card-red">8♦</span>
+        <div class="drawn">drew: <span class="card-black">2♣</span> <span class="card-black">J♣</span> <span class="card-red">9♦</span> <span class="card-red">5♥</span> <span class="card-red">6♥</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:64%"></div>
+        </div>
+        <span class="chips-total">160/250</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">J♠</span> <span class="card-black">5♣</span> <span class="card-black">2♣</span> <span class="card-black">J♣</span> <span class="card-red">5♥</span>
+        <div class="drawn">drew: <span class="card-red">8♥</span> <span class="card-red">6♦</span> <span class="card-black">2♠</span> <span class="card-red">4♥</span> <span class="card-red">3♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:80%"></div>
+        </div>
+        <span class="chips-total">200/250</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row">
+      <td class="turn-cell">5</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">9♦</span> <span class="card-red">6♥</span> <span class="card-red">6♦</span> <span class="card-black">2♠</span> <span class="card-red">3♦</span>
+        <div class="drawn">drew: <span class="card-black">K♠</span> <span class="card-red">7♥</span> <span class="card-red">Q♥</span> <span class="card-black">7♠</span> <span class="card-red">10♥</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:80%"></div>
+        </div>
+        <span class="chips-total">200/250</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">6</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">8♥</span> <span class="card-red">4♥</span> <span class="card-red">7♥</span> <span class="card-red">Q♥</span> <span class="card-red">10♥</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">flush</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+140</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">340/250</span>
+      </td>
+      <td class="pattern-cell">✨ Flush</td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div class="game-card" id="game-102">
+      <div class="game-header">
+        <span class="game-rank">#5</span>
+        <span class="game-title">Game 102 &nbsp;·&nbsp; seed 102</span>
+        <span class="game-meta">9 steps · 280 final chips</span>
+        <span class="game-score">score 13</span>
+        
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">🎴 Flush hunt <em>Discarded 3× to build a straight_flush (+800 chips).</em></span><span class="pattern-pill">✨ Straight <em>Scored a straight without setup discards (+120 chips).</em></span><span class="pattern-pill">✨ Straight <em>Scored a straight without setup discards (+120 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">2♣</span> <span class="card-red">4♦</span> <span class="card-red">Q♦</span> <span class="card-black">10♣</span> <span class="card-red">2♥</span>
+        <div class="drawn">drew: <span class="card-red">2♦</span> <span class="card-black">5♣</span> <span class="card-red">7♥</span> <span class="card-red">10♦</span> <span class="card-black">10♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">A♣</span> <span class="card-red">2♦</span> <span class="card-black">5♣</span> <span class="card-red">10♦</span> <span class="card-black">10♠</span>
+        <div class="drawn">drew: <span class="card-black">8♣</span> <span class="card-black">A♠</span> <span class="card-red">6♦</span> <span class="card-black">K♠</span> <span class="card-red">9♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td class="pattern-cell">✨ Straight</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">A♠</span> <span class="card-red">6♦</span> <span class="card-black">K♠</span>
+        <div class="drawn">drew: <span class="card-red">5♥</span> <span class="card-red">4♥</span> <span class="card-red">6♥</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">8♥</span> <span class="card-red">7♥</span> <span class="card-red">5♥</span> <span class="card-red">4♥</span> <span class="card-red">6♥</span>
+        <div class="drawn">drew: <span class="card-red">K♦</span> <span class="card-black">9♠</span> <span class="card-black">2♣</span> <span class="card-black">J♣</span> <span class="card-black">5♣</span> <span class="card-red">7♥</span> <span class="card-red">5♥</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight flush</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+800</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">800/150</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">K♦</span> <span class="card-black">2♣</span> <span class="card-black">J♣</span> <span class="card-black">5♣</span> <span class="card-red">5♥</span>
+        <div class="drawn">drew: <span class="card-red">3♦</span> <span class="card-black">5♠</span> <span class="card-black">7♠</span> <span class="card-black">6♠</span> <span class="card-black">4♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">3♦</span> <span class="card-black">5♠</span> <span class="card-black">7♠</span> <span class="card-black">6♠</span> <span class="card-black">4♣</span>
+        <div class="drawn">drew: <span class="card-black">8♠</span> <span class="card-black">4♠</span> <span class="card-red">J♦</span> <span class="card-black">3♣</span> <span class="card-black">K♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">✨ Straight</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">9♠</span> <span class="card-black">4♠</span> <span class="card-red">J♦</span> <span class="card-black">3♣</span> <span class="card-black">K♣</span>
+        <div class="drawn">drew: <span class="card-red">2♥</span> <span class="card-black">7♣</span> <span class="card-red">10♥</span> <span class="card-black">2♠</span> <span class="card-red">8♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">8♠</span> <span class="card-red">2♥</span> <span class="card-red">10♥</span> <span class="card-black">2♠</span> <span class="card-red">8♦</span>
+        <div class="drawn">drew: <span class="card-black">J♠</span> <span class="card-black">9♣</span> <span class="card-black">A♣</span> <span class="card-black">8♣</span> <span class="card-red">10♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:64%"></div>
+        </div>
+        <span class="chips-total">160/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">7♣</span> <span class="card-black">J♠</span> <span class="card-black">9♣</span> <span class="card-black">8♣</span> <span class="card-red">10♦</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">280/250</span>
+      </td>
+      <td class="pattern-cell">✨ Straight</td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div class="game-card" id="game-63">
+      <div class="game-header">
+        <span class="game-rank">#6</span>
+        <span class="game-title">Game 63 &nbsp;·&nbsp; seed 63</span>
+        <span class="game-meta">14 steps · 345 final chips</span>
+        <span class="game-score">score 12</span>
+        
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">🎴 Flush hunt <em>Discarded 3× to build a flush (+140 chips).</em></span><span class="pattern-pill">✨ Full House <em>Scored a full house without setup discards (+160 chips).</em></span><span class="pattern-pill">✨ Flush <em>Scored a flush without setup discards (+140 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">2♠</span> <span class="card-black">Q♣</span> <span class="card-red">Q♦</span> <span class="card-black">J♠</span> <span class="card-red">2♥</span>
+        <div class="drawn">drew: <span class="card-black">4♠</span> <span class="card-black">4♣</span> <span class="card-red">Q♥</span> <span class="card-black">3♠</span> <span class="card-red">9♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:27%"></div>
+        </div>
+        <span class="chips-total">40/150</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">7♠</span> <span class="card-black">4♠</span> <span class="card-black">4♣</span> <span class="card-red">Q♥</span> <span class="card-black">3♠</span>
+        <div class="drawn">drew: <span class="card-black">J♣</span> <span class="card-red">A♦</span> <span class="card-black">2♣</span> <span class="card-black">10♠</span> <span class="card-red">K♥</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-plain">pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+20</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:40%"></div>
+        </div>
+        <span class="chips-total">60/150</span>
+      </td>
+      <td class="pattern-cell">✨ Full House</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">J♣</span> <span class="card-red">A♦</span> <span class="card-black">2♣</span> <span class="card-black">10♠</span> <span class="card-red">K♥</span>
+        <div class="drawn">drew: <span class="card-black">8♣</span> <span class="card-red">9♥</span> <span class="card-black">K♣</span> <span class="card-red">10♥</span> <span class="card-red">2♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:40%"></div>
+        </div>
+        <span class="chips-total">60/150</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">J♥</span> <span class="card-red">9♦</span> <span class="card-black">K♣</span> <span class="card-red">10♥</span> <span class="card-red">2♦</span>
+        <div class="drawn">drew: <span class="card-red">8♥</span> <span class="card-red">3♥</span> <span class="card-black">9♣</span> <span class="card-black">6♠</span> <span class="card-red">J♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:40%"></div>
+        </div>
+        <span class="chips-total">60/150</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">8♣</span> <span class="card-red">3♥</span> <span class="card-black">9♣</span> <span class="card-black">6♠</span> <span class="card-red">J♦</span>
+        <div class="drawn">drew: <span class="card-red">A♥</span> <span class="card-black">K♠</span> <span class="card-red">5♥</span> <span class="card-red">7♥</span> <span class="card-black">3♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:40%"></div>
+        </div>
+        <span class="chips-total">60/150</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">5</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">9♥</span> <span class="card-red">8♥</span> <span class="card-red">A♥</span> <span class="card-red">5♥</span> <span class="card-red">7♥</span>
+        <div class="drawn">drew: <span class="card-black">2♠</span> <span class="card-black">4♠</span> <span class="card-black">Q♠</span> <span class="card-black">J♠</span> <span class="card-black">7♣</span> <span class="card-black">9♣</span> <span class="card-black">10♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">flush</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+140</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">200/150</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">2♠</span> <span class="card-black">4♠</span> <span class="card-black">Q♠</span> <span class="card-black">J♠</span> <span class="card-black">10♣</span>
+        <div class="drawn">drew: <span class="card-red">7♦</span> <span class="card-red">9♦</span> <span class="card-black">7♠</span> <span class="card-red">A♥</span> <span class="card-black">8♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">7♣</span> <span class="card-black">9♣</span> <span class="card-red">7♦</span> <span class="card-red">9♦</span> <span class="card-black">7♠</span>
+        <div class="drawn">drew: <span class="card-black">9♠</span> <span class="card-black">2♣</span> <span class="card-red">9♥</span> <span class="card-red">6♥</span> <span class="card-black">3♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">full house</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+160</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:64%"></div>
+        </div>
+        <span class="chips-total">160/250</span>
+      </td>
+      <td class="pattern-cell">✨ Full House</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">A♥</span> <span class="card-black">9♠</span> <span class="card-black">2♣</span> <span class="card-red">6♥</span> <span class="card-black">3♣</span>
+        <div class="drawn">drew: <span class="card-red">7♥</span> <span class="card-red">8♦</span> <span class="card-red">4♥</span> <span class="card-black">K♣</span> <span class="card-red">K♥</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:64%"></div>
+        </div>
+        <span class="chips-total">160/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">8♣</span> <span class="card-red">8♦</span> <span class="card-red">4♥</span> <span class="card-black">K♣</span> <span class="card-red">K♥</span>
+        <div class="drawn">drew: <span class="card-black">3♠</span> <span class="card-black">K♠</span> <span class="card-red">4♦</span> <span class="card-black">J♣</span> <span class="card-black">5♠</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:80%"></div>
+        </div>
+        <span class="chips-total">200/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">3♠</span> <span class="card-black">K♠</span> <span class="card-red">4♦</span> <span class="card-black">J♣</span> <span class="card-black">5♠</span>
+        <div class="drawn">drew: <span class="card-red">6♦</span> <span class="card-red">10♦</span> <span class="card-red">J♥</span> <span class="card-red">K♦</span> <span class="card-red">A♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:80%"></div>
+        </div>
+        <span class="chips-total">200/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">5</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">6♦</span> <span class="card-red">10♦</span> <span class="card-red">J♥</span> <span class="card-red">K♦</span> <span class="card-red">A♦</span>
+        <div class="drawn">drew: <span class="card-red">2♦</span> <span class="card-black">A♠</span> <span class="card-black">4♣</span> <span class="card-black">Q♣</span> <span class="card-red">5♥</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:80%"></div>
+        </div>
+        <span class="chips-total">200/250</span>
+      </td>
+      <td class="pattern-cell">🎴 Flush hunt</td>
+    </tr>
+    <tr class="step-row">
+      <td class="turn-cell">6</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">2♦</span> <span class="card-black">A♠</span> <span class="card-black">4♣</span> <span class="card-black">Q♣</span> <span class="card-red">5♥</span>
+        <div class="drawn">drew: <span class="card-red">2♥</span> <span class="card-red">Q♥</span> <span class="card-red">3♦</span> <span class="card-red">8♥</span> <span class="card-black">A♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-plain">high card</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+5</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:82%"></div>
+        </div>
+        <span class="chips-total">205/250</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">7</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">9♥</span> <span class="card-red">7♥</span> <span class="card-red">2♥</span> <span class="card-red">Q♥</span> <span class="card-red">8♥</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">flush</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+140</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">345/250</span>
+      </td>
+      <td class="pattern-cell">✨ Flush</td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div class="game-card" id="game-76">
+      <div class="game-header">
+        <span class="game-rank">#7</span>
+        <span class="game-title">Game 76 &nbsp;·&nbsp; seed 76</span>
+        <span class="game-meta">10 steps · 260 final chips</span>
+        <span class="game-score">score 12</span>
+        
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">✨ Flush <em>Scored a flush without setup discards (+140 chips).</em></span><span class="pattern-pill">✨ Straight <em>Scored a straight without setup discards (+120 chips).</em></span><span class="pattern-pill">➡ Straight hunt <em>Discarded 3× to build a straight (+120 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">K♠</span> <span class="card-red">A♥</span> <span class="card-red">2♦</span> <span class="card-red">5♦</span> <span class="card-black">7♠</span>
+        <div class="drawn">drew: <span class="card-black">10♣</span> <span class="card-black">K♣</span> <span class="card-black">J♣</span> <span class="card-red">J♦</span> <span class="card-black">3♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td class="pattern-cell">✨ Straight</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">8♣</span> <span class="card-black">10♣</span> <span class="card-black">K♣</span> <span class="card-black">J♣</span> <span class="card-black">3♣</span>
+        <div class="drawn">drew: <span class="card-red">10♥</span> <span class="card-red">6♥</span> <span class="card-red">3♥</span> <span class="card-black">Q♠</span> <span class="card-red">9♥</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">flush</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+140</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:93%"></div>
+        </div>
+        <span class="chips-total">140/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">9♦</span> <span class="card-red">J♦</span> <span class="card-red">6♥</span> <span class="card-black">Q♠</span> <span class="card-red">9♥</span>
+        <div class="drawn">drew: <span class="card-black">6♠</span> <span class="card-black">Q♣</span> <span class="card-black">8♣</span> <span class="card-black">7♣</span> <span class="card-red">3♦</span> <span class="card-red">9♥</span> <span class="card-black">10♠</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-plain">pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+20</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">160/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">6♠</span> <span class="card-black">8♣</span> <span class="card-black">7♣</span> <span class="card-red">9♥</span> <span class="card-black">10♠</span>
+        <div class="drawn">drew: <span class="card-red">10♦</span> <span class="card-red">7♦</span> <span class="card-black">5♠</span> <span class="card-red">4♦</span> <span class="card-black">9♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">✨ Straight</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">Q♣</span> <span class="card-red">3♦</span> <span class="card-red">10♦</span> <span class="card-black">5♠</span> <span class="card-red">4♦</span>
+        <div class="drawn">drew: <span class="card-black">Q♠</span> <span class="card-red">2♦</span> <span class="card-red">7♥</span> <span class="card-red">8♥</span> <span class="card-black">3♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">7♦</span> <span class="card-black">9♣</span> <span class="card-black">Q♠</span> <span class="card-red">2♦</span> <span class="card-black">3♠</span>
+        <div class="drawn">drew: <span class="card-black">K♠</span> <span class="card-red">A♦</span> <span class="card-red">9♦</span> <span class="card-black">A♠</span> <span class="card-red">J♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">K♠</span> <span class="card-red">A♦</span> <span class="card-red">9♦</span> <span class="card-black">A♠</span> <span class="card-red">J♦</span>
+        <div class="drawn">drew: <span class="card-red">5♦</span> <span class="card-black">4♣</span> <span class="card-black">6♣</span> <span class="card-red">J♥</span> <span class="card-black">7♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:48%"></div>
+        </div>
+        <span class="chips-total">120/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">8♥</span> <span class="card-red">5♦</span> <span class="card-black">4♣</span> <span class="card-black">6♣</span> <span class="card-black">7♠</span>
+        <div class="drawn">drew: <span class="card-black">J♠</span> <span class="card-red">8♦</span> <span class="card-black">5♣</span> <span class="card-red">6♦</span> <span class="card-black">10♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:96%"></div>
+        </div>
+        <span class="chips-total">240/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row">
+      <td class="turn-cell">5</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">J♥</span> <span class="card-black">J♠</span> <span class="card-black">5♣</span> <span class="card-red">6♦</span> <span class="card-black">10♣</span>
+        <div class="drawn">drew: <span class="card-black">3♣</span> <span class="card-black">8♠</span> <span class="card-black">J♣</span> <span class="card-black">9♠</span> <span class="card-red">Q♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:96%"></div>
+        </div>
+        <span class="chips-total">240/250</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row">
+      <td class="turn-cell">6</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">8♦</span> <span class="card-black">8♠</span> <span class="card-black">J♣</span> <span class="card-black">9♠</span> <span class="card-red">Q♦</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-plain">pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+20</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">260/250</span>
+      </td>
+      <td></td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div class="game-card" id="game-85">
+      <div class="game-header">
+        <span class="game-rank">#8</span>
+        <span class="game-title">Game 85 &nbsp;·&nbsp; seed 85</span>
+        <span class="game-meta">10 steps · 370 final chips</span>
+        <span class="game-score">score 12</span>
+        
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">✨ Straight <em>Scored a straight without setup discards (+120 chips).</em></span><span class="pattern-pill">➡ Straight hunt <em>Discarded 3× to build a straight (+120 chips).</em></span><span class="pattern-pill">✨ Full House <em>Scored a full house without setup discards (+160 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">4♥</span> <span class="card-red">A♦</span> <span class="card-red">Q♦</span> <span class="card-black">3♣</span> <span class="card-red">5♦</span>
+        <div class="drawn">drew: <span class="card-red">2♥</span> <span class="card-red">6♦</span> <span class="card-black">Q♣</span> <span class="card-black">10♣</span> <span class="card-black">4♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">2♥</span> <span class="card-red">6♦</span> <span class="card-black">Q♣</span> <span class="card-black">10♣</span> <span class="card-black">4♣</span>
+        <div class="drawn">drew: <span class="card-black">J♣</span> <span class="card-black">J♠</span> <span class="card-red">8♥</span> <span class="card-black">7♣</span> <span class="card-black">K♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">7♦</span> <span class="card-black">J♣</span> <span class="card-black">J♠</span> <span class="card-black">7♣</span> <span class="card-black">K♣</span>
+        <div class="drawn">drew: <span class="card-black">5♣</span> <span class="card-red">6♥</span> <span class="card-red">7♥</span> <span class="card-black">6♠</span> <span class="card-black">10♠</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:27%"></div>
+        </div>
+        <span class="chips-total">40/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">9♠</span> <span class="card-red">8♥</span> <span class="card-red">7♥</span> <span class="card-black">6♠</span> <span class="card-black">10♠</span>
+        <div class="drawn">drew: <span class="card-red">9♥</span> <span class="card-red">J♦</span> <span class="card-red">5♦</span> <span class="card-black">9♣</span> <span class="card-black">9♠</span> <span class="card-red">10♥</span> <span class="card-red">K♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">160/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">9♥</span> <span class="card-red">5♦</span> <span class="card-black">9♣</span> <span class="card-black">9♠</span> <span class="card-red">K♦</span>
+        <div class="drawn">drew: <span class="card-red">3♦</span> <span class="card-red">2♦</span> <span class="card-black">3♣</span> <span class="card-red">K♥</span> <span class="card-red">Q♥</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">three of a kind</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+90</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:36%"></div>
+        </div>
+        <span class="chips-total">90/250</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">J♦</span> <span class="card-red">3♦</span> <span class="card-red">2♦</span> <span class="card-black">3♣</span> <span class="card-red">K♥</span>
+        <div class="drawn">drew: <span class="card-red">7♦</span> <span class="card-black">5♠</span> <span class="card-black">4♣</span> <span class="card-black">10♣</span> <span class="card-red">A♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:36%"></div>
+        </div>
+        <span class="chips-total">90/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">10♥</span> <span class="card-black">5♠</span> <span class="card-black">4♣</span> <span class="card-black">10♣</span> <span class="card-red">A♦</span>
+        <div class="drawn">drew: <span class="card-red">A♥</span> <span class="card-red">8♦</span> <span class="card-red">10♦</span> <span class="card-red">5♥</span> <span class="card-black">6♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:36%"></div>
+        </div>
+        <span class="chips-total">90/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">Q♥</span> <span class="card-red">7♦</span> <span class="card-red">A♥</span> <span class="card-red">10♦</span> <span class="card-black">6♣</span>
+        <div class="drawn">drew: <span class="card-black">4♠</span> <span class="card-red">8♥</span> <span class="card-black">A♣</span> <span class="card-black">3♠</span> <span class="card-black">2♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:36%"></div>
+        </div>
+        <span class="chips-total">90/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">5♥</span> <span class="card-black">4♠</span> <span class="card-black">A♣</span> <span class="card-black">3♠</span> <span class="card-black">2♣</span>
+        <div class="drawn">drew: <span class="card-red">7♥</span> <span class="card-black">K♠</span> <span class="card-black">7♣</span> <span class="card-black">8♠</span> <span class="card-red">9♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:84%"></div>
+        </div>
+        <span class="chips-total">210/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">5</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">8♦</span> <span class="card-red">8♥</span> <span class="card-red">7♥</span> <span class="card-black">7♣</span> <span class="card-black">8♠</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">full house</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+160</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">370/250</span>
+      </td>
+      <td class="pattern-cell">✨ Full House</td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div class="game-card" id="game-97">
+      <div class="game-header">
+        <span class="game-rank">#9</span>
+        <span class="game-title">Game 97 &nbsp;·&nbsp; seed 97</span>
+        <span class="game-meta">13 steps · 270 final chips</span>
+        <span class="game-score">score 12</span>
+        
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">➡ Straight hunt <em>Discarded 2× to build a straight (+120 chips).</em></span><span class="pattern-pill">➡ Straight hunt <em>Discarded 3× to build a straight (+120 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">2♥</span> <span class="card-black">Q♣</span> <span class="card-black">K♠</span> <span class="card-black">A♠</span> <span class="card-red">3♦</span>
+        <div class="drawn">drew: <span class="card-black">J♣</span> <span class="card-red">5♥</span> <span class="card-red">10♥</span> <span class="card-black">4♠</span> <span class="card-black">3♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">J♣</span> <span class="card-red">5♥</span> <span class="card-red">10♥</span> <span class="card-black">4♠</span> <span class="card-black">3♠</span>
+        <div class="drawn">drew: <span class="card-red">K♥</span> <span class="card-black">2♣</span> <span class="card-red">8♥</span> <span class="card-red">J♦</span> <span class="card-black">10♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">7♥</span> <span class="card-red">9♥</span> <span class="card-red">8♥</span> <span class="card-red">J♦</span> <span class="card-black">10♣</span>
+        <div class="drawn">drew: <span class="card-black">8♠</span> <span class="card-red">A♦</span> <span class="card-red">10♦</span> <span class="card-black">7♠</span> <span class="card-black">2♠</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:80%"></div>
+        </div>
+        <span class="chips-total">120/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">K♥</span> <span class="card-black">2♣</span> <span class="card-red">A♦</span> <span class="card-red">10♦</span> <span class="card-black">2♠</span>
+        <div class="drawn">drew: <span class="card-red">A♥</span> <span class="card-red">7♦</span> <span class="card-black">10♠</span> <span class="card-black">J♠</span> <span class="card-black">7♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:80%"></div>
+        </div>
+        <span class="chips-total">120/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">7♠</span> <span class="card-red">7♦</span> <span class="card-black">10♠</span> <span class="card-black">J♠</span> <span class="card-black">7♣</span>
+        <div class="drawn">drew: <span class="card-red">2♥</span> <span class="card-black">A♣</span> <span class="card-red">5♦</span> <span class="card-red">10♥</span> <span class="card-red">Q♦</span> <span class="card-black">9♠</span> <span class="card-red">10♦</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">three of a kind</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+90</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">210/150</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">2♥</span> <span class="card-black">A♣</span> <span class="card-red">5♦</span> <span class="card-red">Q♦</span> <span class="card-red">10♦</span>
+        <div class="drawn">drew: <span class="card-red">7♦</span> <span class="card-red">9♦</span> <span class="card-black">10♣</span> <span class="card-black">5♠</span> <span class="card-black">6♣</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">10♥</span> <span class="card-black">9♠</span> <span class="card-red">9♦</span> <span class="card-black">10♣</span> <span class="card-black">5♠</span>
+        <div class="drawn">drew: <span class="card-red">A♦</span> <span class="card-black">2♠</span> <span class="card-red">A♥</span> <span class="card-black">9♣</span> <span class="card-red">Q♥</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:16%"></div>
+        </div>
+        <span class="chips-total">40/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">6♣</span> <span class="card-red">A♦</span> <span class="card-black">2♠</span> <span class="card-red">A♥</span> <span class="card-red">Q♥</span>
+        <div class="drawn">drew: <span class="card-black">4♠</span> <span class="card-black">Q♣</span> <span class="card-black">10♠</span> <span class="card-red">J♦</span> <span class="card-black">Q♠</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:16%"></div>
+        </div>
+        <span class="chips-total">40/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">4♠</span> <span class="card-black">Q♣</span> <span class="card-black">10♠</span> <span class="card-red">J♦</span> <span class="card-black">Q♠</span>
+        <div class="drawn">drew: <span class="card-red">8♦</span> <span class="card-black">6♠</span> <span class="card-red">3♦</span> <span class="card-black">7♣</span> <span class="card-red">K♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:16%"></div>
+        </div>
+        <span class="chips-total">40/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">4</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">7♦</span> <span class="card-black">9♣</span> <span class="card-black">6♠</span> <span class="card-red">3♦</span> <span class="card-red">K♦</span>
+        <div class="drawn">drew: <span class="card-black">K♣</span> <span class="card-red">5♥</span> <span class="card-red">2♦</span> <span class="card-red">6♦</span> <span class="card-red">4♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:16%"></div>
+        </div>
+        <span class="chips-total">40/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">5</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">8♦</span> <span class="card-black">7♣</span> <span class="card-red">5♥</span> <span class="card-red">6♦</span> <span class="card-red">4♦</span>
+        <div class="drawn">drew: <span class="card-black">3♠</span> <span class="card-black">8♠</span> <span class="card-red">9♥</span> <span class="card-black">4♣</span> <span class="card-black">8♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:64%"></div>
+        </div>
+        <span class="chips-total">160/250</span>
+      </td>
+      <td class="pattern-cell">➡ Straight hunt</td>
+    </tr>
+    <tr class="step-row">
+      <td class="turn-cell">6</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">K♣</span> <span class="card-red">2♦</span> <span class="card-black">8♠</span> <span class="card-black">4♣</span> <span class="card-black">8♣</span>
+        <div class="drawn">drew: <span class="card-red">3♥</span> <span class="card-red">4♥</span> <span class="card-red">J♥</span> <span class="card-black">5♣</span> <span class="card-black">3♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-plain">pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+20</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:72%"></div>
+        </div>
+        <span class="chips-total">180/250</span>
+      </td>
+      <td></td>
+    </tr>
+    <tr class="step-row">
+      <td class="turn-cell">7</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">3♠</span> <span class="card-red">3♥</span> <span class="card-red">4♥</span> <span class="card-black">5♣</span> <span class="card-black">3♣</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">three of a kind</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+90</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">270/250</span>
+      </td>
+      <td></td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+    <div class="game-card" id="game-148">
+      <div class="game-header">
+        <span class="game-rank">#10</span>
+        <span class="game-title">Game 148 &nbsp;·&nbsp; seed 148</span>
+        <span class="game-meta">8 steps · 420 final chips</span>
+        <span class="game-score">score 12</span>
+        <span class="speed-badge">⚡ Won in just 8 steps.</span>
+      </div>
+      <div class="pattern-row"><span class="pattern-pill">✨ Straight <em>Scored a straight without setup discards (+120 chips).</em></span><span class="pattern-pill">⚡ Quads! <em>Discarded 3× and landed four of a kind (+420 chips).</em></span></div>
+      
+        <div class="round-block">
+          <div class="round-header">
+            Round 1 &nbsp;·&nbsp; target: 150 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">J♥</span> <span class="card-black">3♣</span> <span class="card-red">Q♦</span> <span class="card-red">4♦</span> <span class="card-black">2♠</span>
+        <div class="drawn">drew: <span class="card-red">6♥</span> <span class="card-black">10♠</span> <span class="card-black">9♣</span> <span class="card-red">3♥</span> <span class="card-red">2♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">6♥</span> <span class="card-black">10♠</span> <span class="card-red">3♥</span> <span class="card-red">2♦</span>
+        <div class="drawn">drew: <span class="card-black">K♣</span> <span class="card-black">5♠</span> <span class="card-black">5♣</span> <span class="card-red">K♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/150</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-black">9♣</span> <span class="card-black">K♣</span> <span class="card-black">5♠</span> <span class="card-black">5♣</span> <span class="card-red">K♦</span>
+        <div class="drawn">drew: <span class="card-black">J♠</span> <span class="card-red">A♥</span> <span class="card-black">7♣</span> <span class="card-red">10♦</span> <span class="card-red">9♥</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-strong">two pair</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+40</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:27%"></div>
+        </div>
+        <span class="chips-total">40/150</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">8♦</span> <span class="card-black">J♠</span> <span class="card-black">7♣</span> <span class="card-red">10♦</span> <span class="card-red">9♥</span>
+        <div class="drawn">drew: <span class="card-red">2♥</span> <span class="card-black">K♣</span> <span class="card-red">5♦</span> <span class="card-black">8♠</span> <span class="card-black">J♠</span> <span class="card-black">Q♣</span></div>
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">straight</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+120</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">160/150</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr></tbody>
+          </table>
+        </div>
+        <div class="round-block">
+          <div class="round-header">
+            Round 2 &nbsp;·&nbsp; target: 250 chips
+            <span class="result-win">WIN</span>
+          </div>
+          <table class="step-table">
+            <thead>
+              <tr>
+                <th>Turn</th><th>Action</th><th>Cards</th>
+                <th>Hand</th><th>Chips</th><th>Pattern</th>
+              </tr>
+            </thead>
+            <tbody>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">0</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">2♥</span> <span class="card-black">K♣</span> <span class="card-red">5♦</span> <span class="card-black">J♠</span> <span class="card-black">Q♣</span>
+        <div class="drawn">drew: <span class="card-black">7♣</span> <span class="card-red">4♥</span> <span class="card-black">5♣</span> <span class="card-black">9♠</span> <span class="card-red">K♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">1</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-black">7♣</span> <span class="card-red">4♥</span> <span class="card-black">5♣</span> <span class="card-black">9♠</span> <span class="card-red">K♦</span>
+        <div class="drawn">drew: <span class="card-red">A♥</span> <span class="card-red">J♦</span> <span class="card-black">6♣</span> <span class="card-red">3♦</span> <span class="card-red">2♦</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">2</td>
+      <td class="action-cell"><span class="action-discard">discard</span></td>
+      <td class="cards-cell">
+        <span class="card-red">A♥</span> <span class="card-red">J♦</span> <span class="card-black">6♣</span> <span class="card-red">3♦</span> <span class="card-red">2♦</span>
+        <div class="drawn">drew: <span class="card-red">7♥</span> <span class="card-black">8♣</span> <span class="card-red">10♥</span> <span class="card-red">8♦</span> <span class="card-red">J♥</span></div>
+      </td>
+      <td class="hand-type-cell"></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+0</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:0%"></div>
+        </div>
+        <span class="chips-total">0/250</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr>
+    <tr class="step-row row-highlight">
+      <td class="turn-cell">3</td>
+      <td class="action-cell"><span class="action-play">play</span></td>
+      <td class="cards-cell">
+        <span class="card-red">8♥</span> <span class="card-black">8♠</span> <span class="card-black">8♣</span> <span class="card-red">10♥</span> <span class="card-red">8♦</span>
+        
+      </td>
+      <td class="hand-type-cell"><span class="tag tag-premium">four of a kind</span></td>
+      <td class="chips-cell">
+        <span class="chips-gained">+420</span>
+        <div class="progress-wrap">
+          <div class="progress-bar" style="width:100%"></div>
+        </div>
+        <span class="chips-total">420/250</span>
+      </td>
+      <td class="pattern-cell">⚡ Quads!</td>
+    </tr></tbody>
+          </table>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style A — Bold Signal</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Space Grotesk', sans-serif;
+    overflow: hidden;
+  }
+
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+    display: grid;
+    grid-template-columns: 1fr clamp(280px, 42%, 520px);
+    grid-template-rows: 1fr;
+    position: relative;
+  }
+
+  /* Slide number */
+  .slide-num {
+    position: absolute;
+    top: clamp(20px, 3vh, 36px);
+    left: clamp(24px, 3.5vw, 52px);
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(0.7rem, 1.2vw, 1rem);
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* Nav dots */
+  .nav {
+    position: absolute;
+    top: clamp(20px, 3vh, 36px);
+    right: clamp(24px, 3.5vw, 52px);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+  }
+  .nav-dot.active { background: #FF5722; width: 20px; border-radius: 3px; }
+
+  /* Left: text content */
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: clamp(32px, 5vw, 72px);
+    padding-bottom: clamp(40px, 7vh, 80px);
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.2s;
+  }
+
+  .label {
+    font-size: clamp(0.65rem, 1vw, 0.85rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #FF5722;
+    margin-bottom: clamp(12px, 2vh, 20px);
+    font-weight: 500;
+  }
+
+  h1 {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(2rem, 4.5vw, 4rem);
+    color: #ffffff;
+    line-height: 1.05;
+    margin-bottom: clamp(16px, 2.5vh, 28px);
+  }
+
+  .subtitle {
+    font-size: clamp(0.85rem, 1.3vw, 1.1rem);
+    color: rgba(255,255,255,0.55);
+    line-height: 1.6;
+    max-width: 42ch;
+  }
+
+  /* Right: orange card */
+  .card {
+    background: #FF5722;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(32px, 4vw, 60px);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: slideIn 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards 0.05s;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: calc(-1 * clamp(60px, 12vw, 160px));
+    right: calc(-1 * clamp(40px, 8vw, 100px));
+    width: clamp(180px, 28vw, 360px);
+    height: clamp(180px, 28vw, 360px);
+    border-radius: 50%;
+    background: rgba(0,0,0,0.12);
+  }
+
+  .card-tag {
+    font-size: clamp(0.6rem, 0.9vw, 0.75rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(0,0,0,0.5);
+    margin-bottom: clamp(16px, 3vh, 32px);
+    font-weight: 500;
+  }
+
+  .card-stat {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(3.5rem, 8vw, 7rem);
+    color: #1a1a1a;
+    line-height: 0.9;
+    margin-bottom: clamp(8px, 1.5vh, 16px);
+  }
+
+  .card-stat span {
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    vertical-align: super;
+  }
+
+  .card-desc {
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+    color: rgba(0,0,0,0.65);
+    line-height: 1.5;
+    max-width: 28ch;
+  }
+
+  .card-divider {
+    width: clamp(32px, 4vw, 52px);
+    height: 2px;
+    background: rgba(0,0,0,0.25);
+    margin: clamp(16px, 2.5vh, 28px) 0;
+  }
+
+  .card-secondary {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: clamp(1.6rem, 3.5vw, 3rem);
+    color: #1a1a1a;
+    line-height: 1;
+  }
+
+  .card-secondary-desc {
+    font-size: clamp(0.75rem, 1.1vw, 0.9rem);
+    color: rgba(0,0,0,0.5);
+    margin-top: 6px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .content, .card { animation: none; opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="slide-num">STYLE A — BOLD SIGNAL</div>
+  <div class="nav">
+    <div class="nav-dot active"></div>
+    <div class="nav-dot"></div>
+    <div class="nav-dot"></div>
+    <div class="nav-dot"></div>
+    <div class="nav-dot"></div>
+    <div class="nav-dot"></div>
+    <div class="nav-dot"></div>
+  </div>
+
+  <div class="content">
+    <div class="label">CS348K · Final Project</div>
+    <h1>Learning<br>to Play<br>Balatro</h1>
+    <p class="subtitle">RL agents, scripted baselines, and what the bot's decisions can teach a human player.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-tag">Easy Preset · Win Rate</div>
+    <div class="card-stat"><span></span>54<span>%</span></div>
+    <div class="card-desc">RLQBot vs 26% for best scripted baseline</div>
+    <div class="card-divider"></div>
+    <div class="card-secondary">6 bots</div>
+    <div class="card-secondary-desc">Random → Lookahead → RL</div>
+  </div>
+</div>
+</body>
+</html>

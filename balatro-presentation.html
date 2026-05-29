@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning to Play Balatro — CS348K Final Project</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ===========================================
+   CSS CUSTOM PROPERTIES — DARK BOTANICAL THEME
+   Change :root vars to retheme the whole deck
+   =========================================== */
+:root {
+  --bg-primary:    #0f0f0f;
+  --bg-secondary:  #161616;
+  --text-primary:  #e8e4df;
+  --text-secondary:#9a9590;
+  --accent-warm:   #d4a574;
+  --accent-pink:   #e8b4b8;
+  --accent-gold:   #c9b896;
+  --accent-dim:    rgba(212, 165, 116, 0.18);
+
+  --font-display:  'Cormorant', serif;
+  --font-body:     'IBM Plex Sans', sans-serif;
+
+  --title-size:    clamp(2.8rem, 6.5vw, 6rem);
+  --h2-size:       clamp(1.8rem, 4vw, 3.6rem);
+  --h3-size:       clamp(1.1rem, 2.2vw, 1.9rem);
+  --body-size:     clamp(0.8rem, 1.3vw, 1.05rem);
+  --small-size:    clamp(0.65rem, 0.95vw, 0.8rem);
+  --label-size:    clamp(0.58rem, 0.85vw, 0.72rem);
+
+  --slide-padding: clamp(40px, 6vw, 96px);
+  --content-gap:   clamp(16px, 2.5vh, 36px);
+
+  --ease-expo:     cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-soft:     cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ===========================================
+   VIEWPORT FITTING — MANDATORY BASE STYLES
+   =========================================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  background: var(--bg-primary);
+}
+
+html {
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+
+.slide {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg-primary);
+}
+
+.slide-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-height: 100%;
+  overflow: hidden;
+  padding: var(--slide-padding);
+}
+
+img, .image-container {
+  max-width: 100%;
+  max-height: min(50vh, 400px);
+  object-fit: contain;
+}
+
+/* Short viewport overrides */
+@media (max-height: 700px) {
+  :root { --slide-padding: clamp(24px, 3.5vw, 52px); --h2-size: clamp(1.4rem, 3.5vw, 2.6rem); }
+}
+@media (max-height: 600px) {
+  :root { --slide-padding: clamp(16px, 2.5vw, 36px); --title-size: clamp(2rem, 5vw, 3.6rem); --body-size: clamp(0.7rem, 1.1vw, 0.9rem); }
+  .decorative, .nav-hint { display: none; }
+}
+@media (max-height: 500px) {
+  :root { --slide-padding: clamp(12px, 2vw, 24px); --h2-size: clamp(1.1rem, 2.8vw, 1.8rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   SHARED DECORATIVE ELEMENTS
+   =========================================== */
+
+/* Soft ambient glows — reused across slides */
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.glow-a {
+  top: -12vh; right: -8vw;
+  width: clamp(260px, 42vw, 560px);
+  height: clamp(260px, 42vw, 560px);
+  background: radial-gradient(circle, rgba(212,165,116,0.11) 0%, transparent 68%);
+  animation: driftA 10s ease-in-out infinite alternate;
+}
+.glow-b {
+  bottom: -8vh; left: 28vw;
+  width: clamp(180px, 28vw, 380px);
+  height: clamp(180px, 28vw, 380px);
+  background: radial-gradient(circle, rgba(232,180,184,0.09) 0%, transparent 68%);
+  animation: driftB 13s ease-in-out infinite alternate-reverse;
+}
+.glow-c {
+  top: 22vh; right: 18vw;
+  width: clamp(100px, 15vw, 200px);
+  height: clamp(100px, 15vw, 200px);
+  background: radial-gradient(circle, rgba(201,184,150,0.07) 0%, transparent 68%);
+}
+.glow-bl {
+  bottom: -5vh; left: -6vw;
+  width: clamp(200px, 30vw, 400px);
+  height: clamp(200px, 30vw, 400px);
+  background: radial-gradient(circle, rgba(212,165,116,0.08) 0%, transparent 68%);
+  animation: driftA 12s ease-in-out infinite alternate;
+}
+
+@keyframes driftA {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(2%, 4%) scale(1.06); }
+}
+@keyframes driftB {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(-3%, 2%) scale(1.04); }
+}
+
+/* Thin vertical accent line */
+.v-line {
+  position: absolute;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(212,165,116,0.35), transparent);
+  pointer-events: none;
+}
+
+/* ===========================================
+   REVEAL ANIMATIONS
+   .visible class added by IntersectionObserver
+   =========================================== */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s var(--ease-expo), transform 0.7s var(--ease-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+.reveal:nth-child(1) { transition-delay: 0.08s; }
+.reveal:nth-child(2) { transition-delay: 0.18s; }
+.reveal:nth-child(3) { transition-delay: 0.28s; }
+.reveal:nth-child(4) { transition-delay: 0.38s; }
+.reveal:nth-child(5) { transition-delay: 0.46s; }
+.reveal:nth-child(6) { transition-delay: 0.54s; }
+
+.reveal-left {
+  opacity: 0;
+  transform: translateX(calc(-1 * clamp(12px, 2vw, 24px)));
+  transition: opacity 0.7s var(--ease-expo), transform 0.7s var(--ease-expo);
+}
+.slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+
+.reveal-right {
+  opacity: 0;
+  transform: translateX(clamp(12px, 2vw, 24px));
+  transition: opacity 0.65s var(--ease-soft), transform 0.65s var(--ease-soft);
+  transition-delay: 0.12s;
+}
+.slide.visible .reveal-right { opacity: 1; transform: translateX(0); }
+
+/* ===========================================
+   GLOBAL TYPE HELPERS
+   =========================================== */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 300;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  margin-bottom: clamp(12px, 2vh, 22px);
+}
+
+.rule {
+  height: 1px;
+  background: rgba(212,165,116,0.3);
+  border: none;
+  margin: clamp(14px, 2.5vh, 26px) 0;
+}
+
+/* ===========================================
+   PROGRESS BAR
+   =========================================== */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-warm), var(--accent-pink));
+  z-index: 1000;
+  transition: width 0.3s ease;
+}
+
+/* ===========================================
+   NAV DOTS
+   =========================================== */
+.nav-dots {
+  position: fixed;
+  right: clamp(16px, 2.5vw, 32px);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+  list-style: none;
+}
+.nav-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: rgba(232,228,223,0.2);
+  cursor: pointer;
+  transition: background 0.3s ease, height 0.3s ease, border-radius 0.3s ease;
+  border: none;
+  padding: 0;
+}
+.nav-dot.active {
+  background: var(--accent-warm);
+  height: 18px;
+  border-radius: 3px;
+}
+
+/* ===========================================
+   SLIDE COUNTER (top-left)
+   =========================================== */
+.slide-counter {
+  position: absolute;
+  top: clamp(20px, 3vh, 32px);
+  left: clamp(24px, 4vw, 52px);
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  color: rgba(232,228,223,0.2);
+  z-index: 10;
+}
+
+/* ===========================================
+   SLIDE 1 — TITLE
+   =========================================== */
+#slide-1 {
+  display: grid;
+  grid-template-columns: 1fr clamp(220px, 35%, 420px);
+}
+
+.s1-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--slide-padding);
+  padding-bottom: clamp(48px, 8vh, 88px);
+}
+
+.s1-title {
+  font-family: var(--font-display);
+  font-size: var(--title-size);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.0;
+  letter-spacing: -0.01em;
+  margin-bottom: clamp(14px, 2.5vh, 26px);
+}
+
+.s1-title em {
+  font-style: italic;
+  color: var(--accent-warm);
+}
+
+.s1-subtitle {
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.5);
+  line-height: 1.7;
+  max-width: 44ch;
+}
+
+.s1-right {
+  border-left: 1px solid rgba(212,165,116,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--slide-padding);
+  padding-bottom: clamp(48px, 8vh, 88px);
+  gap: clamp(18px, 3.5vh, 36px);
+}
+
+.s1-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.s1-stat-num {
+  font-family: var(--font-display);
+  font-size: clamp(2.4rem, 5.5vw, 5rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 0.9;
+}
+
+.s1-stat-num em {
+  font-style: normal;
+  color: var(--accent-warm);
+  font-size: 0.55em;
+  vertical-align: super;
+}
+
+.s1-stat-label {
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(232,228,223,0.3);
+  margin-top: 6px;
+}
+
+.s1-divider {
+  width: clamp(28px, 4vw, 48px);
+  height: 1px;
+  background: rgba(212,165,116,0.25);
+}
+
+/* ===========================================
+   SLIDE 2 — PROBLEM & GOAL
+   =========================================== */
+#slide-2 .slide-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+.s2-col h2 {
+  font-family: var(--font-display);
+  font-size: var(--h2-size);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.1;
+  margin-bottom: var(--content-gap);
+}
+
+.s2-col h2 em {
+  font-style: italic;
+  color: var(--accent-warm);
+}
+
+.s2-body {
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.6);
+  line-height: 1.75;
+  margin-bottom: clamp(10px, 1.8vh, 18px);
+}
+
+.s2-highlight {
+  font-family: var(--font-display);
+  font-size: var(--h3-size);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--accent-warm);
+  line-height: 1.3;
+  border-left: 2px solid var(--accent-warm);
+  padding-left: clamp(12px, 1.8vw, 22px);
+  margin-top: clamp(14px, 2.5vh, 24px);
+}
+
+.io-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1.5vw, 18px);
+  margin-top: clamp(14px, 2.5vh, 24px);
+}
+
+.io-cell {
+  background: rgba(212,165,116,0.06);
+  border: 1px solid rgba(212,165,116,0.15);
+  border-radius: 4px;
+  padding: clamp(10px, 1.5vh, 18px) clamp(12px, 1.5vw, 20px);
+}
+
+.io-cell-label {
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  margin-bottom: 6px;
+}
+
+.io-cell-val {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.55);
+  line-height: 1.5;
+}
+
+/* ===========================================
+   SLIDE 3 — THE ENVIRONMENT
+   =========================================== */
+#slide-3 .slide-content {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--content-gap);
+}
+
+.s3-header h2 {
+  font-family: var(--font-display);
+  font-size: var(--h2-size);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+
+.s3-header p {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.4);
+  margin-top: 6px;
+}
+
+.s3-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: start;
+}
+
+.s3-col-title {
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  margin-bottom: clamp(12px, 2vh, 20px);
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(212,165,116,0.18);
+}
+
+.noun-list, .verb-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.2vh, 14px);
+}
+
+.noun-list li, .verb-list li {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(8px, 1.2vw, 14px);
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.65);
+  line-height: 1.5;
+}
+
+.noun-list li::before {
+  content: attr(data-tag);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.95em;
+  color: var(--accent-warm);
+  flex-shrink: 0;
+  min-width: clamp(60px, 8vw, 100px);
+}
+
+.verb-list li::before {
+  content: attr(data-tag);
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-pink);
+  flex-shrink: 0;
+  min-width: clamp(60px, 8vw, 100px);
+}
+
+/* ===========================================
+   SLIDE 4 — SCRIPTED BASELINES
+   =========================================== */
+#slide-4 .slide-content {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--content-gap);
+}
+
+.s4-header h2 {
+  font-family: var(--font-display);
+  font-size: var(--h2-size);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.s4-header h2 em { font-style: italic; color: var(--accent-warm); }
+
+.s4-header p {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.4);
+  margin-top: 6px;
+}
+
+.bot-ladder {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(6px, 1vh, 10px);
+  justify-content: center;
+}
+
+.bot-row {
+  display: grid;
+  grid-template-columns: clamp(160px, 22vw, 260px) 1fr clamp(50px, 7vw, 80px);
+  align-items: center;
+  gap: clamp(10px, 1.5vw, 20px);
+  padding: clamp(8px, 1.2vh, 14px) clamp(12px, 1.5vw, 20px);
+  border-radius: 3px;
+  background: rgba(232,228,223,0.02);
+  border: 1px solid rgba(232,228,223,0.05);
+  transition: border-color 0.3s ease;
+}
+.bot-row:hover { border-color: rgba(212,165,116,0.18); }
+
+.bot-name {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.bot-bar-wrap {
+  position: relative;
+  height: clamp(3px, 0.5vh, 5px);
+  background: rgba(232,228,223,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bot-bar {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(212,165,116,0.4), var(--accent-warm));
+  width: 0%;
+  transition: width 0.9s var(--ease-expo);
+}
+.slide.visible .bot-bar { width: var(--w, 0%); }
+
+/* Stagger each bot row's bar reveal */
+.bot-row:nth-child(1) .bot-bar { transition-delay: 0.08s; }
+.bot-row:nth-child(2) .bot-bar { transition-delay: 0.18s; }
+.bot-row:nth-child(3) .bot-bar { transition-delay: 0.28s; }
+.bot-row:nth-child(4) .bot-bar { transition-delay: 0.38s; }
+.bot-row:nth-child(5) .bot-bar { transition-delay: 0.48s; }
+.bot-row:nth-child(6) .bot-bar { transition-delay: 0.60s; }
+
+.bot-pct {
+  font-family: var(--font-display);
+  font-size: var(--h3-size);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: right;
+  line-height: 1;
+}
+
+.bot-row.rl-row {
+  background: rgba(212,165,116,0.06);
+  border-color: rgba(212,165,116,0.2);
+}
+.bot-row.rl-row .bot-name { color: var(--accent-warm); }
+.bot-row.rl-row .bot-pct { color: var(--accent-warm); }
+.bot-row.rl-row .bot-bar {
+  background: linear-gradient(90deg, var(--accent-warm), var(--accent-pink));
+}
+
+/* RandomBot — zero win rate: show only the empty track, no fill */
+.bot-bar-zero {
+  width: 0% !important;
+  background: transparent;
+}
+/* Make the track itself slightly dimmer for the zero row */
+.bot-row:first-child .bot-bar-wrap {
+  background: rgba(232,228,223,0.04);
+}
+
+.bot-desc {
+  font-family: var(--font-body);
+  font-size: clamp(0.55rem, 0.8vw, 0.68rem);
+  font-weight: 300;
+  color: rgba(232,228,223,0.3);
+  margin-top: 2px;
+}
+
+/* ===========================================
+   SLIDE 5 — WHY RL?
+   =========================================== */
+#slide-5 .slide-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+.s5-left h2 {
+  font-family: var(--font-display);
+  font-size: var(--h2-size);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.05;
+  margin-bottom: var(--content-gap);
+}
+.s5-left h2 em { font-style: italic; color: var(--accent-warm); }
+
+.s5-point {
+  display: flex;
+  gap: clamp(12px, 1.5vw, 18px);
+  align-items: flex-start;
+  margin-bottom: clamp(10px, 1.8vh, 18px);
+}
+
+.s5-point-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  color: var(--accent-warm);
+  line-height: 1;
+  flex-shrink: 0;
+  padding-top: 2px;
+  min-width: clamp(22px, 2.5vw, 36px);
+}
+
+.s5-point-text {
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.6);
+  line-height: 1.65;
+}
+
+.s5-right {
+  background: rgba(212,165,116,0.04);
+  border: 1px solid rgba(212,165,116,0.12);
+  border-radius: 4px;
+  padding: clamp(20px, 3vw, 40px);
+}
+
+.s5-arch-label {
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  margin-bottom: clamp(14px, 2.5vh, 24px);
+  font-weight: 300;
+}
+
+.s5-arch-item {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(10px, 1.2vw, 16px);
+  margin-bottom: clamp(10px, 1.5vh, 16px);
+}
+
+.s5-arch-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent-pink);
+  flex-shrink: 0;
+  margin-top: 0.45em;
+}
+
+.s5-arch-text {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.55);
+  line-height: 1.55;
+}
+
+.s5-arch-text strong {
+  color: rgba(232,228,223,0.8);
+  font-weight: 400;
+}
+
+/* ===========================================
+   SLIDE 6 — RESULTS
+   =========================================== */
+#slide-6 .slide-content {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--content-gap);
+}
+
+.s6-header h2 {
+  font-family: var(--font-display);
+  font-size: var(--h2-size);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.s6-header h2 em { font-style: italic; color: var(--accent-warm); }
+.s6-header p {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.4);
+  margin-top: 5px;
+}
+
+.s6-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 2.5vw, 36px);
+  align-items: start;
+}
+
+.s6-panel {
+  background: rgba(232,228,223,0.02);
+  border: 1px solid rgba(232,228,223,0.07);
+  border-radius: 4px;
+  padding: clamp(16px, 2.5vw, 32px);
+}
+
+.s6-panel.featured {
+  border-color: rgba(212,165,116,0.22);
+  background: rgba(212,165,116,0.04);
+}
+
+.s6-panel-label {
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  margin-bottom: clamp(12px, 2vh, 20px);
+}
+
+.s6-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: clamp(8px, 1.2vh, 14px);
+  padding-bottom: clamp(8px, 1.2vh, 14px);
+  border-bottom: 1px solid rgba(232,228,223,0.06);
+}
+.s6-stat-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.s6-bot-name {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.5);
+}
+.s6-bot-name.rl { color: var(--accent-warm); font-weight: 400; }
+
+.s6-bot-val {
+  font-family: var(--font-display);
+  font-size: var(--h3-size);
+  font-weight: 600;
+  color: var(--text-secondary);
+  line-height: 1;
+}
+.s6-bot-val.rl { color: var(--accent-warm); }
+
+.s6-note {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--small-size);
+  color: rgba(232,228,223,0.35);
+  line-height: 1.55;
+  margin-top: clamp(10px, 1.5vh, 16px);
+  border-top: 1px solid rgba(232,228,223,0.06);
+  padding-top: clamp(10px, 1.5vh, 16px);
+}
+
+/* ===========================================
+   SLIDE 7 — TAKEAWAYS
+   =========================================== */
+#slide-7 .slide-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+.s7-left h2 {
+  font-family: var(--font-display);
+  font-size: var(--h2-size);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.05;
+  margin-bottom: var(--content-gap);
+}
+.s7-left h2 em { font-style: italic; color: var(--accent-warm); }
+
+.takeaway {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(10px, 1.4vw, 18px);
+  margin-bottom: clamp(10px, 1.8vh, 18px);
+}
+
+.takeaway-icon {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--accent-warm);
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  flex-shrink: 0;
+  padding-top: 2px;
+  min-width: clamp(18px, 2vw, 28px);
+}
+
+.takeaway-text {
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.6);
+  line-height: 1.65;
+}
+
+.s7-right {
+  border-left: 1px solid rgba(212,165,116,0.12);
+  padding-left: clamp(24px, 3.5vw, 52px);
+}
+
+.s7-open-label {
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-pink);
+  margin-bottom: clamp(14px, 2.5vh, 24px);
+}
+
+.open-q {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--h3-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.45);
+  line-height: 1.4;
+  margin-bottom: clamp(10px, 1.5vh, 16px);
+  padding-left: clamp(10px, 1.5vw, 18px);
+  border-left: 1px solid rgba(232,180,184,0.25);
+}
+
+.s7-closing {
+  margin-top: clamp(20px, 3.5vh, 40px);
+  padding-top: clamp(16px, 2.5vh, 28px);
+  border-top: 1px solid rgba(212,165,116,0.12);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+  color: rgba(212,165,116,0.5);
+  line-height: 1.5;
+}
+
+/* ===========================================
+   INLINE EDITING (user opted in)
+   =========================================== */
+.edit-hotzone {
+  position: fixed;
+  top: 0; left: 0;
+  width: 80px; height: 80px;
+  z-index: 10000;
+  cursor: pointer;
+}
+
+.edit-toggle {
+  position: fixed;
+  top: 16px; left: 16px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,165,116,0.3);
+  background: rgba(15,15,15,0.9);
+  color: var(--accent-warm);
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease, background 0.2s ease;
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-toggle.active { background: rgba(212,165,116,0.15); border-color: var(--accent-warm); }
+
+.edit-mode [contenteditable] {
+  outline: 1px dashed rgba(212,165,116,0.3);
+  outline-offset: 2px;
+  border-radius: 2px;
+  cursor: text;
+  min-width: 4px;
+}
+
+.edit-mode [contenteditable]:focus {
+  outline-color: var(--accent-warm);
+  background: rgba(212,165,116,0.04);
+}
+
+.edit-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15,15,15,0.92);
+  border: 1px solid rgba(212,165,116,0.25);
+  color: rgba(232,228,223,0.6);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  padding: 8px 18px;
+  border-radius: 20px;
+  z-index: 10002;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.edit-mode .edit-banner { opacity: 1; }
+
+/* ===========================================
+   KEYBOARD HINT (bottom of title slide)
+   =========================================== */
+.nav-hint {
+  position: absolute;
+  bottom: clamp(16px, 2.5vh, 28px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 300;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(232,228,223,0.18);
+  white-space: nowrap;
+  animation: pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:0.18} 50%{opacity:0.35} }
+
+/* ===========================================
+   SLIDE 7 — TRACE EXAMPLE
+   =========================================== */
+#slide-7 .slide-content {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(28px, 4.5vw, 64px);
+  align-items: center;
+}
+
+.s7t-left h2 {
+  font-family: var(--font-display);
+  font-size: var(--h2-size);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.05;
+  margin-bottom: clamp(6px, 1vh, 12px);
+}
+.s7t-left h2 em { font-style: italic; color: var(--accent-warm); }
+
+.trace-meta {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.35);
+  margin-bottom: clamp(12px, 2vh, 20px);
+}
+
+/* Step timeline */
+.trace-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.7vh, 8px);
+  position: relative;
+}
+
+/* Hunt zone bracket */
+.hunt-zone {
+  border-left: 2px solid rgba(212,165,116,0.3);
+  margin-left: clamp(4px, 0.8vw, 10px);
+  padding-left: clamp(8px, 1.2vw, 16px);
+  position: relative;
+}
+.hunt-zone::before {
+  content: 'HUNT';
+  position: absolute;
+  left: calc(-1 * clamp(34px, 4vw, 50px));
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  font-family: var(--font-body);
+  font-size: clamp(0.45rem, 0.65vw, 0.55rem);
+  letter-spacing: 0.22em;
+  color: rgba(212,165,116,0.4);
+  white-space: nowrap;
+}
+
+.trace-step {
+  display: grid;
+  grid-template-columns: clamp(18px, 2vw, 26px) clamp(52px, 7vw, 72px) 1fr clamp(52px, 7vw, 80px);
+  align-items: center;
+  gap: clamp(6px, 1vw, 12px);
+  padding: clamp(4px, 0.6vh, 7px) clamp(8px, 1vw, 12px);
+  border-radius: 3px;
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+}
+.trace-step.step-normal  { background: rgba(232,228,223,0.02); }
+.trace-step.step-discard { background: rgba(212,165,116,0.04); }
+.trace-step.step-payoff  { background: rgba(212,165,116,0.1); border: 1px solid rgba(212,165,116,0.2); }
+
+.ts-turn { color: rgba(232,228,223,0.25); font-size: clamp(0.55rem,0.75vw,0.65rem); }
+
+.ts-action {
+  font-size: clamp(0.55rem, 0.8vw, 0.68rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+.ts-action.play    { color: #7ec8a0; }
+.ts-action.discard { color: rgba(212,165,116,0.6); }
+
+.ts-cards {
+  color: rgba(232,228,223,0.55);
+  font-size: clamp(0.6rem, 0.85vw, 0.72rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ts-cards .r { color: #e07070; }
+.ts-cards .b { color: rgba(232,228,223,0.8); }
+
+.ts-result {
+  text-align: right;
+  font-size: clamp(0.6rem, 0.85vw, 0.72rem);
+}
+.ts-chips { color: #7ec8a0; font-weight: 400; }
+.ts-hand  { color: var(--accent-warm); font-size: clamp(0.52rem, 0.72vw, 0.62rem); margin-top: 1px; }
+.ts-none  { color: rgba(232,228,223,0.18); }
+
+/* Chip progress bar under timeline */
+.chip-progress {
+  margin-top: clamp(8px, 1.2vh, 14px);
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 14px);
+}
+.cp-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(232,228,223,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.cp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(212,165,116,0.5), var(--accent-warm));
+  border-radius: 2px;
+  width: 0%;
+  transition: width 1s var(--ease-expo);
+}
+.slide.visible .cp-fill { width: var(--fill-pct); }
+.cp-label {
+  font-family: var(--font-body);
+  font-size: clamp(0.55rem, 0.75vw, 0.65rem);
+  font-weight: 300;
+  color: rgba(232,228,223,0.3);
+  white-space: nowrap;
+}
+
+/* Right col — analyzer logic */
+.s7t-right h3 {
+  font-family: var(--font-display);
+  font-size: var(--h3-size);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin-bottom: clamp(12px, 2vh, 20px);
+}
+
+.analyzer-step {
+  display: flex;
+  gap: clamp(10px, 1.4vw, 16px);
+  align-items: flex-start;
+  margin-bottom: clamp(8px, 1.4vh, 14px);
+}
+.az-num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  color: var(--accent-warm);
+  flex-shrink: 0;
+  line-height: 1;
+  padding-top: 2px;
+  min-width: clamp(16px, 1.8vw, 24px);
+}
+.az-text {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.6);
+  line-height: 1.6;
+}
+.az-text strong { color: rgba(232,228,223,0.85); font-weight: 400; }
+
+/* Pattern frequency mini-table */
+.pattern-mini {
+  margin-top: clamp(12px, 2vh, 20px);
+  border-top: 1px solid rgba(212,165,116,0.12);
+  padding-top: clamp(10px, 1.5vh, 16px);
+}
+.pm-label {
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  margin-bottom: clamp(8px, 1.2vh, 12px);
+}
+.pm-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 14px);
+  margin-bottom: clamp(4px, 0.6vh, 6px);
+}
+.pm-name {
+  font-family: var(--font-body);
+  font-size: clamp(0.6rem, 0.85vw, 0.72rem);
+  font-weight: 300;
+  color: rgba(232,228,223,0.5);
+  min-width: clamp(80px, 10vw, 120px);
+}
+.pm-bar-wrap {
+  flex: 1;
+  height: 3px;
+  background: rgba(232,228,223,0.06);
+  border-radius: 2px;
+}
+.pm-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent-warm);
+  opacity: 0.5;
+  width: 0%;
+  transition: width 0.9s var(--ease-expo);
+}
+.slide.visible .pm-bar { width: var(--w, 0%); }
+
+.pm-row:nth-child(1) .pm-bar { transition-delay: 0.1s; }
+.pm-row:nth-child(2) .pm-bar { transition-delay: 0.22s; }
+.pm-row:nth-child(3) .pm-bar { transition-delay: 0.34s; }
+.pm-row:nth-child(4) .pm-bar { transition-delay: 0.46s; }
+.pm-count {
+  font-family: var(--font-display);
+  font-size: clamp(0.75rem, 1.1vw, 0.9rem);
+  color: rgba(232,228,223,0.35);
+  min-width: 24px;
+  text-align: right;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Nav dots (generated by JS) -->
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<!-- Inline edit toggle -->
+<div class="edit-hotzone" id="editHotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Edit mode (E)" aria-label="Toggle edit mode">✏</button>
+<div class="edit-banner">Edit mode — click any text to edit · Ctrl+S to save · E to exit</div>
+
+
+<!-- ============================================================
+     SLIDE 1 — TITLE
+     ============================================================ -->
+<section class="slide" id="slide-1" aria-label="Title slide">
+  <div class="glow glow-a"></div>
+  <div class="glow glow-b"></div>
+  <div class="glow glow-c"></div>
+  <div class="v-line" style="left: clamp(18px,2.5vw,36px); top:15%; bottom:15%;"></div>
+  <div class="slide-counter">01 / 08</div>
+
+  <div class="s1-left">
+    <p class="eyebrow reveal" contenteditable="false">CS348K · Final Project</p>
+    <h1 class="s1-title reveal" contenteditable="false">Learning<br>to Play<br><em>Balatro</em></h1>
+    <p class="s1-subtitle reveal" contenteditable="false">RL agents, scripted baselines, and the bot as teacher — quantifying strategy in a probabilistic card game.</p>
+  </div>
+
+  <div class="s1-right reveal-right">
+    <div class="s1-stat">
+      <div class="s1-stat-num" contenteditable="false">54<em>%</em></div>
+      <div class="s1-stat-label">RLQBot win rate · easy</div>
+    </div>
+    <div class="s1-divider"></div>
+    <div class="s1-stat">
+      <div class="s1-stat-num" contenteditable="false">2<em>×</em></div>
+      <div class="s1-stat-label">Over best scripted bot</div>
+    </div>
+    <div class="s1-divider"></div>
+    <div class="s1-stat">
+      <div class="s1-stat-num" contenteditable="false">6</div>
+      <div class="s1-stat-label">Agents compared</div>
+    </div>
+  </div>
+
+  <div class="nav-hint">↓ scroll or arrow keys</div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 2 — PROBLEM & GOAL
+     ============================================================ -->
+<section class="slide" id="slide-2" aria-label="Problem and goal">
+  <div class="glow glow-a" style="opacity:0.6;"></div>
+  <div class="glow glow-bl"></div>
+  <div class="slide-counter">02 / 08</div>
+
+  <div class="slide-content">
+    <div class="s2-col">
+      <p class="eyebrow reveal">The Problem</p>
+      <h2 class="reveal">Hard to reason<br>about <em>strategy</em></h2>
+      <p class="s2-body reveal">Balatro is a roguelike poker game where scoring scales multiplicatively. The right discard or hand choice can mean the difference between clearing a round and losing the run — but it's difficult to reason systematically about what's actually strong.</p>
+      <blockquote class="s2-highlight reveal" contenteditable="false">Get better at Balatro, within the game rules, without cheating.</blockquote>
+    </div>
+
+    <div class="s2-col reveal-right">
+      <p class="eyebrow">The Approach</p>
+      <h2>Bot as <em>teacher</em></h2>
+      <p class="s2-body">Build a simulator, run agents of increasing sophistication, and analyze their decision traces. The bot doesn't play <em>for</em> us — it plays <em>ahead</em> of us, surfacing strategies a human might not discover through trial and error alone.</p>
+      <div class="io-grid">
+        <div class="io-cell">
+          <div class="io-cell-label">Input</div>
+          <div class="io-cell-val">Game state: hand, deck, chips scored, resources left</div>
+        </div>
+        <div class="io-cell">
+          <div class="io-cell-label">Output</div>
+          <div class="io-cell-val">Win rate, chip scores, and annotated strategy traces</div>
+        </div>
+        <div class="io-cell">
+          <div class="io-cell-label">Constraint</div>
+          <div class="io-cell-val">Standard 52-card rules; no lookahead into draw order</div>
+        </div>
+        <div class="io-cell">
+          <div class="io-cell-label">Goal</div>
+          <div class="io-cell-val">Pass 2 rounds: 300 chips, then 500 chips</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 3 — THE ENVIRONMENT
+     ============================================================ -->
+<section class="slide" id="slide-3" aria-label="The environment">
+  <div class="glow glow-b" style="opacity:0.7;"></div>
+  <div class="glow glow-c"></div>
+  <div class="v-line" style="right: clamp(18px,2.5vw,36px); top:20%; bottom:20%; opacity:0.4;"></div>
+  <div class="slide-counter">03 / 08</div>
+
+  <div class="slide-content">
+    <div class="s3-header">
+      <p class="eyebrow reveal">System Design</p>
+      <h2 class="reveal">The Environment — <em>nouns, then verbs</em></h2>
+      <p class="reveal">Start with what exists; then describe what happens to it.</p>
+    </div>
+
+    <div class="s3-body">
+      <div class="reveal">
+        <div class="s3-col-title">Nouns · State</div>
+        <ul class="noun-list">
+          <li data-tag="hand">7 cards visible to the agent each turn</li>
+          <li data-tag="unseen deck">remaining cards — counts known, order hidden</li>
+          <li data-tag="discard pile">spent cards, out of play for the round</li>
+          <li data-tag="action">play or discard 1–5 cards from hand</li>
+          <li data-tag="resources">hands left (4), discards left (4) per round</li>
+          <li data-tag="target">300 chips (round 1) · 500 chips (round 2)</li>
+        </ul>
+      </div>
+
+      <div class="reveal">
+        <div class="s3-col-title">Verbs · Transitions</div>
+        <ul class="verb-list">
+          <li data-tag="play">score the poker hand → add chips → redraw</li>
+          <li data-tag="discard">remove cards → redraw · never ends the round</li>
+          <li data-tag="score">base_chips × mult from hand-type lookup table</li>
+          <li data-tag="win">chips_scored ≥ target before hands_left = 0</li>
+          <li data-tag="lose">hands exhausted before reaching target</li>
+          <li data-tag="next round">fresh deck, reset resources, higher target</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 4 — SCRIPTED BASELINES
+     ============================================================ -->
+<section class="slide" id="slide-4" aria-label="Scripted baselines">
+  <div class="glow glow-a" style="opacity:0.5;"></div>
+  <div class="glow glow-bl" style="opacity:0.5;"></div>
+  <div class="slide-counter">04 / 08</div>
+
+  <div class="slide-content">
+    <div class="s4-header">
+      <p class="eyebrow reveal">Baseline Progression</p>
+      <h2 class="reveal">Each step adds one <em>deliberate</em> policy improvement</h2>
+      <p class="reveal">Win rate on easy preset · 100 games per seed · 3 seeds averaged</p>
+    </div>
+
+    <div class="bot-ladder">
+      <!-- RandomBot -->
+      <div class="bot-row reveal" style="transition-delay:0.1s;">
+        <div>
+          <div class="bot-name">RandomBot</div>
+          <div class="bot-desc">Uniform random over all legal actions</div>
+        </div>
+        <div class="bot-bar-wrap">
+          <div class="bot-bar bot-bar-zero"></div>
+        </div>
+        <div class="bot-pct" style="color:rgba(232,228,223,0.2);">0%</div>
+      </div>
+
+      <!-- StimBot -->
+      <div class="bot-row reveal" style="transition-delay:0.18s;">
+        <div>
+          <div class="bot-name">StimBot</div>
+          <div class="bot-desc">Always play highest-scoring immediate hand</div>
+        </div>
+        <div class="bot-bar-wrap">
+          <div class="bot-bar" style="--w:5%;"></div>
+        </div>
+        <div class="bot-pct">5%</div>
+      </div>
+
+      <!-- DiscardLowestChipBot -->
+      <div class="bot-row reveal" style="transition-delay:0.26s;">
+        <div>
+          <div class="bot-name">DiscardLowestChipBot</div>
+          <div class="bot-desc">Play best hand; discard weakest cards if hand is low</div>
+        </div>
+        <div class="bot-bar-wrap">
+          <div class="bot-bar" style="--w:8%;"></div>
+        </div>
+        <div class="bot-pct">8%</div>
+      </div>
+
+      <!-- LookaheadDiscardBot -->
+      <div class="bot-row reveal" style="transition-delay:0.34s;">
+        <div>
+          <div class="bot-name">LookaheadDiscardBot</div>
+          <div class="bot-desc">Evaluate expected score after one discard + redraw</div>
+        </div>
+        <div class="bot-bar-wrap">
+          <div class="bot-bar" style="--w:23%;"></div>
+        </div>
+        <div class="bot-pct">23%</div>
+      </div>
+
+      <!-- PrunedSampledLookaheadBot -->
+      <div class="bot-row reveal" style="transition-delay:0.42s;">
+        <div>
+          <div class="bot-name">PrunedSampledLookaheadBot</div>
+          <div class="bot-desc">Lookahead + flush-bias pruning of action space</div>
+        </div>
+        <div class="bot-bar-wrap">
+          <div class="bot-bar" style="--w:26%;"></div>
+        </div>
+        <div class="bot-pct">26%</div>
+      </div>
+
+      <!-- RLQBot -->
+      <div class="bot-row rl-row reveal" style="transition-delay:0.52s;">
+        <div>
+          <div class="bot-name">RLQBot ← learned policy</div>
+          <div class="bot-desc">DQN Q-network trained over 500 episodes</div>
+        </div>
+        <div class="bot-bar-wrap">
+          <div class="bot-bar" style="--w:54%;"></div>
+        </div>
+        <div class="bot-pct">54%</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 5 — WHY RL / ARCHITECTURE
+     ============================================================ -->
+<section class="slide" id="slide-5" aria-label="Why RL">
+  <div class="glow glow-a" style="opacity:0.55;"></div>
+  <div class="glow glow-b"></div>
+  <div class="slide-counter">05 / 08</div>
+
+  <div class="slide-content">
+    <div class="s5-left">
+      <p class="eyebrow reveal">Motivation</p>
+      <h2 class="reveal">Why move to <em>learned</em> policy?</h2>
+
+      <div class="s5-point reveal">
+        <div class="s5-point-num">i.</div>
+        <div class="s5-point-text">Scripted bots encode human intuitions. A learned policy can discover non-obvious trade-offs — like when <em>not</em> to chase a flush — that heuristics miss.</div>
+      </div>
+      <div class="s5-point reveal">
+        <div class="s5-point-num">ii.</div>
+        <div class="s5-point-text">The action space is large (up to C(7,5)×2 actions per turn). Pruning helps, but a Q-function can learn to deprioritize weak actions rather than hard-cut them.</div>
+      </div>
+      <div class="s5-point reveal">
+        <div class="s5-point-num">iii.</div>
+        <div class="s5-point-text">Reward signal is clean: chips scored per action is direct, dense, and well-defined. This is an ideal RL testbed.</div>
+      </div>
+    </div>
+
+    <div class="s5-right reveal-right">
+      <div class="s5-arch-label">RLQBot Architecture</div>
+
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>State features</strong> — hand composition, outs to each hand type, chips scored, resources remaining, round target gap</div>
+      </div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>Action features</strong> — hand type achievable, score estimate, cards used, discard vs play flag</div>
+      </div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>Network</strong> — small PyTorch Q-network; state × action → scalar Q-value</div>
+      </div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>Training</strong> — DQN-style with replay buffer; ε-greedy exploration; 500 episodes × 3 seeds</div>
+      </div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>Reward</strong> — chips gained per action; round completion bonus</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 6 — RESULTS
+     ============================================================ -->
+<section class="slide" id="slide-6" aria-label="Results">
+  <div class="glow glow-bl" style="opacity:0.7;"></div>
+  <div class="glow glow-c"></div>
+  <div class="slide-counter">06 / 08</div>
+
+  <div class="slide-content">
+    <div class="s6-header">
+      <p class="eyebrow reveal">Evaluation</p>
+      <h2 class="reveal">RL clears easy — <em>hard reveals a gap</em></h2>
+      <p class="reveal">Key question: does a learned policy beat the best scripted baseline? And does it generalize to harder conditions?</p>
+    </div>
+
+    <div class="s6-grid">
+      <div class="s6-panel featured reveal">
+        <div class="s6-panel-label">Easy Preset · Win Rate</div>
+        <div class="s6-stat-row">
+          <div class="s6-bot-name rl">RLQBot</div>
+          <div class="s6-bot-val rl">54%</div>
+        </div>
+        <div class="s6-stat-row">
+          <div class="s6-bot-name">PrunedSampledLookahead</div>
+          <div class="s6-bot-val">26%</div>
+        </div>
+        <div class="s6-stat-row">
+          <div class="s6-bot-name">LookaheadDiscardBot</div>
+          <div class="s6-bot-val">23%</div>
+        </div>
+        <div class="s6-stat-row">
+          <div class="s6-bot-name">DiscardLowestChipBot</div>
+          <div class="s6-bot-val">8%</div>
+        </div>
+        <div class="s6-note">RL doubles the best scripted win rate on easy. The margin is consistent across all 3 seeds.</div>
+      </div>
+
+      <div class="reveal" style="display:flex;flex-direction:column;gap:clamp(12px,1.8vh,20px);">
+        <div class="s6-panel">
+          <div class="s6-panel-label">Hard Preset · Win Rate</div>
+          <div class="s6-stat-row">
+            <div class="s6-bot-name rl">RLQBot</div>
+            <div class="s6-bot-val rl">2.3%</div>
+          </div>
+          <div class="s6-stat-row">
+            <div class="s6-bot-name">PrunedSampledLookahead</div>
+            <div class="s6-bot-val">3.0%</div>
+          </div>
+          <div class="s6-note">Hard is still largely unsolved — win rates are near-zero for all bots.</div>
+        </div>
+
+        <div class="s6-panel featured">
+          <div class="s6-panel-label">Hard Preset · Avg Final Chips</div>
+          <div class="s6-stat-row">
+            <div class="s6-bot-name rl">RLQBot</div>
+            <div class="s6-bot-val rl">234</div>
+          </div>
+          <div class="s6-stat-row">
+            <div class="s6-bot-name">PrunedSampledLookahead</div>
+            <div class="s6-bot-val">204</div>
+          </div>
+          <div class="s6-note">RL accumulates more chips but doesn't convert — suggesting the reward signal doesn't penalize falling short of the round target strongly enough.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 7 — TRACE EXAMPLE: BOT AS TEACHER
+     ============================================================ -->
+<section class="slide" id="slide-7" aria-label="Trace example: bot as teacher">
+  <div class="glow glow-a" style="opacity:0.5;"></div>
+  <div class="glow glow-bl"></div>
+  <div class="slide-counter">07 / 08</div>
+
+  <div class="slide-content">
+
+    <!-- Left: annotated trace timeline -->
+    <div class="s7t-left reveal">
+      <p class="eyebrow">Trace — Game 179, Round 1</p>
+      <h2>Bank chips, <em>then hunt</em></h2>
+      <p class="trace-meta">Target: 150 chips &nbsp;·&nbsp; 6 steps &nbsp;·&nbsp; seed 179</p>
+
+      <div class="trace-timeline">
+
+        <!-- t0: normal play -->
+        <div class="trace-step step-normal">
+          <span class="ts-turn">t0</span>
+          <span class="ts-action play">play</span>
+          <span class="ts-cards">
+            <span class="b">10♠</span> <span class="b">8♠</span> <span class="b">K♣</span>
+            <span class="r">8♥</span> <span class="b">K♠</span>
+          </span>
+          <span class="ts-result">
+            <div class="ts-chips">+40</div>
+            <div class="ts-hand">two pair</div>
+          </span>
+        </div>
+
+        <!-- t1: normal play -->
+        <div class="trace-step step-normal">
+          <span class="ts-turn">t1</span>
+          <span class="ts-action play">play</span>
+          <span class="ts-cards">
+            <span class="r">2♥</span> <span class="r">3♥</span> <span class="b">A♠</span>
+            <span class="r">2♦</span> <span class="b">3♠</span>
+          </span>
+          <span class="ts-result">
+            <div class="ts-chips">+40</div>
+            <div class="ts-hand">two pair</div>
+          </span>
+        </div>
+
+        <!-- hunt zone: t2–t4 -->
+        <div class="hunt-zone">
+          <div class="trace-step step-discard">
+            <span class="ts-turn">t2</span>
+            <span class="ts-action discard">discard</span>
+            <span class="ts-cards">
+              <span class="b">Q♠</span> <span class="b">4♠</span> <span class="b">6♠</span>
+              <span class="r">J♦</span> <span class="r">A♦</span>
+            </span>
+            <span class="ts-result"><div class="ts-none">—</div></span>
+          </div>
+          <div class="trace-step step-discard">
+            <span class="ts-turn">t3</span>
+            <span class="ts-action discard">discard</span>
+            <span class="ts-cards">
+              <span class="r">10♥</span> <span class="r">A♥</span> <span class="r">6♦</span>
+              <span class="r">Q♦</span> <span class="b">7♠</span>
+            </span>
+            <span class="ts-result"><div class="ts-none">—</div></span>
+          </div>
+          <div class="trace-step step-discard">
+            <span class="ts-turn">t4</span>
+            <span class="ts-action discard">discard</span>
+            <span class="ts-cards">
+              <span class="b">2♠</span> <span class="b">3♣</span> <span class="r">K♦</span>
+              <span class="b">2♣</span> <span class="b">J♣</span>
+            </span>
+            <span class="ts-result"><div class="ts-none">—</div></span>
+          </div>
+        </div>
+
+        <!-- t5: payoff -->
+        <div class="trace-step step-payoff">
+          <span class="ts-turn">t5</span>
+          <span class="ts-action play">play</span>
+          <span class="ts-cards">
+            <span class="r">7♦</span> <span class="b">4♣</span> <span class="b">8♣</span>
+            <span class="r">6♥</span> <span class="b">5♠</span>
+          </span>
+          <span class="ts-result">
+            <div class="ts-chips">+120</div>
+            <div class="ts-hand">straight ✓</div>
+          </span>
+        </div>
+
+      </div><!-- /trace-timeline -->
+
+      <!-- Chip progress: 0 → 80 → 200 -->
+      <div class="chip-progress">
+        <span class="cp-label">0</span>
+        <div class="cp-track">
+          <div class="cp-fill" style="--fill-pct: 100%;"></div>
+        </div>
+        <span class="cp-label">200 / 150 ✓</span>
+      </div>
+    </div><!-- /s7t-left -->
+
+    <!-- Right: how the analyzer works -->
+    <div class="s7t-right reveal-right">
+      <p class="eyebrow">How the analyzer works</p>
+      <h3>Discard counting<br>→ intent inference</h3>
+
+      <div class="analyzer-step">
+        <div class="az-num">i.</div>
+        <div class="az-text">Count <strong>consecutive discards</strong> — two or more in a row signals a hunt is underway.</div>
+      </div>
+      <div class="analyzer-step">
+        <div class="az-num">ii.</div>
+        <div class="az-text">The <strong>hand type played immediately after</strong> the discard run reveals the hunt target — straight, flush, or full house.</div>
+      </div>
+      <div class="analyzer-step">
+        <div class="az-num">iii.</div>
+        <div class="az-text">Score the game by <strong>what was hunted, whether it succeeded, and how many discards it cost</strong> — more discards for the same result = more deliberate.</div>
+      </div>
+
+      <div class="pattern-mini">
+        <div class="pm-label">Patterns across 78 wins</div>
+        <div class="pm-row">
+          <span class="pm-name">premium (no hunt)</span>
+          <div class="pm-bar-wrap"><div class="pm-bar" style="--w:100%;"></div></div>
+          <span class="pm-count">128</span>
+        </div>
+        <div class="pm-row">
+          <span class="pm-name">straight hunt</span>
+          <div class="pm-bar-wrap"><div class="pm-bar" style="--w:15%;"></div></div>
+          <span class="pm-count">19</span>
+        </div>
+        <div class="pm-row">
+          <span class="pm-name">flush hunt</span>
+          <div class="pm-bar-wrap"><div class="pm-bar" style="--w:9%;"></div></div>
+          <span class="pm-count">11</span>
+        </div>
+        <div class="pm-row">
+          <span class="pm-name">full house build</span>
+          <div class="pm-bar-wrap"><div class="pm-bar" style="--w:8%;"></div></div>
+          <span class="pm-count">10</span>
+        </div>
+      </div>
+    </div><!-- /s7t-right -->
+
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 8 — TAKEAWAYS
+     ============================================================ -->
+<section class="slide" id="slide-8" aria-label="Takeaways and open questions">
+  <div class="glow glow-a" style="opacity:0.6;"></div>
+  <div class="glow glow-b" style="opacity:0.5;"></div>
+  <div class="glow glow-c"></div>
+  <div class="slide-counter">08 / 08</div>
+
+  <div class="slide-content">
+    <div class="s7-left">
+      <p class="eyebrow reveal">Takeaways</p>
+      <h2 class="reveal">What the bot <em>taught</em> us</h2>
+
+      <div class="takeaway reveal">
+        <div class="takeaway-icon">✓</div>
+        <div class="takeaway-text">The scripted baseline ladder confirms the environment is <strong>sensitive enough to rank policies</strong>. Each deliberate improvement produces measurable gain.</div>
+      </div>
+      <div class="takeaway reveal">
+        <div class="takeaway-icon">✓</div>
+        <div class="takeaway-text">RL doubles scripted win rate on easy (54% vs 26%), learning <strong>premium-hand hunting</strong> — trading guaranteed pairs for flushes and straights that score 3–4× more.</div>
+      </div>
+      <div class="takeaway reveal">
+        <div class="takeaway-icon">△</div>
+        <div class="takeaway-text">On hard, RL accumulates more chips than any scripted bot but doesn't close runs — a <strong>reward shaping gap</strong>: chips/action ≠ round completion.</div>
+      </div>
+    </div>
+
+    <div class="s7-right reveal-right">
+      <div class="s7-open-label">Open Questions</div>
+      <div class="open-q" contenteditable="false">Can reward shaping — penalizing a chip shortfall at round end — unlock hard-mode completion?</div>
+      <div class="open-q" contenteditable="false">Does the hunt-first strategy transfer to harder presets, or does the higher target demand a different approach?</div>
+      <div class="open-q" contenteditable="false">Would richer Balatro mechanics (jokers, mult stacking) change the learned strategy qualitatively?</div>
+      <div class="s7-closing" contenteditable="false">The bot earns its keep as a teacher — hard mode is the next lesson.</div>
+    </div>
+  </div>
+</section>
+
+
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   =========================================== */
+class SlidePresentation {
+  constructor() {
+    this.slides = Array.from(document.querySelectorAll('.slide'));
+    this.current = 0;
+    this.isScrolling = false;
+    this.touchStartY = 0;
+
+    this.progressBar = document.getElementById('progressBar');
+    this.navDotsContainer = document.getElementById('navDots');
+
+    this.setupIntersectionObserver();
+    this.setupNavDots();
+    this.setupKeyboardNav();
+    this.setupTouchNav();
+    this.setupWheelNav();
+    this.updateProgress(0);
+
+    /* Trigger first slide immediately */
+    this.slides[0].classList.add('visible');
+  }
+
+  /* --- Intersection Observer: adds .visible for CSS animations --- */
+  setupIntersectionObserver() {
+    const opts = { threshold: 0.5 };
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          const idx = this.slides.indexOf(e.target);
+          this.current = idx;
+          this.updateProgress(idx);
+          this.updateNavDots(idx);
+        }
+      });
+    }, opts);
+    this.slides.forEach(s => obs.observe(s));
+  }
+
+  /* --- Nav dots --- */
+  setupNavDots() {
+    this.slides.forEach((_, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'nav-dot' + (i === 0 ? ' active' : '');
+      btn.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      btn.addEventListener('click', () => this.goTo(i));
+      this.navDotsContainer.appendChild(btn);
+    });
+  }
+
+  updateNavDots(idx) {
+    const dots = this.navDotsContainer.querySelectorAll('.nav-dot');
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  }
+
+  /* --- Progress bar --- */
+  updateProgress(idx) {
+    const pct = this.slides.length > 1 ? (idx / (this.slides.length - 1)) * 100 : 100;
+    this.progressBar.style.width = pct + '%';
+  }
+
+  /* --- Navigation --- */
+  goTo(idx) {
+    if (idx < 0 || idx >= this.slides.length) return;
+    this.slides[idx].scrollIntoView({ behavior: 'smooth' });
+  }
+
+  next() { this.goTo(this.current + 1); }
+  prev() { this.goTo(this.current - 1); }
+
+  /* --- Keyboard --- */
+  setupKeyboardNav() {
+    document.addEventListener('keydown', (e) => {
+      /* Skip navigation keys when user is editing text */
+      if (e.target.getAttribute('contenteditable') === 'true') return;
+      if (['ArrowDown', 'ArrowRight', ' ', 'PageDown'].includes(e.key)) {
+        e.preventDefault(); this.next();
+      } else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(e.key)) {
+        e.preventDefault(); this.prev();
+      } else if (e.key === 'Home') {
+        e.preventDefault(); this.goTo(0);
+      } else if (e.key === 'End') {
+        e.preventDefault(); this.goTo(this.slides.length - 1);
+      }
+    });
+  }
+
+  /* --- Touch / swipe --- */
+  setupTouchNav() {
+    document.addEventListener('touchstart', (e) => {
+      this.touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    document.addEventListener('touchend', (e) => {
+      const dy = this.touchStartY - e.changedTouches[0].clientY;
+      if (Math.abs(dy) > 50) dy > 0 ? this.next() : this.prev();
+    }, { passive: true });
+  }
+
+  /* --- Mouse wheel (debounced) --- */
+  setupWheelNav() {
+    let lastTime = 0;
+    document.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const now = Date.now();
+      if (now - lastTime < 800) return;
+      lastTime = now;
+      e.deltaY > 0 ? this.next() : this.prev();
+    }, { passive: false });
+  }
+}
+
+/* ===========================================
+   INLINE EDITING
+   =========================================== */
+class InlineEditor {
+  constructor() {
+    this.isActive = false;
+    this.editToggle = document.getElementById('editToggle');
+    this.editHotzone = document.getElementById('editHotzone');
+    this.editables = document.querySelectorAll('[contenteditable]');
+
+    this.setupHotzoneHover();
+    this.setupToggle();
+    this.setupKeyboard();
+    this.setupSave();
+    this.loadSaved();
+  }
+
+  /* JS-based hover with 400ms grace period — see html-template.md */
+  setupHotzoneHover() {
+    let hideTimeout = null;
+
+    const showBtn = () => {
+      clearTimeout(hideTimeout);
+      this.editToggle.classList.add('show');
+    };
+    const scheduleHide = () => {
+      hideTimeout = setTimeout(() => {
+        if (!this.isActive) this.editToggle.classList.remove('show');
+      }, 400);
+    };
+
+    this.editHotzone.addEventListener('mouseenter', showBtn);
+    this.editHotzone.addEventListener('mouseleave', scheduleHide);
+    this.editToggle.addEventListener('mouseenter', showBtn);
+    this.editToggle.addEventListener('mouseleave', scheduleHide);
+    this.editHotzone.addEventListener('click', () => this.toggle());
+    this.editToggle.addEventListener('click', () => this.toggle());
+  }
+
+  setupToggle() {
+    /* nothing extra needed — handled in setupHotzoneHover */
+  }
+
+  setupKeyboard() {
+    document.addEventListener('keydown', (e) => {
+      if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable') || e.target.getAttribute('contenteditable') === 'false') {
+        if (e.target.tagName === 'BODY' || e.target.classList.contains('nav-dot')) {
+          this.toggle();
+        }
+      }
+    });
+  }
+
+  toggle() {
+    this.isActive = !this.isActive;
+    document.body.classList.toggle('edit-mode', this.isActive);
+    this.editToggle.classList.toggle('active', this.isActive);
+    this.editToggle.classList.add('show');
+
+    this.editables.forEach(el => {
+      el.setAttribute('contenteditable', this.isActive ? 'true' : 'false');
+    });
+
+    if (!this.isActive) this.save();
+  }
+
+  setupSave() {
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        this.save();
+        this.showSaveFlash();
+      }
+    });
+  }
+
+  save() {
+    const data = {};
+    this.editables.forEach((el, i) => {
+      data[i] = el.innerHTML;
+    });
+    try { localStorage.setItem('balatro-slides-edits', JSON.stringify(data)); } catch(err) {}
+  }
+
+  loadSaved() {
+    try {
+      const raw = localStorage.getItem('balatro-slides-edits');
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      this.editables.forEach((el, i) => {
+        if (data[i] !== undefined) el.innerHTML = data[i];
+      });
+    } catch(err) {}
+  }
+
+  showSaveFlash() {
+    const banner = document.querySelector('.edit-banner');
+    const orig = banner.textContent;
+    banner.textContent = 'Saved ✓';
+    setTimeout(() => { banner.textContent = orig; }, 1500);
+  }
+}
+
+/* ===========================================
+   COUNTER ANIMATIONS
+   Numbers tick up when slide becomes visible
+   =========================================== */
+function animateCounters() {
+  document.querySelectorAll('.s6-bot-val, .s1-stat-num').forEach(el => {
+    /* Only animate pure numeric content */
+    const raw = el.textContent.replace(/[^0-9.]/g, '');
+    if (!raw || isNaN(parseFloat(raw))) return;
+    const target = parseFloat(raw);
+    const suffix = el.textContent.replace(raw, '');
+    const duration = 800;
+    const start = performance.now();
+
+    const slide = el.closest('.slide');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        obs.disconnect();
+        const tick = (now) => {
+          const t = Math.min((now - start) / duration, 1);
+          const ease = 1 - Math.pow(1 - t, 3);
+          const val = target * ease;
+          el.textContent = (target % 1 === 0 ? Math.round(val) : val.toFixed(1)) + suffix;
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    }, { threshold: 0.5 });
+    obs.observe(slide);
+  });
+}
+
+/* ===========================================
+   INIT
+   =========================================== */
+const presentation = new SlidePresentation();
+const editor = new InlineEditor();
+animateCounters();
+</script>
+
+</body>
+</html>

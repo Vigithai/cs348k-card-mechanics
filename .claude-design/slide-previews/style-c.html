@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Style C — Dark Botanical</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,600;1,400;1,600&family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0f0f0f;
+    overflow: hidden;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+
+  .slide {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    background: #0f0f0f;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: clamp(40px, 7vw, 100px);
+    position: relative;
+  }
+
+  /* Abstract soft glows */
+  .glow-1 {
+    position: absolute;
+    top: -10vh; right: -8vw;
+    width: clamp(280px, 45vw, 600px);
+    height: clamp(280px, 45vw, 600px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(212,165,116,0.13) 0%, transparent 70%);
+    pointer-events: none;
+    animation: drift 8s ease-in-out infinite alternate;
+  }
+  .glow-2 {
+    position: absolute;
+    bottom: -5vh; left: 30vw;
+    width: clamp(200px, 30vw, 420px);
+    height: clamp(200px, 30vw, 420px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,180,184,0.1) 0%, transparent 70%);
+    pointer-events: none;
+    animation: drift 11s ease-in-out infinite alternate-reverse;
+  }
+  .glow-3 {
+    position: absolute;
+    top: 20vh; right: 15vw;
+    width: clamp(120px, 18vw, 260px);
+    height: clamp(120px, 18vw, 260px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201,184,150,0.09) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* Thin vertical accent line */
+  .accent-line {
+    position: absolute;
+    left: clamp(20px, 3vw, 44px);
+    top: 18%;
+    bottom: 18%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(212,165,116,0.4), transparent);
+  }
+
+  /* Label */
+  .eyebrow {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: clamp(0.6rem, 0.9vw, 0.8rem);
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #d4a574;
+    margin-bottom: clamp(16px, 3vh, 28px);
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards 0.1s;
+  }
+
+  h1 {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-weight: 400;
+    color: #e8e4df;
+    line-height: 1.0;
+    letter-spacing: -0.01em;
+    margin-bottom: clamp(20px, 3.5vh, 36px);
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards 0.25s;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: #d4a574;
+  }
+
+  .rule {
+    width: clamp(40px, 5vw, 70px);
+    height: 1px;
+    background: rgba(212,165,116,0.4);
+    margin-bottom: clamp(16px, 2.5vh, 28px);
+    opacity: 0;
+    animation: expand 0.6s ease forwards 0.45s;
+  }
+
+  .subtitle {
+    font-size: clamp(0.8rem, 1.3vw, 1.05rem);
+    font-weight: 300;
+    color: rgba(232,228,223,0.5);
+    line-height: 1.7;
+    max-width: 44ch;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards 0.55s;
+  }
+
+  /* Bottom-right: small data cluster */
+  .data-cluster {
+    position: absolute;
+    right: clamp(40px, 6vw, 80px);
+    bottom: clamp(36px, 6vh, 60px);
+    text-align: right;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards 0.7s;
+  }
+  .data-big {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(2.5rem, 5.5vw, 5rem);
+    font-weight: 600;
+    color: #e8e4df;
+    line-height: 1;
+  }
+  .data-big em {
+    color: #d4a574;
+    font-style: normal;
+    font-size: 0.6em;
+    vertical-align: super;
+  }
+  .data-sub {
+    font-size: clamp(0.6rem, 0.85vw, 0.75rem);
+    font-weight: 300;
+    color: rgba(232,228,223,0.35);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* Corner label */
+  .corner-label {
+    position: absolute;
+    top: clamp(20px, 3vh, 32px);
+    right: clamp(24px, 3vw, 44px);
+    font-size: clamp(0.55rem, 0.8vw, 0.7rem);
+    font-weight: 300;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(232,228,223,0.2);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes expand {
+    from { opacity: 0; width: 0; }
+    to   { opacity: 1; width: clamp(40px, 5vw, 70px); }
+  }
+  @keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(2%, 3%) scale(1.05); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .eyebrow, h1, .rule, .subtitle, .data-cluster { animation: none; opacity: 1; }
+    .glow-1, .glow-2 { animation: none; }
+  }
+</style>
+</head>
+<body>
+<div class="slide">
+  <div class="glow-1"></div>
+  <div class="glow-2"></div>
+  <div class="glow-3"></div>
+  <div class="accent-line"></div>
+  <div class="corner-label">Style C — Dark Botanical</div>
+
+  <div class="eyebrow">CS348K · Final Project</div>
+  <h1>Learning to<br>Play <em>Balatro</em></h1>
+  <div class="rule"></div>
+  <p class="subtitle">RL agents, scripted baselines, and the bot as teacher — quantifying strategy in a probabilistic card game.</p>
+
+  <div class="data-cluster">
+    <div class="data-big">54<em>%</em></div>
+    <div class="data-sub">RLQBot win rate · easy preset</div>
+  </div>
+</div>
+</body>
+</html>
