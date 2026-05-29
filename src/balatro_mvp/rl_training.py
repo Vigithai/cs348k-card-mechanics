@@ -38,6 +38,10 @@ class RLTrainingConfig:
     hidden_dims: tuple[int, ...] = (128, 64)
     device: str = "cpu"
     output_dir: str = "results/rl"
+    # Reward shaping: bonuses/penalties on round outcomes.
+    # Set both to 0.0 to reproduce the original unmodified reward.
+    round_win_bonus: float = 0.0
+    round_loss_penalty: float = 0.0
 
 
 @dataclass
@@ -235,11 +239,20 @@ class RLQTrainer:
             action = self.training_bot.act(observation, legal_actions)
             next_observation, reward, done, info = env.step(action)
             next_legal_actions = tuple(env.get_legal_actions())
+
+            # Reward shaping: augment the raw chip reward with round-outcome signals.
+            shaped_reward = float(reward)
+            if info.get("round_result") == "round_win":
+                shaped_reward += self.config.round_win_bonus
+                rounds_passed += 1
+            elif info.get("round_result") == "round_loss":
+                shaped_reward += self.config.round_loss_penalty  # penalty is negative
+
             self.replay_buffer.add(
                 ReplayTransition(
                     observation=observation,
                     action=action,
-                    reward=float(reward),
+                    reward=shaped_reward,
                     next_observation=next_observation,
                     next_legal_actions=next_legal_actions,
                     done=done,
@@ -248,9 +261,7 @@ class RLQTrainer:
 
             self.global_step += 1
             turn_count += 1
-            episode_reward += reward
-            if info.get("round_result") == "round_win":
-                rounds_passed += 1
+            episode_reward += shaped_reward
 
             if len(self.replay_buffer) >= max(self.config.batch_size, self.config.warmup_transitions):
                 optimization_summary = self._maybe_optimize()

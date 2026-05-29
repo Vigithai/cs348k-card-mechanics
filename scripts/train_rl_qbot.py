@@ -84,6 +84,24 @@ def main() -> None:
         default="cpu",
         help="Torch device to use for training.",
     )
+    parser.add_argument(
+        "--round-win-bonus",
+        type=float,
+        default=0.0,
+        help=(
+            "Extra reward added when the agent clears a round target. "
+            "Set to a positive value (e.g. 150) to shape towards round completion."
+        ),
+    )
+    parser.add_argument(
+        "--round-loss-penalty",
+        type=float,
+        default=0.0,
+        help=(
+            "Reward delta (should be negative, e.g. -75) applied when a round is lost. "
+            "Magnitude should be smaller than round-win-bonus to keep the agent exploring."
+        ),
+    )
     args = parser.parse_args()
 
     config = RLTrainingConfig(
@@ -106,6 +124,8 @@ def main() -> None:
         hidden_dims=tuple(args.hidden_dims),
         device=args.device,
         output_dir=str(args.output_dir),
+        round_win_bonus=args.round_win_bonus,
+        round_loss_penalty=args.round_loss_penalty,
     )
     trainer = RLQTrainer(config)
     history = trainer.train()
