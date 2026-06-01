@@ -1,20 +1,20 @@
-"""Generate rich per-step traces for RLQBot winning games.
+"""Generate rich per-step traces for scripted bot winning games.
 
-Only winning games are saved. Each trace captures the full hand state before
-every action, the action taken, chips gained, and the hand after redraw — giving
-enough context to read a run and understand what the bot was doing and why.
+Mirrors generate_rl_win_traces.py but runs a named scripted bot instead of
+RLQBot. Only winning games are saved. Output format is identical so both
+trace files can be fed into analyze_win_traces.py for comparison.
 
 Usage
 -----
-python scripts/generate_rl_win_traces.py \
-    --checkpoint results/rl_training/ante_1/seed_0/checkpoints/episode_0500.pt \
+python scripts/generate_scripted_win_traces.py \
+    --bot PrunedSampledLookaheadBot \
     --max-ante 1 \
-    --games 200 \
+    --games 500 \
     --base-seed 0
 
 Output
 ------
-results/traces/rl_wins/ante_<N>_seed<base_seed>_<W>wins.json
+results/traces/scripted_wins/<bot>_ante<N>_seed<base_seed>_<W>wins.json
 """
 
 from __future__ import annotations
@@ -33,10 +33,22 @@ if str(SRC_PATH) not in sys.path:
 
 from balatro_mvp import (
     BalatroMVPEnvironment,
-    DEFAULT_MAX_ANTE,
-    RLQBot,
+    DiscardLowestChipBot,
+    LookaheadDiscardBot,
+    PrunedSampledLookaheadBot,
+    RandomBot,
+    StimBot,
 )
-from balatro_mvp.rl import load_q_network_from_checkpoint
+
+# ── Bot registry ───────────────────────────────────────────────────────────────
+
+BOT_REGISTRY: dict[str, Any] = {
+    "RandomBot": lambda rng: RandomBot(rng=rng),
+    "StimBot": lambda rng: StimBot(rng=rng),
+    "DiscardLowestChipBot": lambda rng: DiscardLowestChipBot(rng=rng),
+    "LookaheadDiscardBot": lambda rng: LookaheadDiscardBot(rng=rng),
+    "PrunedSampledLookaheadBot": lambda rng: PrunedSampledLookaheadBot(rng=rng),
+}
 
 # ── Card formatting ────────────────────────────────────────────────────────────
 
@@ -49,21 +61,19 @@ SUIT_SYMBOL: dict[str, str] = {
 
 
 def fmt_card(card: Any) -> str:
-    """Return a compact human-readable card string, e.g. 'A♥' or '10♠'."""
     if hasattr(card, "rank"):
         return f"{card.rank}{SUIT_SYMBOL[card.suit]}"
     return f"{card['rank']}{SUIT_SYMBOL[card['suit']]}"
 
 
 def fmt_hand(cards: Any) -> list[str]:
-    """Format a sequence of cards as a list of compact strings."""
     return [fmt_card(c) for c in cards]
 
 
 # ── Trace helpers ──────────────────────────────────────────────────────────────
 
 def cards_added(hand_before: list[str], hand_after: list[str]) -> list[str]:
-    """Return cards that appear in hand_after but not hand_before (the redraw)."""
+    """Return cards that appear in hand_after but not hand_before."""
     before_counts: dict[str, int] = {}
     for c in hand_before:
         before_counts[c] = before_counts.get(c, 0) + 1
@@ -79,7 +89,7 @@ def cards_added(hand_before: list[str], hand_after: list[str]) -> list[str]:
 # ── Core game runner ───────────────────────────────────────────────────────────
 
 def run_one_game(
-    bot: RLQBot,
+    bot: Any,
     seed: int,
     max_ante: int,
 ) -> dict[str, Any] | None:
@@ -88,7 +98,6 @@ def run_one_game(
     env = BalatroMVPEnvironment(seed=seed, max_ante=max_ante)
     done = False
 
-    # Accumulate steps and split into blinds as we go.
     blinds_data: list[dict[str, Any]] = []
     current_blind_steps: list[dict[str, Any]] = []
     current_ante: int = 1
@@ -173,7 +182,7 @@ def run_one_game(
     blinds_data.append({
         "ante": current_ante,
         "blind_type": current_blind_type,
-        "chips_needed": obs["chips_needed"],   # type: ignore[possibly-undefined]
+        "chips_needed": obs["chips_needed"],  # type: ignore[possibly-undefined]
         "result": info.get("round_result"),
         "steps": current_blind_steps,
     })
@@ -197,24 +206,22 @@ def run_one_game(
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--checkpoint", type=Path, required=True,
-        help="Path to an RLQBot .pt checkpoint file.",
+        "--bot",
+        choices=sorted(BOT_REGISTRY),
+        default="PrunedSampledLookaheadBot",
+        help="Which scripted bot to run.",
     )
     parser.add_argument(
         "--max-ante", type=int, default=1,
         help="Maximum ante to win the run (default 1 for trace generation).",
     )
     parser.add_argument(
-        "--games", type=int, default=200,
+        "--games", type=int, default=500,
         help="Total games to simulate (wins are a subset of this).",
     )
     parser.add_argument(
         "--base-seed", type=int, default=0,
         help="Starting seed; game i uses seed base_seed+i.",
-    )
-    parser.add_argument(
-        "--device", default="cpu",
-        help="Torch device for RLQBot inference.",
     )
     parser.add_argument(
         "--output", type=Path, default=None,
@@ -223,36 +230,35 @@ def main() -> None:
     args = parser.parse_args()
 
     max_ante = args.max_ante
-    rl_q_network, _ = load_q_network_from_checkpoint(args.checkpoint, device=args.device)
-
+    bot_name = args.bot
     wins: list[dict[str, Any]] = []
 
-    print(f"Running {args.games} games (max_ante={max_ante}, base_seed={args.base_seed}) …")
+    print(f"Running {args.games} games ({bot_name}, max_ante={max_ante}, base_seed={args.base_seed}) …")
 
     for game_index in range(args.games):
         seed = args.base_seed + game_index
-        bot = RLQBot(rl_q_network, rng=random.Random(seed), epsilon=0.0, training=False, device=args.device)
+        bot = BOT_REGISTRY[bot_name](random.Random(seed))
         trace = run_one_game(bot, seed=seed, max_ante=max_ante)
         if trace is not None:
             trace["game_index"] = game_index
+            trace["bot"] = bot_name
             wins.append(trace)
 
-        if (game_index + 1) % 50 == 0:
+        if (game_index + 1) % 100 == 0:
             print(f"  {game_index + 1}/{args.games} games — {len(wins)} wins so far")
 
     print(f"\nDone. {len(wins)} winning games out of {args.games} ({len(wins)/args.games:.1%}).")
 
-    # ── Save ──────────────────────────────────────────────────────────────────
-    out_dir = REPO_ROOT / "results" / "traces" / "rl_wins"
+    out_dir = REPO_ROOT / "results" / "traces" / "scripted_wins"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     if args.output:
         out_path = args.output
     else:
-        out_path = out_dir / f"ante_{max_ante}_seed{args.base_seed}_{len(wins)}wins.json"
+        out_path = out_dir / f"{bot_name}_ante{max_ante}_seed{args.base_seed}_{len(wins)}wins.json"
 
     payload = {
-        "checkpoint": str(args.checkpoint),
+        "bot": bot_name,
         "max_ante": max_ante,
         "num_games_run": args.games,
         "base_seed": args.base_seed,
