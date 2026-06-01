@@ -23,8 +23,8 @@ def main() -> None:
     parser.add_argument(
         "--max-ante",
         type=int,
-        default=DEFAULT_MAX_ANTE,
-        help="Maximum ante to win the run (default 8).",
+        default=2,
+        help="Maximum ante to win the run (default 2; full game is 8).",
     )
     parser.add_argument("--episodes", type=int, default=200, help="Number of training episodes.")
     parser.add_argument("--seed", type=int, default=0, help="Base random seed for training.")
@@ -138,7 +138,7 @@ def main() -> None:
     print(f"Final checkpoint: {final_checkpoint}")
     if last_evaluation is not None:
         print(f"Last eval win rate: {last_evaluation['win_rate']:.2%}")
-        print(f"Last eval avg rounds passed: {last_evaluation['average_rounds_passed']:.2f}")
+        print(f"Last eval avg blinds cleared: {last_evaluation['average_blinds_cleared']:.2f}")
         print(f"Last eval avg final chips: {last_evaluation['average_final_chips_scored']:.2f}")
 
 

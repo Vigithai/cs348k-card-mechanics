@@ -54,7 +54,7 @@ def evaluate_bot(
 ) -> dict[str, Any]:
     """Run repeated seeded games for one bot and return summary metrics."""
     wins = 0
-    total_rounds_passed = 0
+    total_blinds_cleared = 0
     hand_type_counts: Counter[str] = Counter()
     final_chip_scores: list[int] = []
     decision_debug_records: list[dict[str, Any]] = []
@@ -67,7 +67,7 @@ def evaluate_bot(
         should_save_trace = save_traces and bot_name == trace_bot_name and game_index < trace_limit
         trace_records: list[dict[str, Any]] = []
         done = False
-        rounds_passed = 0
+        blinds_cleared = 0
         turn_index = 0
 
         while not done:
@@ -100,7 +100,7 @@ def evaluate_bot(
             if hand_category is not None:
                 hand_type_counts[hand_category] += 1
             if info.get("round_result") == "round_win":
-                rounds_passed += 1
+                blinds_cleared += 1
 
             turn_index += 1
 
@@ -118,7 +118,7 @@ def evaluate_bot(
 
         if env.state.result == "run_win":
             wins += 1
-        total_rounds_passed += rounds_passed
+        total_blinds_cleared += blinds_cleared
         final_chip_scores.append(env.state.chips_scored)
 
     average_final_chips = sum(final_chip_scores) / num_games
@@ -128,7 +128,7 @@ def evaluate_bot(
         "bot_name": bot_name,
         "num_games": num_games,
         "win_rate": wins / num_games,
-        "average_rounds_passed": total_rounds_passed / num_games,
+        "average_blinds_cleared": total_blinds_cleared / num_games,
         "average_final_chips_scored": average_final_chips,
         "final_chips_std_dev": final_chips_std_dev,
         "hand_type_counts": dict(sorted(hand_type_counts.items())),
@@ -149,7 +149,7 @@ def print_summary_table(
     headers = [
         "Bot",
         "Win Rate",
-        "Avg Rounds",
+        "Avg Blinds",
         "Avg Final Chips",
         "Std Final Chips",
         "Hand Types",
@@ -158,7 +158,7 @@ def print_summary_table(
         [
             result["bot_name"],
             f"{result['win_rate']:.2%}",
-            f"{result['average_rounds_passed']:.2f}",
+            f"{result['average_blinds_cleared']:.2f}",
             f"{result['average_final_chips_scored']:.2f}",
             f"{result['final_chips_std_dev']:.2f}",
             json.dumps(result["hand_type_counts"], sort_keys=True),
@@ -292,8 +292,8 @@ def main() -> None:
     parser.add_argument(
         "--max-ante",
         type=int,
-        default=DEFAULT_MAX_ANTE,
-        help="Maximum ante to win the run (default 8).",
+        default=2,
+        help="Maximum ante to win the run (default 2; full game is 8).",
     )
     parser.add_argument(
         "--output",

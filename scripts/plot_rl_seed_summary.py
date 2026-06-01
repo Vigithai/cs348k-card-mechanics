@@ -44,8 +44,8 @@ def main() -> None:
                     "bot": row["bot"],
                     "mean_win_rate_pct": float(row["mean_win_rate_pct"]),
                     "std_win_rate_pct": float(row["std_win_rate_pct"]),
-                    "mean_avg_rounds": float(row["mean_avg_rounds"]),
-                    "std_avg_rounds": float(row["std_avg_rounds"]),
+                    "mean_avg_blinds_cleared": float(row["mean_avg_blinds_cleared"]),
+                    "std_avg_blinds_cleared": float(row["std_avg_blinds_cleared"]),
                     "mean_avg_final_chips": float(row["mean_avg_final_chips"]),
                     "std_avg_final_chips": float(row["std_avg_final_chips"]),
                 }

@@ -1,0 +1,7 @@
+ante_label,bot,num_seeds,seeds,mean_win_rate_pct,std_win_rate_pct,mean_avg_blinds_cleared,std_avg_blinds_cleared,mean_avg_final_chips,std_avg_final_chips
+ante_2,RandomBot,3,"0,1,2",0.0,0.0,0.0,0.0,95.375,0.0
+ante_2,StimBot,3,"0,1,2",0.0,0.0,0.465,0.0,197.305,0.0
+ante_2,DiscardLowestChipBot,3,"0,1,2",0.0,0.0,0.745,0.0,261.065,0.0
+ante_2,LookaheadDiscardBot,3,"0,1,2",0.0,0.0,1.155,0.0,307.05,0.0
+ante_2,PrunedSampledLookaheadBot,3,"0,1,2",0.0,0.0,1.51,0.0,354.325,0.0
+ante_2,RLQBot,3,"0,1,2",0.0,0.0,1.5966666666666667,0.23271943050233973,354.875,34.07338440777494

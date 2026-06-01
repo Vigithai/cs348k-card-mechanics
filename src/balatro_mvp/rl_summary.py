@@ -23,7 +23,7 @@ BOT_ORDER: tuple[str, ...] = (
 SEED_FILE_PATTERN = re.compile(r"ante_(?P<max_ante>\d+)_comparison_seed_(?P<seed>\d+)\.json$")
 PLOT_SPECS: tuple[tuple[str, str, str], ...] = (
     ("mean_win_rate_pct", "Win Rate (%)", "win_rate_summary.png"),
-    ("mean_avg_rounds", "Average Rounds Passed", "avg_rounds_summary.png"),
+    ("mean_avg_blinds_cleared", "Average Blinds Cleared", "avg_blinds_cleared_summary.png"),
     ("mean_avg_final_chips", "Average Final Chips", "avg_final_chips_summary.png"),
 )
 
@@ -63,7 +63,7 @@ def load_seed_result_rows(result_path: Path) -> list[dict[str, Any]]:
                 "seed": seed,
                 "bot": bot_result["bot_name"],
                 "win_rate_pct": float(bot_result["win_rate"]) * 100.0,
-                "avg_rounds": float(bot_result["average_rounds_passed"]),
+                "avg_blinds_cleared": float(bot_result["average_blinds_cleared"]),
                 "avg_final_chips": float(bot_result["average_final_chips_scored"]),
                 "std_final_chips": float(bot_result["final_chips_std_dev"]),
             }
@@ -85,7 +85,7 @@ def summarize_seed_result_paths(result_paths: list[Path]) -> list[dict[str, Any]
         key=lambda item: (item[0][0], _bot_sort_key(item[0][1])),
     ):
         win_rate_values = [row["win_rate_pct"] for row in rows]
-        avg_round_values = [row["avg_rounds"] for row in rows]
+        avg_round_values = [row["avg_blinds_cleared"] for row in rows]
         avg_chip_values = [row["avg_final_chips"] for row in rows]
         summary_rows.append(
             {
@@ -95,8 +95,8 @@ def summarize_seed_result_paths(result_paths: list[Path]) -> list[dict[str, Any]
                 "seeds": ",".join(str(row["seed"]) for row in sorted(rows, key=lambda row: row["seed"])),
                 "mean_win_rate_pct": statistics.mean(win_rate_values),
                 "std_win_rate_pct": _sample_std(win_rate_values),
-                "mean_avg_rounds": statistics.mean(avg_round_values),
-                "std_avg_rounds": _sample_std(avg_round_values),
+                "mean_avg_blinds_cleared": statistics.mean(avg_round_values),
+                "std_avg_blinds_cleared": _sample_std(avg_round_values),
                 "mean_avg_final_chips": statistics.mean(avg_chip_values),
                 "std_avg_final_chips": _sample_std(avg_chip_values),
             }
@@ -115,8 +115,8 @@ def write_seed_summary_csv(summary_rows: list[dict[str, Any]], output_path: Path
         "seeds",
         "mean_win_rate_pct",
         "std_win_rate_pct",
-        "mean_avg_rounds",
-        "std_avg_rounds",
+        "mean_avg_blinds_cleared",
+        "std_avg_blinds_cleared",
         "mean_avg_final_chips",
         "std_avg_final_chips",
     ]
@@ -173,8 +173,8 @@ def format_summary_table(summary_rows: list[dict[str, Any]]) -> str:
         "Bot",
         "Mean Win %",
         "Std Win %",
-        "Mean Rounds",
-        "Std Rounds",
+        "Mean Blinds",
+        "Std Blinds",
         "Mean Chips",
         "Std Chips",
     ]
@@ -184,8 +184,8 @@ def format_summary_table(summary_rows: list[dict[str, Any]]) -> str:
             row["bot"],
             f"{row['mean_win_rate_pct']:.2f}",
             f"{row['std_win_rate_pct']:.2f}",
-            f"{row['mean_avg_rounds']:.2f}",
-            f"{row['std_avg_rounds']:.2f}",
+            f"{row['mean_avg_blinds_cleared']:.2f}",
+            f"{row['std_avg_blinds_cleared']:.2f}",
             f"{row['mean_avg_final_chips']:.2f}",
             f"{row['std_avg_final_chips']:.2f}",
         ]

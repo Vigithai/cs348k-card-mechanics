@@ -1,0 +1,106 @@
+{
+  "base_seed": 0,
+  "bot_results": [
+    {
+      "average_final_chips_scored": 95.375,
+      "average_rounds_passed": 0.0,
+      "bot_name": "RandomBot",
+      "final_chips_std_dev": 41.782345254904016,
+      "hand_type_counts": {
+        "high_card": 617,
+        "pair": 172,
+        "three_of_a_kind": 7,
+        "two_pair": 4
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    },
+    {
+      "average_final_chips_scored": 197.305,
+      "average_rounds_passed": 0.465,
+      "bot_name": "StimBot",
+      "final_chips_std_dev": 88.84189313043706,
+      "hand_type_counts": {
+        "flush": 32,
+        "full_house": 9,
+        "high_card": 307,
+        "pair": 496,
+        "straight": 66,
+        "three_of_a_kind": 19,
+        "two_pair": 143
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    },
+    {
+      "average_final_chips_scored": 261.065,
+      "average_rounds_passed": 0.745,
+      "bot_name": "DiscardLowestChipBot",
+      "final_chips_std_dev": 89.64915378853277,
+      "hand_type_counts": {
+        "flush": 48,
+        "full_house": 9,
+        "high_card": 37,
+        "pair": 792,
+        "straight": 114,
+        "three_of_a_kind": 28,
+        "two_pair": 211
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    },
+    {
+      "average_final_chips_scored": 307.05,
+      "average_rounds_passed": 1.155,
+      "bot_name": "LookaheadDiscardBot",
+      "final_chips_std_dev": 111.35585974702903,
+      "hand_type_counts": {
+        "flush": 101,
+        "four_of_a_kind": 5,
+        "full_house": 89,
+        "high_card": 248,
+        "pair": 450,
+        "royal_flush": 1,
+        "straight": 133,
+        "straight_flush": 1,
+        "three_of_a_kind": 39,
+        "two_pair": 291
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    },
+    {
+      "average_final_chips_scored": 354.325,
+      "average_rounds_passed": 1.51,
+      "bot_name": "PrunedSampledLookaheadBot",
+      "decision_debug_summary": {
+        "average_pruned_discard_candidate_count": 6.149167927382753,
+        "average_raw_legal_discard_count": 76.4768532526475,
+        "average_redraw_sample_count_used": 15.300453857791226,
+        "chosen_discard_size_counts": {
+          "0": 1473,
+          "1": 692,
+          "2": 903,
+          "3": 233,
+          "4": 4
+        }
+      },
+      "final_chips_std_dev": 153.86480876080793,
+      "hand_type_counts": {
+        "flush": 209,
+        "four_of_a_kind": 10,
+        "full_house": 138,
+        "high_card": 252,
+        "pair": 393,
+        "straight": 179,
+        "straight_flush": 9,
+        "three_of_a_kind": 50,
+        "two_pair": 233
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    }
+  ],
+  "max_ante": 2,
+  "num_games": 200
+}

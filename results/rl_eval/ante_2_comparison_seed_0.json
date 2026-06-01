@@ -1,0 +1,113 @@
+{
+  "base_seed": 0,
+  "bot_results": [
+    {
+      "average_blinds_cleared": 0.0,
+      "average_final_chips_scored": 95.375,
+      "bot_name": "RandomBot",
+      "final_chips_std_dev": 41.782345254904016,
+      "hand_type_counts": {
+        "high_card": 617,
+        "pair": 172,
+        "three_of_a_kind": 7,
+        "two_pair": 4
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    },
+    {
+      "average_blinds_cleared": 0.465,
+      "average_final_chips_scored": 197.305,
+      "bot_name": "StimBot",
+      "final_chips_std_dev": 88.84189313043706,
+      "hand_type_counts": {
+        "flush": 32,
+        "full_house": 9,
+        "high_card": 307,
+        "pair": 496,
+        "straight": 66,
+        "three_of_a_kind": 19,
+        "two_pair": 143
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    },
+    {
+      "average_blinds_cleared": 0.745,
+      "average_final_chips_scored": 261.065,
+      "bot_name": "DiscardLowestChipBot",
+      "final_chips_std_dev": 89.64915378853277,
+      "hand_type_counts": {
+        "flush": 48,
+        "full_house": 9,
+        "high_card": 37,
+        "pair": 792,
+        "straight": 114,
+        "three_of_a_kind": 28,
+        "two_pair": 211
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    },
+    {
+      "average_blinds_cleared": 1.155,
+      "average_final_chips_scored": 307.05,
+      "bot_name": "LookaheadDiscardBot",
+      "final_chips_std_dev": 111.35585974702903,
+      "hand_type_counts": {
+        "flush": 101,
+        "four_of_a_kind": 5,
+        "full_house": 89,
+        "high_card": 248,
+        "pair": 450,
+        "royal_flush": 1,
+        "straight": 133,
+        "straight_flush": 1,
+        "three_of_a_kind": 39,
+        "two_pair": 291
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    },
+    {
+      "average_blinds_cleared": 1.51,
+      "average_final_chips_scored": 354.325,
+      "bot_name": "PrunedSampledLookaheadBot",
+      "final_chips_std_dev": 153.86480876080793,
+      "hand_type_counts": {
+        "flush": 209,
+        "four_of_a_kind": 10,
+        "full_house": 138,
+        "high_card": 252,
+        "pair": 393,
+        "straight": 179,
+        "straight_flush": 9,
+        "three_of_a_kind": 50,
+        "two_pair": 233
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    },
+    {
+      "average_blinds_cleared": 1.45,
+      "average_final_chips_scored": 333.695,
+      "bot_name": "RLQBot",
+      "final_chips_std_dev": 114.7220640286776,
+      "hand_type_counts": {
+        "flush": 73,
+        "four_of_a_kind": 2,
+        "full_house": 79,
+        "high_card": 131,
+        "pair": 587,
+        "straight": 146,
+        "three_of_a_kind": 128,
+        "two_pair": 564
+      },
+      "num_games": 200,
+      "win_rate": 0.0
+    }
+  ],
+  "checkpoint_path": "results/rl_training/ante_2/seed_0/checkpoints/episode_0500.pt",
+  "max_ante": 2,
+  "num_games": 200
+}

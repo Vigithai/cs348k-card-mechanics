@@ -137,7 +137,7 @@ class RLQTrainer:
         """Evaluate the current greedy policy over a seeded batch of games."""
 
         wins = 0
-        total_rounds_passed = 0
+        total_blinds_cleared = 0
         final_chip_scores: list[int] = []
 
         for game_index in range(num_games):
@@ -152,20 +152,20 @@ class RLQTrainer:
             )
 
             done = False
-            rounds_passed = 0
+            blinds_cleared = 0
             while not done:
                 observation = env.get_observation()
                 legal_actions = env.get_legal_actions()
                 action = evaluation_bot.act(observation, legal_actions)
                 _, _, done, info = env.step(action)
                 if info.get("round_result") == "round_win":
-                    rounds_passed += 1
+                    blinds_cleared += 1
 
             if env.state is None:
                 raise RuntimeError("Environment state missing after evaluation.")
             if env.state.result == "run_win":
                 wins += 1
-            total_rounds_passed += rounds_passed
+            total_blinds_cleared += blinds_cleared
             final_chip_scores.append(env.state.chips_scored)
 
         average_final_chips = sum(final_chip_scores) / num_games
@@ -173,7 +173,7 @@ class RLQTrainer:
             "num_games": num_games,
             "base_seed": base_seed,
             "win_rate": wins / num_games,
-            "average_rounds_passed": total_rounds_passed / num_games,
+            "average_blinds_cleared": total_blinds_cleared / num_games,
             "average_final_chips_scored": average_final_chips,
             "average_episode_reward": average_final_chips,
         }
@@ -226,7 +226,7 @@ class RLQTrainer:
         env = BalatroMVPEnvironment(seed=episode_seed, max_ante=self.max_ante)
         done = False
         episode_reward = 0.0
-        rounds_passed = 0
+        blinds_cleared = 0
         turn_count = 0
 
         while not done:
@@ -242,7 +242,7 @@ class RLQTrainer:
             shaped_reward = float(reward)
             if info.get("round_result") == "round_win":
                 shaped_reward += self.config.round_win_bonus
-                rounds_passed += 1
+                blinds_cleared += 1
             elif info.get("round_result") == "round_loss":
                 shaped_reward += self.config.round_loss_penalty  # penalty is negative
 
@@ -277,7 +277,7 @@ class RLQTrainer:
             "seed": episode_seed,
             "episode_reward": episode_reward,
             "final_chips_scored": env.state.chips_scored,
-            "rounds_passed": rounds_passed,
+            "blinds_cleared": blinds_cleared,
             "run_result": env.state.result,
             "turn_count": turn_count,
             "epsilon_end_of_episode": self._epsilon_for_step(self.global_step),
