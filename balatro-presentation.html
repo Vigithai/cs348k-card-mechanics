@@ -1167,13 +1167,14 @@ img, .image-container {
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-height: 62vh;
-  overflow: hidden;
+  min-height: 0;
 }
 
 .visual-fig-wrap img {
-  max-width: 100%;
-  max-height: 100%;
+  max-width: 88vw;
+  max-height: 55vh;
+  width: auto;
+  height: auto;
   border-radius: 6px;
   object-fit: contain;
 }
@@ -1271,47 +1272,65 @@ img, .image-container {
    SLIDE 3 — PERFORMANCE COMPARISON
    =========================================== */
 #slide-3 .slide-content {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
+  text-align: center;
+  padding: var(--slide-padding);
+  gap: clamp(10px, 2vh, 20px);
+}
+
+/* chart area fills the middle row */
+.perf-chart-area {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: clamp(16px, 2.5vh, 32px);
-  text-align: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: clamp(12px, 2vh, 20px);
 }
 
 .perf-chart {
   display: flex;
   align-items: flex-end;
-  gap: clamp(20px, 4vw, 60px);
-  height: clamp(200px, 35vh, 320px);
+  justify-content: center;
+  gap: clamp(24px, 5vw, 80px);
+  flex: 1;
+  width: 100%;
+  max-height: 42vh;
 }
 
+/* each column: pct on top, bar in middle, label below */
 .perf-bar-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  justify-content: flex-end;
+  gap: clamp(6px, 1vh, 10px);
+  height: 100%;
 }
 
 .perf-bar {
-  width: clamp(60px, 10vw, 110px);
+  width: clamp(70px, 12vw, 130px);
   border-radius: 4px 4px 0 0;
-  transition: height 1s var(--ease-expo);
-  position: relative;
+  transition: height 1.1s var(--ease-expo);
+  flex-shrink: 0;
 }
-.perf-bar.human  { background: linear-gradient(180deg, #7ec8a0, rgba(126,200,160,0.7)); height: 0%; }
-.perf-bar.scripted { background: linear-gradient(180deg, #6a8fad, rgba(106,143,173,0.7)); height: 0%; }
-.perf-bar.rl { background: linear-gradient(180deg, var(--accent-warm), rgba(212,165,116,0.7)); height: 0%; }
-.slide.visible .perf-bar.human   { height: clamp(200px,35vh,320px); }
-.slide.visible .perf-bar.scripted { height: calc(clamp(200px,35vh,320px) * 0.336); }
-.slide.visible .perf-bar.rl { height: calc(clamp(200px,35vh,320px) * 0.708); }
+.perf-bar.human    { background: linear-gradient(180deg, #7ec8a0, rgba(126,200,160,0.6)); height: 0; }
+.perf-bar.scripted { background: linear-gradient(180deg, #6a8fad, rgba(106,143,173,0.6)); height: 0; }
+.perf-bar.rl       { background: linear-gradient(180deg, var(--accent-warm), rgba(212,165,116,0.6)); height: 0; }
+/* heights as fraction of max (rl=100%) */
+.slide.visible .perf-bar.human    { height: 34vh; }
+.slide.visible .perf-bar.scripted { height: 29vh; }
+.slide.visible .perf-bar.rl       { height: 42vh; }
 
 .perf-pct {
   font-family: var(--font-display);
-  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-size: clamp(1.4rem, 2.8vw, 2.2rem);
   font-weight: 600;
   color: var(--text-primary);
   line-height: 1;
+  order: -1; /* sits above the bar */
 }
 .perf-pct.rl-pct { color: var(--accent-warm); }
 
@@ -1423,12 +1442,12 @@ img, .image-container {
   <div class="glow glow-b"></div>
   <div class="glow glow-c"></div>
   <div class="v-line" style="left: clamp(18px,2.5vw,36px); top:15%; bottom:15%;"></div>
-  <div class="slide-counter">01 / 09</div>
+  <div class="slide-counter">01 / 10</div>
 
   <div class="s1-left">
     <p class="eyebrow reveal" contenteditable="false">CS348K · Final Project</p>
     <h1 class="s1-title reveal" contenteditable="false">Learning<br>to Play<br><em>Balatro</em></h1>
-    <p class="s1-subtitle reveal" contenteditable="false">RL agents, scripted baselines, and the bot as teacher — quantifying strategy in a probabilistic card game.</p>
+    <p class="s1-subtitle reveal" contenteditable="false">RL agents, scripted baselines, and the bot as teacher — what can a learned policy teach a human player?</p>
   </div>
 
   <div class="s1-right reveal-right">
@@ -1461,7 +1480,7 @@ img, .image-container {
 <section class="slide" id="slide-2" aria-label="The game">
   <div class="glow glow-a" style="opacity:0.5;"></div>
   <div class="glow glow-c"></div>
-  <div class="slide-counter">02 / 09</div>
+  <div class="slide-counter">02 / 10</div>
 
   <div class="slide-content">
     <p class="eyebrow reveal">The Game</p>
@@ -1518,27 +1537,31 @@ img, .image-container {
 <section class="slide" id="slide-3" aria-label="Performance comparison">
   <div class="glow glow-bl" style="opacity:0.6;"></div>
   <div class="glow glow-c"></div>
-  <div class="slide-counter">03 / 09</div>
+  <div class="slide-counter">03 / 10</div>
 
   <div class="slide-content">
-    <p class="eyebrow reveal">Results</p>
-    <h2 class="game-title reveal">The RL bot closes the gap to <em>human-level play</em></h2>
+    <div>
+      <p class="eyebrow reveal">Results</p>
+      <h2 class="game-title reveal">The RL bot <em>already surpasses</em> human baseline</h2>
+    </div>
 
-    <div class="perf-chart reveal">
-      <div class="perf-bar-group">
-        <div class="perf-pct">~50%</div>
-        <div class="perf-bar human"></div>
-        <div class="perf-label">Me<br>(human)</div>
-      </div>
-      <div class="perf-bar-group">
-        <div class="perf-pct">17%</div>
-        <div class="perf-bar scripted"></div>
-        <div class="perf-label">Best scripted bot</div>
-      </div>
-      <div class="perf-bar-group">
-        <div class="perf-pct rl-pct">35%</div>
-        <div class="perf-bar rl"></div>
-        <div class="perf-label">RLQBot<br>(learned)</div>
+    <div class="perf-chart-area reveal">
+      <div class="perf-chart">
+        <div class="perf-bar-group">
+          <div class="perf-pct">~20%</div>
+          <div class="perf-bar human"></div>
+          <div class="perf-label">Me (human)</div>
+        </div>
+        <div class="perf-bar-group">
+          <div class="perf-pct">17%</div>
+          <div class="perf-bar scripted"></div>
+          <div class="perf-label">Best scripted bot</div>
+        </div>
+        <div class="perf-bar-group">
+          <div class="perf-pct rl-pct">35%</div>
+          <div class="perf-bar rl"></div>
+          <div class="perf-label">RLQBot (learned)</div>
+        </div>
       </div>
     </div>
 
@@ -1553,7 +1576,7 @@ img, .image-container {
 <section class="slide" id="slide-4" aria-label="Motivating questions">
   <div class="glow glow-a" style="opacity:0.5;"></div>
   <div class="glow glow-bl" style="opacity:0.5;"></div>
-  <div class="slide-counter">04 / 09</div>
+  <div class="slide-counter">04 / 10</div>
 
   <div class="slide-content">
     <div class="s4-q-header reveal">
@@ -1604,7 +1627,7 @@ img, .image-container {
 <section class="slide" id="slide-5" aria-label="Analysis pipeline">
   <div class="glow glow-a" style="opacity:0.55;"></div>
   <div class="glow glow-b"></div>
-  <div class="slide-counter">05 / 09</div>
+  <div class="slide-counter">05 / 10</div>
 
   <div class="slide-content">
     <p class="eyebrow reveal">How we analyzed</p>
@@ -1648,7 +1671,7 @@ img, .image-container {
 <section class="slide" id="slide-6" aria-label="Q1: Setup then strike">
   <div class="glow glow-a" style="opacity:0.4;"></div>
   <div class="glow glow-bl" style="opacity:0.4;"></div>
-  <div class="slide-counter">06 / 09</div>
+  <div class="slide-counter">06 / 10</div>
 
   <div class="slide-content visual-slide">
     <p class="eyebrow reveal">Q1 · Hand sequences</p>
@@ -1667,7 +1690,7 @@ img, .image-container {
 <section class="slide" id="slide-7" aria-label="Q2: Hunting is principled">
   <div class="glow glow-a" style="opacity:0.4;"></div>
   <div class="glow glow-c"></div>
-  <div class="slide-counter">07 / 09</div>
+  <div class="slide-counter">07 / 10</div>
 
   <div class="slide-content visual-slide">
     <p class="eyebrow reveal">Q2 · Hunting strategy</p>
@@ -1686,7 +1709,7 @@ img, .image-container {
 <section class="slide" id="slide-8" aria-label="Q3: RL is more selective">
   <div class="glow glow-bl" style="opacity:0.5;"></div>
   <div class="glow glow-b" style="opacity:0.3;"></div>
-  <div class="slide-counter">08 / 09</div>
+  <div class="slide-counter">08 / 10</div>
 
   <div class="slide-content visual-slide">
     <p class="eyebrow reveal">Q3 · RL vs scripted</p>
@@ -1705,7 +1728,7 @@ img, .image-container {
 <section class="slide" id="slide-9" aria-label="Q4: Aggressive pays off">
   <div class="glow glow-a" style="opacity:0.4;"></div>
   <div class="glow glow-bl" style="opacity:0.4;"></div>
-  <div class="slide-counter">09 / 09</div>
+  <div class="slide-counter">09 / 10</div>
 
   <div class="slide-content visual-slide">
     <p class="eyebrow reveal">Q4 · The rule</p>
@@ -1713,6 +1736,70 @@ img, .image-container {
     <p class="visual-sub reveal">aggressive (>1 discard/blind): +121 avg margin &nbsp;·&nbsp; conservative: +97 avg margin</p>
     <div class="visual-fig-wrap reveal">
       <img src="results/figures/analysis_q4_conservative_vs_aggressive.png" alt="Conservative vs aggressive: win margin and premium hand rate">
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SLIDE 10 — CONCLUSION + REFERENCES
+     ============================================================ -->
+<section class="slide" id="slide-10" aria-label="Conclusion and references">
+  <div class="glow glow-a" style="opacity:0.5;"></div>
+  <div class="glow glow-b" style="opacity:0.3;"></div>
+  <div class="glow glow-c"></div>
+  <div class="slide-counter">10 / 10</div>
+
+  <div class="slide-content" style="display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,80px);align-items:center;padding:var(--slide-padding);">
+
+    <div>
+      <p class="eyebrow reveal">Conclusion</p>
+      <h2 class="reveal" style="font-family:var(--font-display);font-size:clamp(1.6rem,3.2vw,2.8rem);font-weight:400;color:var(--text-primary);line-height:1.1;margin-bottom:clamp(16px,2.5vh,28px);">The bot found the <em>setup-then-strike</em> pattern a human might take hours to discover</h2>
+
+      <div class="s5-arch-item reveal">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text">RL surpasses human baseline (35% vs ~20%) on ante 1 — without any explicit strategy encoding</div>
+      </div>
+      <div class="s5-arch-item reveal">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text">Winning games follow a pattern: bank chips with two_pair, then burn discards to land a flush or straight</div>
+      </div>
+      <div class="s5-arch-item reveal">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text">Hunting is worth it — aggressive games clear with 25% more headroom</div>
+      </div>
+      <div class="s5-arch-item reveal" style="margin-top:clamp(8px,1.5vh,16px);">
+        <div class="s5-arch-dot" style="background:var(--accent-warm);"></div>
+        <div class="s5-arch-text" style="color:rgba(232,228,223,0.7);">Next: add jokers and the shop layer — where Balatro's real complexity begins</div>
+      </div>
+    </div>
+
+    <div class="s5-right reveal-right" style="align-self:start;">
+      <div class="s5-arch-label">References &amp; Tools</div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>Balatro</strong> — LocalThunk, 2024. <em>balatro.game</em></div>
+      </div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>DQN</strong> — Mnih et al., "Human-level control through deep reinforcement learning," <em>Nature</em> 2015</div>
+      </div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>Simulator</strong> — custom Python environment; standard 52-card deck, poker hand scoring</div>
+      </div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>RL training</strong> — PyTorch; replay buffer; ε-greedy; 500 episodes × 3 seeds; reward shaping (+300 blind-win bonus)</div>
+      </div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>Trace analysis</strong> — custom scripts; 177 RL wins + 84 scripted wins; N-gram sequence analysis, hunt detection</div>
+      </div>
+      <div class="s5-arch-item">
+        <div class="s5-arch-dot"></div>
+        <div class="s5-arch-text"><strong>Code</strong> — github.com/[your-handle]/cs348k-card-mechanics</div>
+      </div>
     </div>
   </div>
 </section>

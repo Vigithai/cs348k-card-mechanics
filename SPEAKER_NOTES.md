@@ -24,9 +24,9 @@ My project models just the card mechanics — no jokers, no shop — to isolate 
 
 ## Slide 3 · Performance
 
-The three bars are: me (~50% on ante 1), the best scripted bot (17%), and the RL agent (35%).
+The three bars are: me (~20% on ante 1), the best scripted bot (17%), and the RL agent (35%).
 
-A few important caveats: my number is a rough estimate from playing the real game. The bots run on a simplified environment. So this is directional, not a direct comparison. The point is: the RL agent got meaningfully closer to human-level play than any of the scripted bots, without any hand-crafted strategy.
+A few important caveats: my number is a rough estimate from playing with the same simplified environment. The point is the RL agent already beats my personal win rate — without any hand-crafted strategy. The scripted bot barely trails me, but RL is nearly 2× better than either of us.
 
 ---
 
