@@ -1,0 +1,98 @@
+{
+  "q1_top_ngrams_rl": {
+    "two_pair \u2192 flush": 104,
+    "two_pair \u2192 two_pair": 100,
+    "pair \u2192 flush": 96,
+    "pair \u2192 two_pair": 79,
+    "two_pair \u2192 three_of_a_kind": 53,
+    "flush \u2192 two_pair": 50,
+    "pair \u2192 pair": 46,
+    "three_of_a_kind \u2192 flush": 39,
+    "two_pair \u2192 pair": 38,
+    "two_pair \u2192 straight": 37,
+    "flush \u2192 flush": 33,
+    "flush \u2192 straight": 33
+  },
+  "q1_top_ngrams_scripted": {
+    "pair \u2192 pair": 27,
+    "flush \u2192 two_pair": 22,
+    "flush \u2192 pair": 20,
+    "straight \u2192 flush": 18,
+    "flush \u2192 flush": 17,
+    "two_pair \u2192 pair": 16,
+    "full_house \u2192 pair": 16,
+    "straight \u2192 pair": 14,
+    "pair \u2192 straight": 14,
+    "straight \u2192 two_pair": 13,
+    "full_house \u2192 two_pair": 13,
+    "two_pair \u2192 two_pair": 12
+  },
+  "q2_hunt_aggressiveness": {
+    "hunt_count": 740,
+    "multi_discard_hunts": 346,
+    "by_n_discards": {
+      "1": 394,
+      "2": 198,
+      "3": 95,
+      "4": 53
+    },
+    "outcome_given_multi_hunt": {
+      "flush": 136,
+      "two_pair": 62,
+      "pair": 52,
+      "straight": 42,
+      "high_card": 20,
+      "three_of_a_kind": 16,
+      "full_house": 12,
+      "straight_flush": 4,
+      "four_of_a_kind": 2
+    },
+    "comfortable_premium_rate": 0.573,
+    "desperate_premium_rate": 0.562
+  },
+  "q3_bot_comparison": {
+    "RLQBot": {
+      "n_wins": 177,
+      "avg_win_margin": 119.9,
+      "avg_discard_rate": 0.431,
+      "avg_premium_hand_rate": 0.449,
+      "hand_type_totals": {
+        "two_pair": 441,
+        "flush": 390,
+        "pair": 323,
+        "straight": 191,
+        "three_of_a_kind": 136,
+        "full_house": 108,
+        "high_card": 29,
+        "straight_flush": 10,
+        "four_of_a_kind": 8
+      }
+    },
+    "PrunedSampledLookaheadBot": {
+      "n_wins": 84,
+      "avg_win_margin": 107.4,
+      "avg_discard_rate": 0.594,
+      "avg_premium_hand_rate": 0.663,
+      "hand_type_totals": {
+        "flush": 138,
+        "straight": 112,
+        "full_house": 109,
+        "pair": 106,
+        "two_pair": 75,
+        "high_card": 26,
+        "three_of_a_kind": 14,
+        "four_of_a_kind": 12,
+        "straight_flush": 11,
+        "royal_flush": 1
+      }
+    }
+  },
+  "q4_conservative_vs_aggressive": {
+    "conservative_count": 9,
+    "aggressive_count": 168,
+    "conservative_avg_margin": 97.0,
+    "aggressive_avg_margin": 121.1,
+    "conservative_avg_premium_rate": 0.558,
+    "aggressive_avg_premium_rate": 0.443
+  }
+}
