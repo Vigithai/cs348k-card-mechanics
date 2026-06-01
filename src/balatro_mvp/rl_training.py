@@ -37,7 +37,7 @@ class RLTrainingConfig:
     train_every: int = 1
     hidden_dims: tuple[int, ...] = (128, 64)
     device: str = "cpu"
-    output_dir: str = "results/rl"
+    output_dir: str = "results/rl_training"
     # Reward shaping: bonuses/penalties on round outcomes.
     # Set both to 0.0 to reproduce the original unmodified reward.
     round_win_bonus: float = 0.0
@@ -336,7 +336,7 @@ class RLQTrainer:
 def default_training_config(
     *,
     max_ante: int = DEFAULT_MAX_ANTE,
-    output_dir: str = "results/rl",
+    output_dir: str = "results/rl_training",
     seed: int = 0,
     hidden_dims: Sequence[int] = (128, 64),
 ) -> RLTrainingConfig:

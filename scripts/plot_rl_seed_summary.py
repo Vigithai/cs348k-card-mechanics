@@ -23,13 +23,13 @@ def main() -> None:
     parser.add_argument(
         "--input-csv",
         type=Path,
-        default=REPO_ROOT / "results" / "rl_summary" / "seed_summary.csv",
+        default=REPO_ROOT / "results" / "rl_eval" / "seed_summary.csv",
         help="Aggregated RL seed summary CSV.",
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=REPO_ROOT / "results" / "rl_summary",
+        default=REPO_ROOT / "results" / "figures",
         help="Directory for the generated figures.",
     )
     args = parser.parse_args()
@@ -40,7 +40,7 @@ def main() -> None:
         for row in reader:
             summary_rows.append(
                 {
-                    "preset": row["preset"],
+                    "ante_label": row["ante_label"],
                     "bot": row["bot"],
                     "mean_win_rate_pct": float(row["mean_win_rate_pct"]),
                     "std_win_rate_pct": float(row["std_win_rate_pct"]),

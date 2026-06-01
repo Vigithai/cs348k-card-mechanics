@@ -14,7 +14,7 @@ from typing import Any, Callable
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 RESULTS_DIR = REPO_ROOT / "results"
-TRACE_RESULTS_DIR = RESULTS_DIR / "traces"
+TRACE_RESULTS_DIR = RESULTS_DIR / "traces" / "scripted"
 SRC_PATH = REPO_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
@@ -37,7 +37,7 @@ BotFactory = Callable[[random.Random], object]
 
 def default_output_path(max_ante: int) -> Path:
     """Return the default JSON results path."""
-    return RESULTS_DIR / f"ante_{max_ante}_eval_results.json"
+    return RESULTS_DIR / "scripted_eval" / f"ante_{max_ante}_eval_results.json"
 
 
 def evaluate_bot(

@@ -31,7 +31,7 @@ def main() -> None:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=REPO_ROOT / "results" / "rl",
+        default=REPO_ROOT / "results" / "rl_training",
         help="Root directory for RL checkpoints and metrics.",
     )
     parser.add_argument("--eval-interval", type=int, default=25, help="Evaluate every N episodes.")

@@ -21,38 +21,39 @@ from balatro_mvp.rl_summary import (
 
 
 def main() -> None:
-    """Parse CLI arguments, summarize easy/hard seed results, and save CSV output."""
+    """Parse CLI arguments, summarize RL seed results, and save CSV output."""
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--easy",
+        "inputs",
         type=Path,
         nargs="*",
-        default=None,
-        help="Optional easy-preset comparison JSON files.",
-    )
-    parser.add_argument(
-        "--hard",
-        type=Path,
-        nargs="*",
-        default=None,
-        help="Optional hard-preset comparison JSON files.",
+        help=(
+            "Optional explicit ante_N_comparison_seed_N.json files. "
+            "If omitted, auto-discovers all matching files in results/rl_eval/."
+        ),
     )
     parser.add_argument(
         "--output-csv",
         type=Path,
-        default=REPO_ROOT / "results" / "rl_summary" / "seed_summary.csv",
+        default=REPO_ROOT / "results" / "rl_eval" / "seed_summary.csv",
         help="CSV path for the aggregated summary.",
     )
     args = parser.parse_args()
 
-    default_paths = default_seed_result_paths(REPO_ROOT)
-    easy_paths = args.easy if args.easy is not None and args.easy else default_paths["easy"]
-    hard_paths = args.hard if args.hard is not None and args.hard else default_paths["hard"]
-    if not easy_paths and not hard_paths:
-        raise ValueError("No seed comparison JSON files were found to summarize.")
+    if args.inputs:
+        result_paths = args.inputs
+    else:
+        discovered = default_seed_result_paths(REPO_ROOT)
+        result_paths = [p for paths in discovered.values() for p in paths]
 
-    summary_rows = summarize_seed_result_paths(list(easy_paths) + list(hard_paths))
+    if not result_paths:
+        raise ValueError(
+            "No seed comparison JSON files found. "
+            "Run evaluate_rl_qbot.py first, or pass files explicitly."
+        )
+
+    summary_rows = summarize_seed_result_paths(list(result_paths))
     write_seed_summary_csv(summary_rows, args.output_csv)
 
     print(format_summary_table(summary_rows))

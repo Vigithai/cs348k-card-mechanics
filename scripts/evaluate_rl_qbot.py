@@ -31,13 +31,13 @@ from balatro_mvp.rl import load_q_network_from_checkpoint
 
 
 BotFactory = Callable[[random.Random], object]
-RESULTS_DIR = REPO_ROOT / "results" / "rl"
+RESULTS_DIR = REPO_ROOT / "results" / "rl_eval"
 
 
-def default_output_path(max_ante: int) -> Path:
+def default_output_path(max_ante: int, seed: int) -> Path:
     """Return the default comparison-results path."""
 
-    return RESULTS_DIR / f"ante_{max_ante}_comparison.json"
+    return RESULTS_DIR / f"ante_{max_ante}_comparison_seed_{seed}.json"
 
 
 def evaluate_bot(
@@ -171,6 +171,12 @@ def main() -> None:
     parser.add_argument("--games", type=int, default=25, help="Number of seeded games to run per bot.")
     parser.add_argument("--base-seed", type=int, default=0, help="Starting seed for simulation runs.")
     parser.add_argument(
+        "--seed",
+        type=int,
+        default=0,
+        help="Training seed index used to name the output file (ante_N_comparison_seed_N.json).",
+    )
+    parser.add_argument(
         "--max-ante",
         type=int,
         default=DEFAULT_MAX_ANTE,
@@ -215,7 +221,7 @@ def main() -> None:
         raise ValueError("--pruned-candidate-pool-size must be positive.")
 
     max_ante = args.max_ante
-    output_path = args.output if args.output is not None else default_output_path(max_ante)
+    output_path = args.output if args.output is not None else default_output_path(max_ante, args.seed)
     rl_q_network, _ = load_q_network_from_checkpoint(args.checkpoint, device=args.device)
 
     bot_factories: list[tuple[str, BotFactory]] = [

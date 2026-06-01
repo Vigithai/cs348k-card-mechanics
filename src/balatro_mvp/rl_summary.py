@@ -29,11 +29,11 @@ PLOT_SPECS: tuple[tuple[str, str, str], ...] = (
 
 
 def default_seed_result_paths(repo_root: Path) -> dict[str, list[Path]]:
-    """Return ante-grouped seed-result JSON files in sorted order."""
+    """Return ante-grouped seed-result JSON files from results/rl_eval/, sorted."""
 
-    summary_dir = repo_root / "results" / "rl_summary"
+    eval_dir = repo_root / "results" / "rl_eval"
     grouped_paths: dict[str, list[Path]] = defaultdict(list)
-    for result_path in sorted(summary_dir.glob("ante_*_comparison_seed_*.json")):
+    for result_path in sorted(eval_dir.glob("ante_*_comparison_seed_*.json")):
         ante_label, _ = parse_seed_result_metadata(result_path)
         grouped_paths[ante_label].append(result_path)
     return dict(grouped_paths)
