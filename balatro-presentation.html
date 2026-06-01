@@ -510,12 +510,85 @@ img, .image-container {
 }
 
 /* ===========================================
-   SLIDE 4 — SCRIPTED BASELINES
+   SLIDE 4 — MOTIVATING QUESTIONS
    =========================================== */
 #slide-4 .slide-content {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2vh, 24px);
+  justify-content: center;
+}
+
+.s4-q-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.2vw, 2.8rem);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.05;
+}
+.s4-q-header h2 em { font-style: italic; color: var(--accent-warm); }
+.s4-q-header p {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.4);
+  margin-top: 6px;
+}
+
+.s4-questions {
   display: grid;
-  grid-template-rows: auto 1fr;
-  gap: var(--content-gap);
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1.6vw, 20px);
+}
+
+.q-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(212,165,116,0.1);
+  border-radius: 4px;
+  padding: clamp(12px, 1.8vh, 20px) clamp(14px, 1.8vw, 22px);
+  display: flex;
+  gap: clamp(10px, 1.2vw, 16px);
+  align-items: flex-start;
+}
+
+.q-num {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(212,165,116,0.3);
+  line-height: 1;
+  flex-shrink: 0;
+  min-width: clamp(28px, 3vw, 40px);
+}
+
+.q-body { flex: 1; }
+
+.q-title {
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: clamp(4px, 0.6vh, 8px);
+  line-height: 1.3;
+}
+
+.q-text {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.45);
+  line-height: 1.6;
+}
+
+.q-intuition {
+  font-family: var(--font-body);
+  font-size: clamp(0.62rem, 0.88vw, 0.74rem);
+  font-weight: 300;
+  color: var(--accent-warm);
+  opacity: 0.7;
+  margin-top: clamp(4px, 0.5vh, 7px);
+  font-style: italic;
 }
 
 .s4-header h2 {
@@ -977,225 +1050,354 @@ img, .image-container {
 @keyframes pulse { 0%,100%{opacity:0.18} 50%{opacity:0.35} }
 
 /* ===========================================
-   SLIDE 7 — TRACE EXAMPLE
+   SLIDE 7 — ANALYSIS FINDINGS
    =========================================== */
 #slide-7 .slide-content {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: clamp(28px, 4.5vw, 64px);
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vh, 24px);
+  justify-content: center;
 }
 
-.s7t-left h2 {
+.s7-header { margin-bottom: clamp(8px, 1.5vh, 18px); }
+.s7-header h2 {
   font-family: var(--font-display);
-  font-size: var(--h2-size);
+  font-size: clamp(1.6rem, 3.2vw, 2.8rem);
   font-weight: 400;
   color: var(--text-primary);
   line-height: 1.05;
-  margin-bottom: clamp(6px, 1vh, 12px);
 }
-.s7t-left h2 em { font-style: italic; color: var(--accent-warm); }
+.s7-header h2 em { font-style: italic; color: var(--accent-warm); }
 
-.trace-meta {
-  font-family: var(--font-body);
-  font-size: var(--small-size);
-  font-weight: 300;
-  color: rgba(232,228,223,0.35);
-  margin-bottom: clamp(12px, 2vh, 20px);
-}
-
-/* Step timeline */
-.trace-timeline {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(4px, 0.7vh, 8px);
-  position: relative;
-}
-
-/* Hunt zone bracket */
-.hunt-zone {
-  border-left: 2px solid rgba(212,165,116,0.3);
-  margin-left: clamp(4px, 0.8vw, 10px);
-  padding-left: clamp(8px, 1.2vw, 16px);
-  position: relative;
-}
-.hunt-zone::before {
-  content: 'HUNT';
-  position: absolute;
-  left: calc(-1 * clamp(34px, 4vw, 50px));
-  top: 50%;
-  transform: translateY(-50%) rotate(-90deg);
-  font-family: var(--font-body);
-  font-size: clamp(0.45rem, 0.65vw, 0.55rem);
-  letter-spacing: 0.22em;
-  color: rgba(212,165,116,0.4);
-  white-space: nowrap;
-}
-
-.trace-step {
+.s7-findings {
   display: grid;
-  grid-template-columns: clamp(18px, 2vw, 26px) clamp(52px, 7vw, 72px) 1fr clamp(52px, 7vw, 80px);
-  align-items: center;
-  gap: clamp(6px, 1vw, 12px);
-  padding: clamp(4px, 0.6vh, 7px) clamp(8px, 1vw, 12px);
-  border-radius: 3px;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(10px, 1.6vw, 20px);
+}
+
+.finding-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(212,165,116,0.12);
+  border-radius: 4px;
+  padding: clamp(12px, 1.8vh, 22px) clamp(14px, 1.8vw, 22px);
+  display: flex;
+  gap: clamp(10px, 1.2vw, 16px);
+  align-items: flex-start;
+}
+
+.finding-num {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 300;
+  font-style: italic;
+  color: rgba(212,165,116,0.35);
+  line-height: 1;
+  flex-shrink: 0;
+  min-width: clamp(22px, 2.5vw, 32px);
+}
+
+.finding-body { flex: 1; }
+
+.finding-title {
   font-family: var(--font-body);
   font-size: var(--small-size);
-}
-.trace-step.step-normal  { background: rgba(232,228,223,0.02); }
-.trace-step.step-discard { background: rgba(212,165,116,0.04); }
-.trace-step.step-payoff  { background: rgba(212,165,116,0.1); border: 1px solid rgba(212,165,116,0.2); }
-
-.ts-turn { color: rgba(232,228,223,0.25); font-size: clamp(0.55rem,0.75vw,0.65rem); }
-
-.ts-action {
-  font-size: clamp(0.55rem, 0.8vw, 0.68rem);
-  letter-spacing: 0.12em;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  font-weight: 400;
-}
-.ts-action.play    { color: #7ec8a0; }
-.ts-action.discard { color: rgba(212,165,116,0.6); }
-
-.ts-cards {
-  color: rgba(232,228,223,0.55);
-  font-size: clamp(0.6rem, 0.85vw, 0.72rem);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.ts-cards .r { color: #e07070; }
-.ts-cards .b { color: rgba(232,228,223,0.8); }
-
-.ts-result {
-  text-align: right;
-  font-size: clamp(0.6rem, 0.85vw, 0.72rem);
-}
-.ts-chips { color: #7ec8a0; font-weight: 400; }
-.ts-hand  { color: var(--accent-warm); font-size: clamp(0.52rem, 0.72vw, 0.62rem); margin-top: 1px; }
-.ts-none  { color: rgba(232,228,223,0.18); }
-
-/* Chip progress bar under timeline */
-.chip-progress {
-  margin-top: clamp(8px, 1.2vh, 14px);
-  display: flex;
-  align-items: center;
-  gap: clamp(8px, 1vw, 14px);
-}
-.cp-track {
-  flex: 1;
-  height: 4px;
-  background: rgba(232,228,223,0.07);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.cp-fill {
-  height: 100%;
-  background: linear-gradient(90deg, rgba(212,165,116,0.5), var(--accent-warm));
-  border-radius: 2px;
-  width: 0%;
-  transition: width 1s var(--ease-expo);
-}
-.slide.visible .cp-fill { width: var(--fill-pct); }
-.cp-label {
-  font-family: var(--font-body);
-  font-size: clamp(0.55rem, 0.75vw, 0.65rem);
-  font-weight: 300;
-  color: rgba(232,228,223,0.3);
-  white-space: nowrap;
+  color: var(--accent-warm);
+  margin-bottom: clamp(4px, 0.6vh, 7px);
 }
 
-/* Right col — analyzer logic */
-.s7t-right h3 {
+.finding-stat {
   font-family: var(--font-display);
-  font-size: var(--h3-size);
+  font-size: clamp(0.95rem, 1.7vw, 1.4rem);
   font-weight: 400;
-  font-style: italic;
   color: var(--text-primary);
   line-height: 1.2;
-  margin-bottom: clamp(12px, 2vh, 20px);
+  margin-bottom: clamp(4px, 0.6vh, 8px);
+}
+.finding-stat em { font-style: italic; color: var(--accent-warm); }
+
+.finding-note {
+  font-family: var(--font-body);
+  font-size: clamp(0.68rem, 0.95vw, 0.8rem);
+  font-weight: 300;
+  color: rgba(232,228,223,0.45);
+  line-height: 1.6;
 }
 
-.analyzer-step {
+.finding-fig {
+  display: none; /* hidden — full figures now live on dedicated slides */
+}
+
+/* ===========================================
+   VISUAL-FIRST SLIDES (6-9) — full-bleed figure + headline
+   =========================================== */
+.visual-slide {
   display: flex;
-  gap: clamp(10px, 1.4vw, 16px);
-  align-items: flex-start;
-  margin-bottom: clamp(8px, 1.4vh, 14px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 2vh, 28px);
+  padding: var(--slide-padding);
+  text-align: center;
 }
-.az-num {
+
+.visual-headline {
   font-family: var(--font-display);
-  font-style: italic;
-  font-size: clamp(1rem, 1.8vw, 1.4rem);
-  color: var(--accent-warm);
-  flex-shrink: 0;
-  line-height: 1;
-  padding-top: 2px;
-  min-width: clamp(16px, 1.8vw, 24px);
+  font-size: clamp(1.6rem, 3.5vw, 3rem);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.1;
+  max-width: 80ch;
 }
-.az-text {
+.visual-headline em { font-style: italic; color: var(--accent-warm); }
+
+.visual-sub {
   font-family: var(--font-body);
   font-size: var(--small-size);
   font-weight: 300;
-  color: rgba(232,228,223,0.6);
-  line-height: 1.6;
+  color: rgba(232,228,223,0.4);
+  margin-top: -8px;
 }
-.az-text strong { color: rgba(232,228,223,0.85); font-weight: 400; }
 
-/* Pattern frequency mini-table */
-.pattern-mini {
-  margin-top: clamp(12px, 2vh, 20px);
-  border-top: 1px solid rgba(212,165,116,0.12);
-  padding-top: clamp(10px, 1.5vh, 16px);
+.visual-fig-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-height: 62vh;
+  overflow: hidden;
 }
-.pm-label {
+
+.visual-fig-wrap img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 6px;
+  object-fit: contain;
+}
+
+/* ===========================================
+   SLIDE 2 — THE GAME (ante/blind visual)
+   =========================================== */
+#slide-2 .slide-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.5vh, 36px);
+  text-align: center;
+}
+
+.game-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.05;
+}
+.game-title em { font-style: italic; color: var(--accent-warm); }
+
+.ante-progression {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 20px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.blind-node {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(212,165,116,0.15);
+  border-radius: 6px;
+  padding: clamp(10px, 1.5vh, 18px) clamp(14px, 2vw, 24px);
+  text-align: center;
+  min-width: clamp(80px, 10vw, 120px);
+}
+.blind-node.boss { border-color: rgba(212,165,116,0.4); background: rgba(212,165,116,0.06); }
+
+.blind-type {
   font-family: var(--font-body);
   font-size: var(--label-size);
   font-weight: 300;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--accent-warm);
-  margin-bottom: clamp(8px, 1.2vh, 12px);
+  color: rgba(232,228,223,0.4);
+  margin-bottom: 6px;
 }
-.pm-row {
-  display: flex;
-  align-items: center;
-  gap: clamp(8px, 1vw, 14px);
-  margin-bottom: clamp(4px, 0.6vh, 6px);
+.blind-type.boss-label { color: var(--accent-warm); }
+
+.blind-chips {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
 }
-.pm-name {
+
+.blind-arrow {
+  font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+  color: rgba(212,165,116,0.3);
+  flex-shrink: 0;
+}
+
+.ante-label {
   font-family: var(--font-body);
-  font-size: clamp(0.6rem, 0.85vw, 0.72rem);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.35);
+}
+
+.scoring-grid {
+  display: flex;
+  gap: clamp(8px, 1.2vw, 16px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.score-pill {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(232,228,223,0.08);
+  color: rgba(232,228,223,0.5);
+}
+.score-pill.premium { border-color: rgba(212,165,116,0.3); color: var(--accent-warm); }
+
+/* ===========================================
+   SLIDE 3 — PERFORMANCE COMPARISON
+   =========================================== */
+#slide-3 .slide-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.5vh, 32px);
+  text-align: center;
+}
+
+.perf-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(20px, 4vw, 60px);
+  height: clamp(200px, 35vh, 320px);
+}
+
+.perf-bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.perf-bar {
+  width: clamp(60px, 10vw, 110px);
+  border-radius: 4px 4px 0 0;
+  transition: height 1s var(--ease-expo);
+  position: relative;
+}
+.perf-bar.human  { background: linear-gradient(180deg, #7ec8a0, rgba(126,200,160,0.7)); height: 0%; }
+.perf-bar.scripted { background: linear-gradient(180deg, #6a8fad, rgba(106,143,173,0.7)); height: 0%; }
+.perf-bar.rl { background: linear-gradient(180deg, var(--accent-warm), rgba(212,165,116,0.7)); height: 0%; }
+.slide.visible .perf-bar.human   { height: clamp(200px,35vh,320px); }
+.slide.visible .perf-bar.scripted { height: calc(clamp(200px,35vh,320px) * 0.336); }
+.slide.visible .perf-bar.rl { height: calc(clamp(200px,35vh,320px) * 0.708); }
+
+.perf-pct {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3vw, 2.4rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.perf-pct.rl-pct { color: var(--accent-warm); }
+
+.perf-label {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
   font-weight: 300;
   color: rgba(232,228,223,0.5);
-  min-width: clamp(80px, 10vw, 120px);
+  text-align: center;
+  max-width: clamp(80px, 12vw, 140px);
 }
-.pm-bar-wrap {
-  flex: 1;
-  height: 3px;
-  background: rgba(232,228,223,0.06);
-  border-radius: 2px;
-}
-.pm-bar {
-  height: 3px;
-  border-radius: 2px;
-  background: var(--accent-warm);
-  opacity: 0.5;
-  width: 0%;
-  transition: width 0.9s var(--ease-expo);
-}
-.slide.visible .pm-bar { width: var(--w, 0%); }
 
-.pm-row:nth-child(1) .pm-bar { transition-delay: 0.1s; }
-.pm-row:nth-child(2) .pm-bar { transition-delay: 0.22s; }
-.pm-row:nth-child(3) .pm-bar { transition-delay: 0.34s; }
-.pm-row:nth-child(4) .pm-bar { transition-delay: 0.46s; }
-.pm-count {
-  font-family: var(--font-display);
-  font-size: clamp(0.75rem, 1.1vw, 0.9rem);
-  color: rgba(232,228,223,0.35);
-  min-width: 24px;
-  text-align: right;
+.perf-note {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.3);
+  max-width: 60ch;
 }
+
+/* ===========================================
+   SLIDE 5 — ANALYSIS PIPELINE
+   =========================================== */
+#slide-5 .slide-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.5vh, 36px);
+  text-align: center;
+}
+
+.pipeline {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.5vw, 20px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pipe-node {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(212,165,116,0.15);
+  border-radius: 6px;
+  padding: clamp(12px, 1.8vh, 20px) clamp(16px, 2vw, 28px);
+  text-align: center;
+  min-width: clamp(100px, 14vw, 160px);
+}
+
+.pipe-label {
+  font-family: var(--font-body);
+  font-size: var(--label-size);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent-warm);
+  font-weight: 300;
+  margin-bottom: 6px;
+}
+
+.pipe-detail {
+  font-family: var(--font-body);
+  font-size: clamp(0.62rem, 0.88vw, 0.75rem);
+  font-weight: 300;
+  color: rgba(232,228,223,0.4);
+  line-height: 1.5;
+}
+
+.pipe-arrow {
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  color: rgba(212,165,116,0.3);
+  flex-shrink: 0;
+}
+
+.hunt-logic {
+  background: rgba(212,165,116,0.06);
+  border: 1px solid rgba(212,165,116,0.2);
+  border-radius: 6px;
+  padding: clamp(12px, 1.8vh, 20px) clamp(20px, 3vw, 40px);
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: 300;
+  color: rgba(232,228,223,0.7);
+  line-height: 1.7;
+  max-width: 70ch;
+}
+.hunt-logic strong { color: var(--accent-warm); font-weight: 400; }
 
 </style>
 </head>
@@ -1221,7 +1423,7 @@ img, .image-container {
   <div class="glow glow-b"></div>
   <div class="glow glow-c"></div>
   <div class="v-line" style="left: clamp(18px,2.5vw,36px); top:15%; bottom:15%;"></div>
-  <div class="slide-counter">01 / 08</div>
+  <div class="slide-counter">01 / 09</div>
 
   <div class="s1-left">
     <p class="eyebrow reveal" contenteditable="false">CS348K · Final Project</p>
@@ -1231,8 +1433,8 @@ img, .image-container {
 
   <div class="s1-right reveal-right">
     <div class="s1-stat">
-      <div class="s1-stat-num" contenteditable="false">54<em>%</em></div>
-      <div class="s1-stat-label">RLQBot win rate · easy</div>
+      <div class="s1-stat-num" contenteditable="false">35<em>%</em></div>
+      <div class="s1-stat-label">RLQBot win rate · ante 1</div>
     </div>
     <div class="s1-divider"></div>
     <div class="s1-stat">
@@ -1253,87 +1455,94 @@ img, .image-container {
 <!-- ============================================================
      SLIDE 2 — PROBLEM & GOAL
      ============================================================ -->
-<section class="slide" id="slide-2" aria-label="Problem and goal">
-  <div class="glow glow-a" style="opacity:0.6;"></div>
-  <div class="glow glow-bl"></div>
-  <div class="slide-counter">02 / 08</div>
+<!-- ============================================================
+     SLIDE 2 — THE GAME
+     ============================================================ -->
+<section class="slide" id="slide-2" aria-label="The game">
+  <div class="glow glow-a" style="opacity:0.5;"></div>
+  <div class="glow glow-c"></div>
+  <div class="slide-counter">02 / 09</div>
 
   <div class="slide-content">
-    <div class="s2-col">
-      <p class="eyebrow reveal">The Problem</p>
-      <h2 class="reveal">Hard to reason<br>about <em>strategy</em></h2>
-      <p class="s2-body reveal">Balatro is a roguelike poker game where scoring scales multiplicatively. The right discard or hand choice can mean the difference between clearing a round and losing the run — but it's difficult to reason systematically about what's actually strong.</p>
-      <blockquote class="s2-highlight reveal" contenteditable="false">Get better at Balatro, within the game rules, without cheating.</blockquote>
-    </div>
+    <p class="eyebrow reveal">The Game</p>
+    <h2 class="game-title reveal">Score enough chips to <em>clear each blind</em></h2>
 
-    <div class="s2-col reveal-right">
-      <p class="eyebrow">The Approach</p>
-      <h2>Bot as <em>teacher</em></h2>
-      <p class="s2-body">Build a simulator, run agents of increasing sophistication, and analyze their decision traces. The bot doesn't play <em>for</em> us — it plays <em>ahead</em> of us, surfacing strategies a human might not discover through trial and error alone.</p>
-      <div class="io-grid">
-        <div class="io-cell">
-          <div class="io-cell-label">Input</div>
-          <div class="io-cell-val">Game state: hand, deck, chips scored, resources left</div>
-        </div>
-        <div class="io-cell">
-          <div class="io-cell-label">Output</div>
-          <div class="io-cell-val">Win rate, chip scores, and annotated strategy traces</div>
-        </div>
-        <div class="io-cell">
-          <div class="io-cell-label">Constraint</div>
-          <div class="io-cell-val">Standard 52-card rules; no lookahead into draw order</div>
-        </div>
-        <div class="io-cell">
-          <div class="io-cell-label">Goal</div>
-          <div class="io-cell-val">Pass 2 rounds: 300 chips, then 500 chips</div>
-        </div>
+    <div class="ante-progression reveal">
+      <div class="ante-label">Ante 1</div>
+      <div class="blind-node">
+        <div class="blind-type">Small</div>
+        <div class="blind-chips">300</div>
+      </div>
+      <div class="blind-arrow">→</div>
+      <div class="blind-node">
+        <div class="blind-type">Big</div>
+        <div class="blind-chips">450</div>
+      </div>
+      <div class="blind-arrow">→</div>
+      <div class="blind-node boss">
+        <div class="blind-type boss-label">Boss</div>
+        <div class="blind-chips">600</div>
+      </div>
+      <div class="blind-arrow" style="color:rgba(232,228,223,0.1);">→→</div>
+      <div class="ante-label">Ante 2</div>
+      <div class="blind-node">
+        <div class="blind-type">Small</div>
+        <div class="blind-chips">800</div>
+      </div>
+      <div class="blind-arrow">→</div>
+      <div class="blind-node boss">
+        <div class="blind-type boss-label">Boss</div>
+        <div class="blind-chips">1600</div>
       </div>
     </div>
+
+    <div class="scoring-grid reveal">
+      <span class="score-pill">high card · 5</span>
+      <span class="score-pill">pair · 20</span>
+      <span class="score-pill">two pair · 40</span>
+      <span class="score-pill">three of a kind · 90</span>
+      <span class="score-pill premium">straight · 120+</span>
+      <span class="score-pill premium">flush · 136+</span>
+      <span class="score-pill premium">full house · 150+</span>
+      <span class="score-pill premium">four of a kind · 728+</span>
+    </div>
+
+    <p class="ante-label reveal" style="color:rgba(232,228,223,0.25);">4 hands · 4 discards per blind · standard 52-card deck · card chip values add to base score</p>
   </div>
 </section>
 
 
 <!-- ============================================================
-     SLIDE 3 — THE ENVIRONMENT
+     SLIDE 3 — PERFORMANCE COMPARISON
      ============================================================ -->
-<section class="slide" id="slide-3" aria-label="The environment">
-  <div class="glow glow-b" style="opacity:0.7;"></div>
+<section class="slide" id="slide-3" aria-label="Performance comparison">
+  <div class="glow glow-bl" style="opacity:0.6;"></div>
   <div class="glow glow-c"></div>
-  <div class="v-line" style="right: clamp(18px,2.5vw,36px); top:20%; bottom:20%; opacity:0.4;"></div>
-  <div class="slide-counter">03 / 08</div>
+  <div class="slide-counter">03 / 09</div>
 
   <div class="slide-content">
-    <div class="s3-header">
-      <p class="eyebrow reveal">System Design</p>
-      <h2 class="reveal">The Environment — <em>nouns, then verbs</em></h2>
-      <p class="reveal">Start with what exists; then describe what happens to it.</p>
-    </div>
+    <p class="eyebrow reveal">Results</p>
+    <h2 class="game-title reveal">The RL bot closes the gap to <em>human-level play</em></h2>
 
-    <div class="s3-body">
-      <div class="reveal">
-        <div class="s3-col-title">Nouns · State</div>
-        <ul class="noun-list">
-          <li data-tag="hand">7 cards visible to the agent each turn</li>
-          <li data-tag="unseen deck">remaining cards — counts known, order hidden</li>
-          <li data-tag="discard pile">spent cards, out of play for the round</li>
-          <li data-tag="action">play or discard 1–5 cards from hand</li>
-          <li data-tag="resources">hands left (4), discards left (4) per round</li>
-          <li data-tag="target">300 chips (round 1) · 500 chips (round 2)</li>
-        </ul>
+    <div class="perf-chart reveal">
+      <div class="perf-bar-group">
+        <div class="perf-pct">~50%</div>
+        <div class="perf-bar human"></div>
+        <div class="perf-label">Me<br>(human)</div>
       </div>
-
-      <div class="reveal">
-        <div class="s3-col-title">Verbs · Transitions</div>
-        <ul class="verb-list">
-          <li data-tag="play">score the poker hand → add chips → redraw</li>
-          <li data-tag="discard">remove cards → redraw · never ends the round</li>
-          <li data-tag="score">base_chips × mult from hand-type lookup table</li>
-          <li data-tag="win">chips_scored ≥ target before hands_left = 0</li>
-          <li data-tag="lose">hands exhausted before reaching target</li>
-          <li data-tag="next round">fresh deck, reset resources, higher target</li>
-        </ul>
+      <div class="perf-bar-group">
+        <div class="perf-pct">17%</div>
+        <div class="perf-bar scripted"></div>
+        <div class="perf-label">Best scripted bot</div>
+      </div>
+      <div class="perf-bar-group">
+        <div class="perf-pct rl-pct">35%</div>
+        <div class="perf-bar rl"></div>
+        <div class="perf-label">RLQBot<br>(learned)</div>
       </div>
     </div>
+
+    <p class="perf-note reveal">Win rate on ante 1 · 500 games · no full Balatro mechanics (no jokers, no shop)</p>
   </div>
 </section>
 
@@ -1341,89 +1550,48 @@ img, .image-container {
 <!-- ============================================================
      SLIDE 4 — SCRIPTED BASELINES
      ============================================================ -->
-<section class="slide" id="slide-4" aria-label="Scripted baselines">
+<section class="slide" id="slide-4" aria-label="Motivating questions">
   <div class="glow glow-a" style="opacity:0.5;"></div>
   <div class="glow glow-bl" style="opacity:0.5;"></div>
-  <div class="slide-counter">04 / 08</div>
+  <div class="slide-counter">04 / 09</div>
 
   <div class="slide-content">
-    <div class="s4-header">
-      <p class="eyebrow reveal">Baseline Progression</p>
-      <h2 class="reveal">Each step adds one <em>deliberate</em> policy improvement</h2>
-      <p class="reveal">Win rate on easy preset · 100 games per seed · 3 seeds averaged</p>
+    <div class="s4-q-header reveal">
+      <p class="eyebrow">Questions</p>
+      <h2>What can a bot <em>teach</em> us?</h2>
     </div>
 
-    <div class="bot-ladder">
-      <!-- RandomBot -->
-      <div class="bot-row reveal" style="transition-delay:0.1s;">
-        <div>
-          <div class="bot-name">RandomBot</div>
-          <div class="bot-desc">Uniform random over all legal actions</div>
+    <div class="s4-questions">
+      <div class="q-card reveal" style="transition-delay:0.1s;">
+        <div class="q-num">Q1</div>
+        <div class="q-body">
+          <div class="q-title">What hand sequences actually win?</div>
+          <div class="q-intuition">Do premium hands dominate, or does grinding pairs work just as well?</div>
         </div>
-        <div class="bot-bar-wrap">
-          <div class="bot-bar bot-bar-zero"></div>
-        </div>
-        <div class="bot-pct" style="color:rgba(232,228,223,0.2);">0%</div>
       </div>
 
-      <!-- StimBot -->
-      <div class="bot-row reveal" style="transition-delay:0.18s;">
-        <div>
-          <div class="bot-name">StimBot</div>
-          <div class="bot-desc">Always play highest-scoring immediate hand</div>
+      <div class="q-card reveal" style="transition-delay:0.2s;">
+        <div class="q-num">Q2</div>
+        <div class="q-body">
+          <div class="q-title">When does hunting pay off?</div>
+          <div class="q-intuition">Discarding is a bet — does the bot only take it when comfortable?</div>
         </div>
-        <div class="bot-bar-wrap">
-          <div class="bot-bar" style="--w:5%;"></div>
-        </div>
-        <div class="bot-pct">5%</div>
       </div>
 
-      <!-- DiscardLowestChipBot -->
-      <div class="bot-row reveal" style="transition-delay:0.26s;">
-        <div>
-          <div class="bot-name">DiscardLowestChipBot</div>
-          <div class="bot-desc">Play best hand; discard weakest cards if hand is low</div>
+      <div class="q-card reveal" style="transition-delay:0.3s;">
+        <div class="q-num">Q3</div>
+        <div class="q-body">
+          <div class="q-title">How does RL differ from the best scripted bot?</div>
+          <div class="q-intuition">They both win sometimes — do they win the same way?</div>
         </div>
-        <div class="bot-bar-wrap">
-          <div class="bot-bar" style="--w:8%;"></div>
-        </div>
-        <div class="bot-pct">8%</div>
       </div>
 
-      <!-- LookaheadDiscardBot -->
-      <div class="bot-row reveal" style="transition-delay:0.34s;">
-        <div>
-          <div class="bot-name">LookaheadDiscardBot</div>
-          <div class="bot-desc">Evaluate expected score after one discard + redraw</div>
+      <div class="q-card reveal" style="transition-delay:0.4s;">
+        <div class="q-num">Q4</div>
+        <div class="q-body">
+          <div class="q-title">What's the one rule a human can use?</div>
+          <div class="q-intuition">Do aggressive games win with more margin than conservative ones?</div>
         </div>
-        <div class="bot-bar-wrap">
-          <div class="bot-bar" style="--w:23%;"></div>
-        </div>
-        <div class="bot-pct">23%</div>
-      </div>
-
-      <!-- PrunedSampledLookaheadBot -->
-      <div class="bot-row reveal" style="transition-delay:0.42s;">
-        <div>
-          <div class="bot-name">PrunedSampledLookaheadBot</div>
-          <div class="bot-desc">Lookahead + flush-bias pruning of action space</div>
-        </div>
-        <div class="bot-bar-wrap">
-          <div class="bot-bar" style="--w:26%;"></div>
-        </div>
-        <div class="bot-pct">26%</div>
-      </div>
-
-      <!-- RLQBot -->
-      <div class="bot-row rl-row reveal" style="transition-delay:0.52s;">
-        <div>
-          <div class="bot-name">RLQBot ← learned policy</div>
-          <div class="bot-desc">DQN Q-network trained over 500 episodes</div>
-        </div>
-        <div class="bot-bar-wrap">
-          <div class="bot-bar" style="--w:54%;"></div>
-        </div>
-        <div class="bot-pct">54%</div>
       </div>
     </div>
   </div>
@@ -1433,53 +1601,39 @@ img, .image-container {
 <!-- ============================================================
      SLIDE 5 — WHY RL / ARCHITECTURE
      ============================================================ -->
-<section class="slide" id="slide-5" aria-label="Why RL">
+<section class="slide" id="slide-5" aria-label="Analysis pipeline">
   <div class="glow glow-a" style="opacity:0.55;"></div>
   <div class="glow glow-b"></div>
-  <div class="slide-counter">05 / 08</div>
+  <div class="slide-counter">05 / 09</div>
 
   <div class="slide-content">
-    <div class="s5-left">
-      <p class="eyebrow reveal">Motivation</p>
-      <h2 class="reveal">Why move to <em>learned</em> policy?</h2>
+    <p class="eyebrow reveal">How we analyzed</p>
+    <h2 class="game-title reveal">From game traces to <em>strategy insights</em></h2>
 
-      <div class="s5-point reveal">
-        <div class="s5-point-num">i.</div>
-        <div class="s5-point-text">Scripted bots encode human intuitions. A learned policy can discover non-obvious trade-offs — like when <em>not</em> to chase a flush — that heuristics miss.</div>
+    <div class="pipeline reveal">
+      <div class="pipe-node">
+        <div class="pipe-label">Simulate</div>
+        <div class="pipe-detail">500 games each<br>RLQBot + scripted</div>
       </div>
-      <div class="s5-point reveal">
-        <div class="s5-point-num">ii.</div>
-        <div class="s5-point-text">The action space is large (up to C(7,5)×2 actions per turn). Pruning helps, but a Q-function can learn to deprioritize weak actions rather than hard-cut them.</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-node">
+        <div class="pipe-label">Save traces</div>
+        <div class="pipe-detail">every action: hand before,<br>cards played, chips gained</div>
       </div>
-      <div class="s5-point reveal">
-        <div class="s5-point-num">iii.</div>
-        <div class="s5-point-text">Reward signal is clean: chips scored per action is direct, dense, and well-defined. This is an ideal RL testbed.</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-node">
+        <div class="pipe-label">Filter wins</div>
+        <div class="pipe-detail">177 RL wins<br>84 scripted wins</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-node">
+        <div class="pipe-label">Analyze</div>
+        <div class="pipe-detail">sequence patterns,<br>discard behaviors</div>
       </div>
     </div>
 
-    <div class="s5-right reveal-right">
-      <div class="s5-arch-label">RLQBot Architecture</div>
-
-      <div class="s5-arch-item">
-        <div class="s5-arch-dot"></div>
-        <div class="s5-arch-text"><strong>State features</strong> — hand composition, outs to each hand type, chips scored, resources remaining, round target gap</div>
-      </div>
-      <div class="s5-arch-item">
-        <div class="s5-arch-dot"></div>
-        <div class="s5-arch-text"><strong>Action features</strong> — hand type achievable, score estimate, cards used, discard vs play flag</div>
-      </div>
-      <div class="s5-arch-item">
-        <div class="s5-arch-dot"></div>
-        <div class="s5-arch-text"><strong>Network</strong> — small PyTorch Q-network; state × action → scalar Q-value</div>
-      </div>
-      <div class="s5-arch-item">
-        <div class="s5-arch-dot"></div>
-        <div class="s5-arch-text"><strong>Training</strong> — DQN-style with replay buffer; ε-greedy exploration; 500 episodes × 3 seeds</div>
-      </div>
-      <div class="s5-arch-item">
-        <div class="s5-arch-dot"></div>
-        <div class="s5-arch-text"><strong>Reward</strong> — chips gained per action; round completion bonus</div>
-      </div>
+    <div class="hunt-logic reveal">
+      <strong>How we detect intent:</strong> count consecutive discards — 2+ in a row = a hunt is underway. The hand type played <em>immediately after</em> reveals what the bot was building toward.
     </div>
   </div>
 </section>
@@ -1488,264 +1642,77 @@ img, .image-container {
 <!-- ============================================================
      SLIDE 6 — RESULTS
      ============================================================ -->
-<section class="slide" id="slide-6" aria-label="Results">
-  <div class="glow glow-bl" style="opacity:0.7;"></div>
-  <div class="glow glow-c"></div>
-  <div class="slide-counter">06 / 08</div>
+<!-- ============================================================
+     SLIDE 6 — Q1 FINDING
+     ============================================================ -->
+<section class="slide" id="slide-6" aria-label="Q1: Setup then strike">
+  <div class="glow glow-a" style="opacity:0.4;"></div>
+  <div class="glow glow-bl" style="opacity:0.4;"></div>
+  <div class="slide-counter">06 / 09</div>
 
-  <div class="slide-content">
-    <div class="s6-header">
-      <p class="eyebrow reveal">Evaluation</p>
-      <h2 class="reveal">RL clears easy — <em>reward shaping closes the hard gap</em></h2>
-      <p class="reveal">Key question: does a learned policy beat the best scripted baseline? And does it generalize to harder conditions?</p>
-    </div>
-
-    <div class="s6-grid">
-      <div class="s6-panel featured reveal">
-        <div class="s6-panel-label">Easy Preset · Win Rate</div>
-        <div class="s6-stat-row">
-          <div class="s6-bot-name rl">RLQBot</div>
-          <div class="s6-bot-val rl">54%</div>
-        </div>
-        <div class="s6-stat-row">
-          <div class="s6-bot-name">PrunedSampledLookahead</div>
-          <div class="s6-bot-val">26%</div>
-        </div>
-        <div class="s6-stat-row">
-          <div class="s6-bot-name">LookaheadDiscardBot</div>
-          <div class="s6-bot-val">23%</div>
-        </div>
-        <div class="s6-stat-row">
-          <div class="s6-bot-name">DiscardLowestChipBot</div>
-          <div class="s6-bot-val">8%</div>
-        </div>
-        <div class="s6-note">RL doubles the best scripted win rate on easy. The margin is consistent across all 3 seeds.</div>
-      </div>
-
-      <div class="reveal" style="display:flex;flex-direction:column;gap:clamp(12px,1.8vh,20px);">
-        <div class="s6-panel">
-          <div class="s6-panel-label">Hard Preset · Win Rate</div>
-          <div class="s6-stat-row">
-            <div class="s6-bot-name rl">RLQBot (shaped)</div>
-            <div class="s6-bot-val rl">3.3%</div>
-          </div>
-          <div class="s6-stat-row">
-            <div class="s6-bot-name">PrunedSampledLookahead</div>
-            <div class="s6-bot-val">3.0%</div>
-          </div>
-          <div class="s6-stat-row">
-            <div class="s6-bot-name dim">RLQBot (unshaned)</div>
-            <div class="s6-bot-val dim">2.3%</div>
-          </div>
-          <div class="s6-note">Reward shaping (+300 round-win bonus) corrects the objective misalignment and lifts RL above the scripted best.</div>
-        </div>
-
-        <div class="s6-panel featured">
-          <div class="s6-panel-label">Hard Preset · Avg Final Chips</div>
-          <div class="s6-stat-row">
-            <div class="s6-bot-name dim">RLQBot (unshaned)</div>
-            <div class="s6-bot-val dim">234</div>
-          </div>
-          <div class="s6-stat-row">
-            <div class="s6-bot-name">PrunedSampledLookahead</div>
-            <div class="s6-bot-val">204</div>
-          </div>
-          <div class="s6-stat-row">
-            <div class="s6-bot-name rl">RLQBot (shaped)</div>
-            <div class="s6-bot-val rl">195</div>
-          </div>
-          <div class="s6-note">Shaped agent scores fewer chips on average — it traded chip-farming for threshold-clearing, exactly as intended.</div>
-        </div>
-      </div>
+  <div class="slide-content visual-slide">
+    <p class="eyebrow reveal">Q1 · Hand sequences</p>
+    <h2 class="visual-headline reveal">RL learned to <em>bank chips, then hunt</em> — scripted bots just grind</h2>
+    <p class="visual-sub reveal">top RL bigram: two_pair → flush (104×) &nbsp;·&nbsp; top scripted: pair → pair (27×)</p>
+    <div class="visual-fig-wrap reveal">
+      <img src="results/figures/analysis_q1_ngrams.png" alt="Hand sequence bigrams: RL vs scripted bot">
     </div>
   </div>
 </section>
 
 
 <!-- ============================================================
-     SLIDE 7 — TRACE EXAMPLE: BOT AS TEACHER
+     SLIDE 7 — Q2 FINDING
      ============================================================ -->
-<section class="slide" id="slide-7" aria-label="Trace example: bot as teacher">
-  <div class="glow glow-a" style="opacity:0.5;"></div>
-  <div class="glow glow-bl"></div>
-  <div class="slide-counter">07 / 08</div>
+<section class="slide" id="slide-7" aria-label="Q2: Hunting is principled">
+  <div class="glow glow-a" style="opacity:0.4;"></div>
+  <div class="glow glow-c"></div>
+  <div class="slide-counter">07 / 09</div>
 
-  <div class="slide-content">
-
-    <!-- Left: annotated trace timeline -->
-    <div class="s7t-left reveal">
-      <p class="eyebrow">Trace — Game 179, Round 1</p>
-      <h2>Bank chips, <em>then hunt</em></h2>
-      <p class="trace-meta">Target: 150 chips &nbsp;·&nbsp; 6 steps &nbsp;·&nbsp; seed 179</p>
-
-      <div class="trace-timeline">
-
-        <!-- t0: normal play -->
-        <div class="trace-step step-normal">
-          <span class="ts-turn">t0</span>
-          <span class="ts-action play">play</span>
-          <span class="ts-cards">
-            <span class="b">10♠</span> <span class="b">8♠</span> <span class="b">K♣</span>
-            <span class="r">8♥</span> <span class="b">K♠</span>
-          </span>
-          <span class="ts-result">
-            <div class="ts-chips">+40</div>
-            <div class="ts-hand">two pair</div>
-          </span>
-        </div>
-
-        <!-- t1: normal play -->
-        <div class="trace-step step-normal">
-          <span class="ts-turn">t1</span>
-          <span class="ts-action play">play</span>
-          <span class="ts-cards">
-            <span class="r">2♥</span> <span class="r">3♥</span> <span class="b">A♠</span>
-            <span class="r">2♦</span> <span class="b">3♠</span>
-          </span>
-          <span class="ts-result">
-            <div class="ts-chips">+40</div>
-            <div class="ts-hand">two pair</div>
-          </span>
-        </div>
-
-        <!-- hunt zone: t2–t4 -->
-        <div class="hunt-zone">
-          <div class="trace-step step-discard">
-            <span class="ts-turn">t2</span>
-            <span class="ts-action discard">discard</span>
-            <span class="ts-cards">
-              <span class="b">Q♠</span> <span class="b">4♠</span> <span class="b">6♠</span>
-              <span class="r">J♦</span> <span class="r">A♦</span>
-            </span>
-            <span class="ts-result"><div class="ts-none">—</div></span>
-          </div>
-          <div class="trace-step step-discard">
-            <span class="ts-turn">t3</span>
-            <span class="ts-action discard">discard</span>
-            <span class="ts-cards">
-              <span class="r">10♥</span> <span class="r">A♥</span> <span class="r">6♦</span>
-              <span class="r">Q♦</span> <span class="b">7♠</span>
-            </span>
-            <span class="ts-result"><div class="ts-none">—</div></span>
-          </div>
-          <div class="trace-step step-discard">
-            <span class="ts-turn">t4</span>
-            <span class="ts-action discard">discard</span>
-            <span class="ts-cards">
-              <span class="b">2♠</span> <span class="b">3♣</span> <span class="r">K♦</span>
-              <span class="b">2♣</span> <span class="b">J♣</span>
-            </span>
-            <span class="ts-result"><div class="ts-none">—</div></span>
-          </div>
-        </div>
-
-        <!-- t5: payoff -->
-        <div class="trace-step step-payoff">
-          <span class="ts-turn">t5</span>
-          <span class="ts-action play">play</span>
-          <span class="ts-cards">
-            <span class="r">7♦</span> <span class="b">4♣</span> <span class="b">8♣</span>
-            <span class="r">6♥</span> <span class="b">5♠</span>
-          </span>
-          <span class="ts-result">
-            <div class="ts-chips">+120</div>
-            <div class="ts-hand">straight ✓</div>
-          </span>
-        </div>
-
-      </div><!-- /trace-timeline -->
-
-      <!-- Chip progress: 0 → 80 → 200 -->
-      <div class="chip-progress">
-        <span class="cp-label">0</span>
-        <div class="cp-track">
-          <div class="cp-fill" style="--fill-pct: 100%;"></div>
-        </div>
-        <span class="cp-label">200 / 150 ✓</span>
-      </div>
-    </div><!-- /s7t-left -->
-
-    <!-- Right: how the analyzer works -->
-    <div class="s7t-right reveal-right">
-      <p class="eyebrow">How the analyzer works</p>
-      <h3>Discard counting<br>→ intent inference</h3>
-
-      <div class="analyzer-step">
-        <div class="az-num">i.</div>
-        <div class="az-text">Count <strong>consecutive discards</strong> — two or more in a row signals a hunt is underway.</div>
-      </div>
-      <div class="analyzer-step">
-        <div class="az-num">ii.</div>
-        <div class="az-text">The <strong>hand type played immediately after</strong> the discard run reveals the hunt target — straight, flush, or full house.</div>
-      </div>
-      <div class="analyzer-step">
-        <div class="az-num">iii.</div>
-        <div class="az-text">Score the game by <strong>what was hunted, whether it succeeded, and how many discards it cost</strong> — more discards for the same result = more deliberate.</div>
-      </div>
-
-      <div class="pattern-mini">
-        <div class="pm-label">Patterns across 78 wins</div>
-        <div class="pm-row">
-          <span class="pm-name">premium (no hunt)</span>
-          <div class="pm-bar-wrap"><div class="pm-bar" style="--w:100%;"></div></div>
-          <span class="pm-count">128</span>
-        </div>
-        <div class="pm-row">
-          <span class="pm-name">straight hunt</span>
-          <div class="pm-bar-wrap"><div class="pm-bar" style="--w:15%;"></div></div>
-          <span class="pm-count">19</span>
-        </div>
-        <div class="pm-row">
-          <span class="pm-name">flush hunt</span>
-          <div class="pm-bar-wrap"><div class="pm-bar" style="--w:9%;"></div></div>
-          <span class="pm-count">11</span>
-        </div>
-        <div class="pm-row">
-          <span class="pm-name">full house build</span>
-          <div class="pm-bar-wrap"><div class="pm-bar" style="--w:8%;"></div></div>
-          <span class="pm-count">10</span>
-        </div>
-      </div>
-    </div><!-- /s7t-right -->
-
+  <div class="slide-content visual-slide">
+    <p class="eyebrow reveal">Q2 · Hunting strategy</p>
+    <h2 class="visual-headline reveal">The bot hunts with conviction — <em>pressure doesn't change the strategy</em></h2>
+    <p class="visual-sub reveal">57% premium rate after 2+ discards when comfortable · 56% when desperate · nearly identical</p>
+    <div class="visual-fig-wrap reveal">
+      <img src="results/figures/analysis_q2_hunt.png" alt="Hunt aggressiveness: outcome distribution and pressure effect">
+    </div>
   </div>
 </section>
 
 
 <!-- ============================================================
-     SLIDE 8 — TAKEAWAYS
+     SLIDE 8 — Q3 FINDING
      ============================================================ -->
-<section class="slide" id="slide-8" aria-label="Takeaways and open questions">
-  <div class="glow glow-a" style="opacity:0.6;"></div>
-  <div class="glow glow-b" style="opacity:0.5;"></div>
-  <div class="glow glow-c"></div>
-  <div class="slide-counter">08 / 08</div>
+<section class="slide" id="slide-8" aria-label="Q3: RL is more selective">
+  <div class="glow glow-bl" style="opacity:0.5;"></div>
+  <div class="glow glow-b" style="opacity:0.3;"></div>
+  <div class="slide-counter">08 / 09</div>
 
-  <div class="slide-content">
-    <div class="s7-left">
-      <p class="eyebrow reveal">Takeaways</p>
-      <h2 class="reveal">What the bot <em>taught</em> us</h2>
-
-      <div class="takeaway reveal">
-        <div class="takeaway-icon">✓</div>
-        <div class="takeaway-text">The scripted baseline ladder confirms the environment is <strong>sensitive enough to rank policies</strong>. Each deliberate improvement produces measurable gain.</div>
-      </div>
-      <div class="takeaway reveal">
-        <div class="takeaway-icon">✓</div>
-        <div class="takeaway-text">RL doubles scripted win rate on easy (54% vs 26%), learning <strong>premium-hand hunting</strong> — trading guaranteed pairs for flushes and straights that score 3–4× more.</div>
-      </div>
-      <div class="takeaway reveal">
-        <div class="takeaway-icon">△</div>
-        <div class="takeaway-text">On hard, RL accumulates more chips than any scripted bot but doesn't close runs — a <strong>reward shaping gap</strong>: chips/action ≠ round completion.</div>
-      </div>
+  <div class="slide-content visual-slide">
+    <p class="eyebrow reveal">Q3 · RL vs scripted</p>
+    <h2 class="visual-headline reveal">RL discards <em>less</em>, wins with <em>more margin</em> — it knows when not to hunt</h2>
+    <p class="visual-sub reveal">RL: 43% discard rate, +120 avg margin &nbsp;·&nbsp; Scripted: 59% discard rate, +107 avg margin</p>
+    <div class="visual-fig-wrap reveal">
+      <img src="results/figures/analysis_q3_comparison.png" alt="Bot comparison: win margin, discard rate, premium hand rate">
     </div>
+  </div>
+</section>
 
-    <div class="s7-right reveal-right">
-      <div class="s7-open-label">Open Questions</div>
-      <div class="open-q" contenteditable="false">Reward shaping (+300 round-win bonus) lifted hard-mode win rate from 2.3% → 3.3%, edging above the scripted best — but variance across seeds is high and the problem is far from solved.</div>
-      <div class="open-q" contenteditable="false">Does the hunt-first strategy transfer to harder presets, or does the higher target demand a fundamentally different approach?</div>
-      <div class="open-q" contenteditable="false">Would richer Balatro mechanics (jokers, mult stacking) change the learned strategy qualitatively?</div>
-      <div class="s7-closing" contenteditable="false">The bot earns its keep as a teacher — and reward shaping gives it something new to teach.</div>
+
+<!-- ============================================================
+     SLIDE 9 — Q4 FINDING
+     ============================================================ -->
+<section class="slide" id="slide-9" aria-label="Q4: Aggressive pays off">
+  <div class="glow glow-a" style="opacity:0.4;"></div>
+  <div class="glow glow-bl" style="opacity:0.4;"></div>
+  <div class="slide-counter">09 / 09</div>
+
+  <div class="slide-content visual-slide">
+    <p class="eyebrow reveal">Q4 · The rule</p>
+    <h2 class="visual-headline reveal"><em>Hunt more, win bigger</em> — aggressive games clear with 25% more headroom</h2>
+    <p class="visual-sub reveal">aggressive (>1 discard/blind): +121 avg margin &nbsp;·&nbsp; conservative: +97 avg margin</p>
+    <div class="visual-fig-wrap reveal">
+      <img src="results/figures/analysis_q4_conservative_vs_aggressive.png" alt="Conservative vs aggressive: win margin and premium hand rate">
     </div>
   </div>
 </section>

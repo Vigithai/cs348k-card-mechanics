@@ -237,6 +237,21 @@ def setup_mpl(figures_dir: Path) -> None:
     os.environ.setdefault("MPLCONFIGDIR", str(mpl_config))
     import matplotlib
     matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    plt.style.use("dark_background")
+    # Match the Dark Botanical presentation palette
+    matplotlib.rcParams.update({
+        "figure.facecolor":  "#0f0f0f",
+        "axes.facecolor":    "#161616",
+        "axes.edgecolor":    "#2a2a2a",
+        "axes.labelcolor":   "#9a9590",
+        "xtick.color":       "#9a9590",
+        "ytick.color":       "#9a9590",
+        "text.color":        "#e8e4df",
+        "grid.color":        "#2a2a2a",
+        "grid.alpha":        0.4,
+        "font.family":       "sans-serif",
+    })
 
 
 def plot_q1_ngrams(
@@ -244,7 +259,7 @@ def plot_q1_ngrams(
     scripted_ngrams: dict[str, int],
     figures_dir: Path,
 ) -> Path:
-    import matplotlib.pyplot as plt
+    import matplotlib.pyplot as plt  # noqa: PLC0415
     import numpy as np
 
     # Top 8 by RL count
@@ -264,7 +279,7 @@ def plot_q1_ngrams(
     ax.legend()
     fig.tight_layout()
     out = figures_dir / "analysis_q1_ngrams.png"
-    fig.savefig(out, dpi=180)
+    fig.savefig(out, dpi=180, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
     return out
 
@@ -310,7 +325,7 @@ def plot_q2_hunt(hunt_data: dict[str, Any], figures_dir: Path) -> Path:
     fig.suptitle("Q2 · Hunt aggressiveness in winning games (RLQBot)", fontsize=12)
     fig.tight_layout()
     out = figures_dir / "analysis_q2_hunt.png"
-    fig.savefig(out, dpi=180)
+    fig.savefig(out, dpi=180, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
     return out
 
@@ -341,7 +356,7 @@ def plot_q3_comparison(comparison: dict[str, Any], figures_dir: Path) -> Path:
     fig.suptitle("Q3 · How do RL and scripted bots win differently?", fontsize=12)
     fig.tight_layout()
     out = figures_dir / "analysis_q3_comparison.png"
-    fig.savefig(out, dpi=180)
+    fig.savefig(out, dpi=180, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
     return out
 
@@ -377,7 +392,7 @@ def plot_q4_conservative_vs_aggressive(q4: dict[str, Any], figures_dir: Path) ->
     fig.suptitle("Q4 · Does aggressive discarding pay off in winning games?", fontsize=12)
     fig.tight_layout()
     out = figures_dir / "analysis_q4_conservative_vs_aggressive.png"
-    fig.savefig(out, dpi=180)
+    fig.savefig(out, dpi=180, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
     return out
 
