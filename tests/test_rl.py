@@ -34,7 +34,8 @@ def make_observation() -> dict[str, object]:
         "chips_scored": 40,
         "hands_left": 3,
         "discards_left": 2,
-        "round_index": 1,
+        "ante": 1,
+        "blind_type": "small_blind",
         "target_hand_size": 7,
         "hand": (
             Card(rank="2", suit="club", chip_value=2),

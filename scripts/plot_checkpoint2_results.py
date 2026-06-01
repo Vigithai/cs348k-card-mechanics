@@ -41,7 +41,7 @@ def plot_metric_across_presets(
     y_limit: tuple[float, float] | None = None,
 ) -> None:
     """Save a grouped bar chart comparing one metric across presets."""
-    preset_names = [payload["preset"] for payload in results_payloads]
+    preset_names = [payload.get("ante_label", payload.get("preset", f"ante_{payload.get('max_ante', '?')}")) for payload in results_payloads]
     bot_names = [result["bot_name"] for result in results_payloads[0]["bot_results"]]
     x_positions = list(range(len(bot_names)))
     bar_width = 0.8 / max(1, len(results_payloads))
@@ -72,7 +72,7 @@ def plot_metric_across_presets(
 
 def plot_hand_type_distribution(results_payload: dict[str, object], figures_dir: Path) -> None:
     """Save a stacked hand-type distribution chart for one preset."""
-    preset_name = results_payload["preset"]
+    preset_name = results_payload.get("ante_label", results_payload.get("preset", f"ante_{results_payload.get('max_ante', '?')}"))
     bot_results = results_payload["bot_results"]
     bot_names = [result["bot_name"] for result in bot_results]
     hand_types = sorted(

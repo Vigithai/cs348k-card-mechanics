@@ -12,7 +12,7 @@ SRC_PATH = REPO_ROOT / "src"
 if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
-from balatro_mvp import ROUND_TARGET_PRESETS
+from balatro_mvp import DEFAULT_MAX_ANTE
 from balatro_mvp.rl_training import RLQTrainer, RLTrainingConfig
 
 
@@ -21,10 +21,10 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--preset",
-        choices=sorted(ROUND_TARGET_PRESETS),
-        default="easy",
-        help="Named round-target preset to train on.",
+        "--max-ante",
+        type=int,
+        default=DEFAULT_MAX_ANTE,
+        help="Maximum ante to win the run (default 8).",
     )
     parser.add_argument("--episodes", type=int, default=200, help="Number of training episodes.")
     parser.add_argument("--seed", type=int, default=0, help="Base random seed for training.")
@@ -105,7 +105,7 @@ def main() -> None:
     args = parser.parse_args()
 
     config = RLTrainingConfig(
-        preset_name=args.preset,
+        max_ante=args.max_ante,
         num_episodes=args.episodes,
         eval_interval=args.eval_interval,
         eval_games=args.eval_games,
@@ -132,7 +132,7 @@ def main() -> None:
 
     last_evaluation = history.evaluation_metrics[-1] if history.evaluation_metrics else None
     final_checkpoint = history.checkpoint_paths[-1] if history.checkpoint_paths else "none"
-    print(f"Training preset: {args.preset}")
+    print(f"Max ante: {args.max_ante}")
     print(f"Episodes: {args.episodes}")
     print(f"Output directory: {trainer.output_dir}")
     print(f"Final checkpoint: {final_checkpoint}")

@@ -35,18 +35,23 @@ STRAIGHT_RANK_SETS: frozenset[frozenset[str]] = frozenset(
         ("10", "J", "Q", "K", "A"),
     )
 )
-DEFAULT_ROUND_TARGET_PRESET: str = "hard"
-ROUND_TARGET_PRESETS: dict[str, dict[int, int]] = {
-    "hard": {
-        1: 300,
-        2: 500,
-    },
-    "easy": {
-        1: 150,
-        2: 250,
-    },
+BLIND_TYPES: tuple[str, ...] = ("small_blind", "big_blind", "boss_blind")
+BLIND_MULTIPLIERS: dict[str, float] = {
+    "small_blind": 1.0,
+    "big_blind": 1.5,
+    "boss_blind": 2.0,
 }
-ROUND_CHIP_TARGETS: dict[int, int] = dict(ROUND_TARGET_PRESETS[DEFAULT_ROUND_TARGET_PRESET])
+ANTE_BASE_CHIPS: dict[int, int] = {
+    1: 300,
+    2: 800,
+    3: 2_000,
+    4: 5_000,
+    5: 11_000,
+    6: 20_000,
+    7: 35_000,
+    8: 50_000,
+}
+DEFAULT_MAX_ANTE: int = 8
 HAND_SCORES: dict[str, tuple[int, int]] = {
     "high_card": (5, 1),
     "pair": (10, 2),
@@ -114,10 +119,28 @@ class GameState:
     hands_left: int
     discards_left: int
     target_hand_size: int
-    round_index: int
-    max_rounds_to_win: int
+    ante: int
+    blind_type: str  # one of BLIND_TYPES
+    max_ante: int
     is_terminal: bool
     result: str | None
+
+
+def compute_blind_chips(ante: int, blind_type: str) -> int:
+    """Return the chip requirement for a given ante and blind type."""
+    base = ANTE_BASE_CHIPS.get(ante, ANTE_BASE_CHIPS[max(ANTE_BASE_CHIPS)])
+    return int(base * BLIND_MULTIPLIERS[blind_type])
+
+
+def _next_blind(ante: int, blind_type: str, max_ante: int) -> tuple[int, str] | None:
+    """Return the next (ante, blind_type) or None if the run is won."""
+    blind_index = BLIND_TYPES.index(blind_type)
+    if blind_index < len(BLIND_TYPES) - 1:
+        return ante, BLIND_TYPES[blind_index + 1]
+    # Boss blind beaten — advance ante
+    if ante >= max_ante:
+        return None  # run won
+    return ante + 1, BLIND_TYPES[0]
 
 
 def create_standard_deck() -> tuple[Card, ...]:
@@ -167,11 +190,52 @@ def classify_poker_hand(cards: list[Card] | tuple[Card, ...]) -> str:
     return "high_card"
 
 
+def scoring_cards(cards: list[Card] | tuple[Card, ...], hand_category: str) -> tuple[Card, ...]:
+    """Return the subset of cards whose chip values contribute to the score.
+
+    Rules (matching real Balatro):
+    - royal_flush / straight_flush / flush / straight / full_house: all cards
+    - four_of_a_kind: the four matching cards
+    - three_of_a_kind: the three matching cards
+    - two_pair: both pairs (four cards), kicker excluded
+    - pair: the two matching cards, kickers excluded
+    - high_card: only the single highest-rank card
+    """
+    rank_counts = Counter(card.rank for card in cards)
+
+    if hand_category in ("royal_flush", "straight_flush", "flush", "straight", "full_house"):
+        return tuple(cards)
+
+    if hand_category == "four_of_a_kind":
+        quad_rank = next(rank for rank, count in rank_counts.items() if count == 4)
+        return tuple(c for c in cards if c.rank == quad_rank)
+
+    if hand_category == "three_of_a_kind":
+        trip_rank = next(rank for rank, count in rank_counts.items() if count == 3)
+        return tuple(c for c in cards if c.rank == trip_rank)
+
+    if hand_category == "two_pair":
+        pair_ranks = {rank for rank, count in rank_counts.items() if count == 2}
+        return tuple(c for c in cards if c.rank in pair_ranks)
+
+    if hand_category == "pair":
+        pair_rank = next(rank for rank, count in rank_counts.items() if count == 2)
+        return tuple(c for c in cards if c.rank == pair_rank)
+
+    # high_card: only the highest-ranked card contributes
+    return (max(cards, key=_card_sort_key),)
+
+
 def score_cards(cards: list[Card] | tuple[Card, ...]) -> tuple[str, int]:
-    """Return the MVP hand category and chips gained for the selected cards."""
+    """Return the MVP hand category and chips gained for the selected cards.
+
+    Scoring formula (matching real Balatro):
+        chips = (base_chips + sum of chip_value for each scoring card) * multiplier
+    """
     hand_category = classify_poker_hand(cards)
     base_chips, multiplier = HAND_SCORES[hand_category]
-    return hand_category, base_chips * multiplier
+    card_chips = sum(c.chip_value for c in scoring_cards(cards, hand_category))
+    return hand_category, (base_chips + card_chips) * multiplier
 
 
 def _is_straight(cards: list[Card] | tuple[Card, ...]) -> bool:
@@ -201,21 +265,17 @@ class BalatroMVPEnvironment:
         *,
         seed: int | None = None,
         full_deck: tuple[Card, ...] | None = None,
-        round_chip_targets: dict[int, int] | None = None,
         target_hand_size: int = 7,
         hands_per_round: int = 4,
         discards_per_round: int = 4,
-        max_rounds_to_win: int = 2,
+        max_ante: int = DEFAULT_MAX_ANTE,
     ) -> None:
         self._rng = random.Random(seed)
         self.full_deck = tuple(full_deck) if full_deck is not None else create_standard_deck()
-        self.round_chip_targets = (
-            dict(round_chip_targets) if round_chip_targets is not None else dict(ROUND_CHIP_TARGETS)
-        )
         self.target_hand_size = target_hand_size
         self.hands_per_round = hands_per_round
         self.discards_per_round = discards_per_round
-        self.max_rounds_to_win = max_rounds_to_win
+        self.max_ante = max_ante
         self.state: GameState | None = None
 
         self._validate_configuration()
@@ -223,18 +283,18 @@ class BalatroMVPEnvironment:
         self.reset_run()
 
     def reset_run(self) -> GameState:
-        """Reset the environment to the start of round 1."""
-        return self.start_round(1)
+        """Reset the environment to ante 1, small blind."""
+        return self.start_blind(ante=1, blind_type="small_blind")
 
-    def start_round(self, round_index: int) -> GameState:
-        """Initialize a fresh round from the same fixed 52-card deck."""
-        if round_index not in self.round_chip_targets:
+    def start_blind(self, *, ante: int, blind_type: str) -> GameState:
+        """Initialize a fresh blind from the same fixed 52-card deck."""
+        if ante < 1 or ante > self.max_ante:
             raise ValueError(
-                f"Unsupported round_index {round_index}. Supported rounds: {sorted(self.round_chip_targets)}"
+                f"ante must be between 1 and {self.max_ante}, got {ante}"
             )
-        if round_index > self.max_rounds_to_win:
+        if blind_type not in BLIND_TYPES:
             raise ValueError(
-                f"round_index {round_index} exceeds max_rounds_to_win={self.max_rounds_to_win}"
+                f"blind_type must be one of {BLIND_TYPES}, got {blind_type!r}"
             )
 
         draw_pile = list(self.full_deck)
@@ -247,13 +307,14 @@ class BalatroMVPEnvironment:
             hand=hand,
             unseen_deck=unseen_deck,
             discard_pile=[],
-            chips_needed=self.round_chip_targets[round_index],
+            chips_needed=compute_blind_chips(ante, blind_type),
             chips_scored=0,
             hands_left=self.hands_per_round,
             discards_left=self.discards_per_round,
             target_hand_size=self.target_hand_size,
-            round_index=round_index,
-            max_rounds_to_win=self.max_rounds_to_win,
+            ante=ante,
+            blind_type=blind_type,
+            max_ante=self.max_ante,
             is_terminal=False,
             result=None,
         )
@@ -269,7 +330,8 @@ class BalatroMVPEnvironment:
             "chips_scored": state.chips_scored,
             "hands_left": state.hands_left,
             "discards_left": state.discards_left,
-            "round_index": state.round_index,
+            "ante": state.ante,
+            "blind_type": state.blind_type,
             "target_hand_size": state.target_hand_size,
             "hand": tuple(state.hand),
             "unseen_deck": tuple(sorted(state.unseen_deck, key=_card_sort_key)),
@@ -328,15 +390,16 @@ class BalatroMVPEnvironment:
             if state.chips_scored >= state.chips_needed:
                 round_ended = True
                 round_result = "round_win"
-                if state.round_index >= state.max_rounds_to_win:
+                next_position = _next_blind(state.ante, state.blind_type, state.max_ante)
+                if next_position is None:
+                    # Beat boss blind at max ante — run won
                     state.is_terminal = True
                     state.result = "run_win"
                     run_result = "run_win"
                 else:
                     next_round_started = True
-                    next_round_index = state.round_index + 1
                     self._validate_state(state)
-                    self.start_round(next_round_index)
+                    self.start_blind(ante=next_position[0], blind_type=next_position[1])
             elif state.hands_left == 0:
                 round_ended = True
                 round_result = "round_loss"
@@ -417,16 +480,12 @@ class BalatroMVPEnvironment:
             raise ValueError("hands_per_round cannot be negative")
         if self.discards_per_round < 0:
             raise ValueError("discards_per_round cannot be negative")
-        if self.max_rounds_to_win < 1:
-            raise ValueError("max_rounds_to_win must be at least 1")
-        required_rounds = set(range(1, self.max_rounds_to_win + 1))
-        available_rounds = set(self.round_chip_targets)
-        if not required_rounds.issubset(available_rounds):
+        if self.max_ante < 1:
+            raise ValueError("max_ante must be at least 1")
+        if self.max_ante > max(ANTE_BASE_CHIPS):
             raise ValueError(
-                f"round_chip_targets must define rounds {sorted(required_rounds)}, got {sorted(available_rounds)}"
+                f"max_ante ({self.max_ante}) exceeds highest defined ante ({max(ANTE_BASE_CHIPS)})"
             )
-        if any(target <= 0 for target in self.round_chip_targets.values()):
-            raise ValueError("round chip targets must be positive")
 
     def _validate_state(self, state: GameState) -> None:
         hand_set = set(state.hand)

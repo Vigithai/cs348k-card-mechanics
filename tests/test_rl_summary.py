@@ -15,73 +15,68 @@ from balatro_mvp.rl_summary import parse_seed_result_metadata, summarize_seed_re
 
 
 class RLSeedSummaryTests(unittest.TestCase):
-    def test_parse_seed_result_metadata_reads_preset_and_seed(self) -> None:
-        preset_name, seed = parse_seed_result_metadata(Path("easy_comparison_seed_2.json"))
+    def test_parse_seed_result_metadata_reads_ante_and_seed(self) -> None:
+        ante_label, seed = parse_seed_result_metadata(Path("ante_2_comparison_seed_3.json"))
 
-        self.assertEqual(preset_name, "easy")
-        self.assertEqual(seed, 2)
+        self.assertEqual(ante_label, "ante_2")
+        self.assertEqual(seed, 3)
 
     def test_summarize_seed_result_paths_aggregates_mean_and_std(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             temp_path = Path(temp_dir)
-            easy_seed_0 = temp_path / "easy_comparison_seed_0.json"
-            easy_seed_1 = temp_path / "easy_comparison_seed_1.json"
-            hard_seed_0 = temp_path / "hard_comparison_seed_0.json"
+            ante2_seed_0 = temp_path / "ante_2_comparison_seed_0.json"
+            ante2_seed_1 = temp_path / "ante_2_comparison_seed_1.json"
+            ante8_seed_0 = temp_path / "ante_8_comparison_seed_0.json"
 
             self._write_payload(
-                easy_seed_0,
-                preset_name="easy",
+                ante2_seed_0,
                 rl_win_rate=0.40,
                 rl_avg_rounds=1.20,
                 rl_avg_final_chips=200.0,
             )
             self._write_payload(
-                easy_seed_1,
-                preset_name="easy",
+                ante2_seed_1,
                 rl_win_rate=0.50,
                 rl_avg_rounds=1.40,
                 rl_avg_final_chips=240.0,
             )
             self._write_payload(
-                hard_seed_0,
-                preset_name="hard",
+                ante8_seed_0,
                 rl_win_rate=0.02,
                 rl_avg_rounds=0.35,
                 rl_avg_final_chips=210.0,
             )
 
-            summary_rows = summarize_seed_result_paths([easy_seed_0, easy_seed_1, hard_seed_0])
+            summary_rows = summarize_seed_result_paths([ante2_seed_0, ante2_seed_1, ante8_seed_0])
 
-        easy_rl_row = next(
-            row for row in summary_rows if row["preset"] == "easy" and row["bot"] == "RLQBot"
+        ante2_rl_row = next(
+            row for row in summary_rows if row["ante_label"] == "ante_2" and row["bot"] == "RLQBot"
         )
-        hard_rl_row = next(
-            row for row in summary_rows if row["preset"] == "hard" and row["bot"] == "RLQBot"
+        ante8_rl_row = next(
+            row for row in summary_rows if row["ante_label"] == "ante_8" and row["bot"] == "RLQBot"
         )
 
-        self.assertEqual(easy_rl_row["num_seeds"], 2)
-        self.assertEqual(easy_rl_row["seeds"], "0,1")
-        self.assertAlmostEqual(easy_rl_row["mean_win_rate_pct"], 45.0)
-        self.assertAlmostEqual(easy_rl_row["std_win_rate_pct"], 7.0710678118654755)
-        self.assertAlmostEqual(easy_rl_row["mean_avg_rounds"], 1.3)
-        self.assertAlmostEqual(easy_rl_row["mean_avg_final_chips"], 220.0)
+        self.assertEqual(ante2_rl_row["num_seeds"], 2)
+        self.assertEqual(ante2_rl_row["seeds"], "0,1")
+        self.assertAlmostEqual(ante2_rl_row["mean_win_rate_pct"], 45.0)
+        self.assertAlmostEqual(ante2_rl_row["std_win_rate_pct"], 7.0710678118654755)
+        self.assertAlmostEqual(ante2_rl_row["mean_avg_rounds"], 1.3)
+        self.assertAlmostEqual(ante2_rl_row["mean_avg_final_chips"], 220.0)
 
-        self.assertEqual(hard_rl_row["num_seeds"], 1)
-        self.assertEqual(hard_rl_row["seeds"], "0")
-        self.assertAlmostEqual(hard_rl_row["mean_win_rate_pct"], 2.0)
-        self.assertAlmostEqual(hard_rl_row["std_win_rate_pct"], 0.0)
+        self.assertEqual(ante8_rl_row["num_seeds"], 1)
+        self.assertEqual(ante8_rl_row["seeds"], "0")
+        self.assertAlmostEqual(ante8_rl_row["mean_win_rate_pct"], 2.0)
+        self.assertAlmostEqual(ante8_rl_row["std_win_rate_pct"], 0.0)
 
     def _write_payload(
         self,
         output_path: Path,
         *,
-        preset_name: str,
         rl_win_rate: float,
         rl_avg_rounds: float,
         rl_avg_final_chips: float,
     ) -> None:
         payload = {
-            "preset": preset_name,
             "bot_results": [
                 {
                     "bot_name": "RandomBot",

@@ -23,11 +23,10 @@ from balatro_mvp import (
     Action,
     BalatroMVPEnvironment,
     Card,
-    DEFAULT_ROUND_TARGET_PRESET,
+    DEFAULT_MAX_ANTE,
     DiscardLowestChipBot,
     LookaheadDiscardBot,
     PrunedSampledLookaheadBot,
-    ROUND_TARGET_PRESETS,
     RandomBot,
     StimBot,
 )
@@ -36,9 +35,9 @@ from balatro_mvp import (
 BotFactory = Callable[[random.Random], object]
 
 
-def default_output_path_for_preset(preset_name: str) -> Path:
-    """Return the default JSON results path for one preset."""
-    return RESULTS_DIR / f"{preset_name}_eval_results.json"
+def default_output_path(max_ante: int) -> Path:
+    """Return the default JSON results path."""
+    return RESULTS_DIR / f"ante_{max_ante}_eval_results.json"
 
 
 def evaluate_bot(
@@ -47,8 +46,7 @@ def evaluate_bot(
     *,
     num_games: int,
     base_seed: int,
-    preset_name: str,
-    round_chip_targets: dict[int, int],
+    max_ante: int,
     save_traces: bool,
     trace_limit: int,
     trace_bot_name: str,
@@ -63,7 +61,7 @@ def evaluate_bot(
 
     for game_index in range(num_games):
         seed = base_seed + game_index
-        env = BalatroMVPEnvironment(seed=seed, round_chip_targets=round_chip_targets)
+        env = BalatroMVPEnvironment(seed=seed, max_ante=max_ante)
         bot = bot_factory(random.Random(seed))
 
         should_save_trace = save_traces and bot_name == trace_bot_name and game_index < trace_limit
@@ -82,7 +80,8 @@ def evaluate_bot(
             if should_save_trace:
                 trace_records.append(
                     {
-                        "round_index": observation["round_index"],
+                        "ante": observation["ante"],
+                        "blind_type": observation["blind_type"],
                         "turn_index": turn_index,
                         "chips_needed": observation["chips_needed"],
                         "chips_scored_before_action": observation["chips_scored"],
@@ -111,11 +110,10 @@ def evaluate_bot(
         if should_save_trace:
             save_trace(
                 trace_output_dir=trace_output_dir,
-                preset_name=preset_name,
+                max_ante=max_ante,
                 bot_name=bot_name,
                 seed=seed,
                 trace_records=trace_records,
-                round_chip_targets=round_chip_targets,
             )
 
         if env.state.result == "run_win":
@@ -143,14 +141,10 @@ def evaluate_bot(
 def print_summary_table(
     bot_results: list[dict[str, Any]],
     *,
-    preset_name: str,
-    round_chip_targets: dict[int, int],
+    max_ante: int,
 ) -> None:
     """Print a compact summary table for the evaluated bots."""
-    round_targets_text = ", ".join(
-        f"round {round_index}={target}" for round_index, target in sorted(round_chip_targets.items())
-    )
-    print(f"Preset: {preset_name} ({round_targets_text})")
+    print(f"Max Ante: {max_ante} (Antes 1-{max_ante}, 3 blinds each)")
 
     headers = [
         "Bot",
@@ -188,8 +182,7 @@ def print_summary_table(
 def save_results(
     *,
     output_path: Path,
-    preset_name: str,
-    round_chip_targets: dict[int, int],
+    max_ante: int,
     num_games: int,
     base_seed: int,
     bot_results: list[dict[str, Any]],
@@ -197,8 +190,7 @@ def save_results(
     """Write evaluation results to a machine-readable JSON file."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
     results_payload = {
-        "preset": preset_name,
-        "round_chip_targets": round_chip_targets,
+        "max_ante": max_ante,
         "num_games": num_games,
         "base_seed": base_seed,
         "bot_results": bot_results,
@@ -211,21 +203,19 @@ def save_results(
 def save_trace(
     *,
     trace_output_dir: Path,
-    preset_name: str,
+    max_ante: int,
     bot_name: str,
     seed: int,
     trace_records: list[dict[str, Any]],
-    round_chip_targets: dict[int, int],
 ) -> None:
     """Write one sample run trace to JSON."""
-    preset_trace_dir = trace_output_dir / preset_name
-    preset_trace_dir.mkdir(parents=True, exist_ok=True)
-    trace_path = preset_trace_dir / f"{bot_name}_seed_{seed}.json"
+    ante_trace_dir = trace_output_dir / f"ante_{max_ante}"
+    ante_trace_dir.mkdir(parents=True, exist_ok=True)
+    trace_path = ante_trace_dir / f"{bot_name}_seed_{seed}.json"
     trace_payload = {
-        "preset": preset_name,
+        "max_ante": max_ante,
         "bot_name": bot_name,
         "seed": seed,
-        "round_chip_targets": round_chip_targets,
         "trace": trace_records,
     }
     with trace_path.open("w", encoding="utf-8") as trace_file:
@@ -295,21 +285,21 @@ def serialize_value(value: Any) -> Any:
 
 
 def main() -> None:
-    """Parse arguments and run preset-based baseline bot simulations."""
+    """Parse arguments and run ante/blind-based baseline bot simulations."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--games", type=int, default=25, help="Number of seeded games to run per bot.")
     parser.add_argument("--base-seed", type=int, default=0, help="Starting seed for simulation runs.")
     parser.add_argument(
-        "--preset",
-        choices=sorted(ROUND_TARGET_PRESETS),
-        default=DEFAULT_ROUND_TARGET_PRESET,
-        help="Named round-target preset to evaluate.",
+        "--max-ante",
+        type=int,
+        default=DEFAULT_MAX_ANTE,
+        help="Maximum ante to win the run (default 8).",
     )
     parser.add_argument(
         "--output",
         type=Path,
         default=None,
-        help="Optional output JSON path. Defaults to results/<preset>_eval_results.json.",
+        help="Optional output JSON path. Defaults to results/ante_<N>_eval_results.json.",
     )
     parser.add_argument(
         "--save-traces",
@@ -356,8 +346,8 @@ def main() -> None:
     if args.pruned_candidate_pool_size <= 0:
         raise ValueError("--pruned-candidate-pool-size must be positive.")
 
-    round_chip_targets = dict(ROUND_TARGET_PRESETS[args.preset])
-    output_path = args.output if args.output is not None else default_output_path_for_preset(args.preset)
+    max_ante = args.max_ante
+    output_path = args.output if args.output is not None else default_output_path(max_ante)
 
     bot_factories: list[tuple[str, BotFactory]] = [
         ("RandomBot", lambda rng: RandomBot(rng=rng)),
@@ -383,8 +373,7 @@ def main() -> None:
                 bot_factory,
                 num_games=args.games,
                 base_seed=args.base_seed,
-                preset_name=args.preset,
-                round_chip_targets=round_chip_targets,
+                max_ante=max_ante,
                 save_traces=args.save_traces,
                 trace_limit=args.trace_limit,
                 trace_bot_name=args.trace_bot,
@@ -392,11 +381,10 @@ def main() -> None:
             )
         )
 
-    print_summary_table(bot_results, preset_name=args.preset, round_chip_targets=round_chip_targets)
+    print_summary_table(bot_results, max_ante=max_ante)
     save_results(
         output_path=output_path,
-        preset_name=args.preset,
-        round_chip_targets=round_chip_targets,
+        max_ante=max_ante,
         num_games=args.games,
         base_seed=args.base_seed,
         bot_results=bot_results,

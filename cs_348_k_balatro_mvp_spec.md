@@ -16,7 +16,7 @@ Build a bot that plays a simplified Balatro-like game, compare bot policies, and
 
 ### Metric
 
-Primary performance metric: passing rounds by reaching the target chip threshold. For the MVP, a run is won by passing round 2.
+Primary performance metric: passing blinds by reaching the target chip threshold. A run is won by defeating the Boss Blind at Ante 8.
 
 ---
 
@@ -62,7 +62,7 @@ Action(type="discard", card_indices=(0, 3))
 
 ## Environment state
 
-The full deck is fixed for the run, and each round maintains three mutually exclusive subsets whose union is the current playing deck:
+The full deck is fixed for the run, and each blind maintains three mutually exclusive subsets whose union is the current playing deck:
 
 - `hand`
 - `unseen_deck`
@@ -91,28 +91,31 @@ class GameState:
 
     chips_needed: int
     chips_scored: int
-    hands_left: int        # for MVP, starts at 4 each round
-    discards_left: int     # for MVP, starts at 4 each round
-    target_hand_size: int  # for MVP, 7
+    hands_left: int        # starts at 4 each blind
+    discards_left: int     # starts at 4 each blind
+    target_hand_size: int  # 7
 
-    round_index: int
-    max_rounds_to_win: int
+    ante: int              # 1-8
+    blind_type: str        # "small_blind", "big_blind", or "boss_blind"
+    max_ante: int          # default 8
     is_terminal: bool
-    result: str | None   # None, "round_win", "round_loss", "run_win", "run_loss"
+    result: str | None     # None, "round_win", "round_loss", "run_win", "run_loss"
 ```
 
 ---
 
 ## Observation exposed to agents
 
-For the MVP, the environment state is fully observable except for the future draw order.
+The environment state is fully observable except for the future draw order.
 
 ```python
 {
-    "chips_needed": 100,
+    "chips_needed": 300,
     "chips_scored": 10,
     "hands_left": 1,
     "discards_left": 1,
+    "ante": 1,
+    "blind_type": "small_blind",
     "hand": [
         Card(rank="2", suit="heart", chip_value=2),
         Card(rank="K", suit="heart", chip_value=10),
@@ -264,9 +267,9 @@ For the MVP, the normal target hand size is 7. After a play or discard, redraw t
 
 ---
 
-## Round and run termination
+## Blind and run termination
 
-### Round ends in win
+### Blind ends in win
 
 After a play action, if:
 
@@ -274,7 +277,7 @@ After a play action, if:
 chips_scored >= chips_needed
 ```
 
-### Round ends in loss
+### Blind ends in loss
 
 After a play action, if:
 
@@ -282,14 +285,46 @@ After a play action, if:
 chips_scored < chips_needed and hands_left == 0
 ```
 
-### MVP run result
+### Ante/Blind scoring system
 
-- A run is won by passing round 2.
-- For the MVP, use `chips_needed = 300` for round 1 and `chips_needed = 500` for round 2.
-- Each new round starts fresh from the same fixed 52-card deck.
-- On each new round, reset `hand`, `unseen_deck`, and `discard_pile` from that deck.
-- On each new round, reset `hands_left = 4`, `discards_left = 4`, and `chips_scored = 0`.
-- A run is lost immediately when a round is lost.
+An Ante consists of three Blinds played in sequence: Small Blind, Big Blind, Boss Blind. A run always begins at Ante 1. After defeating the Boss Blind at Ante 8, the run is won.
+
+The chip requirement for each blind is:
+
+```python
+chips_needed = ANTE_BASE_CHIPS[ante] * BLIND_MULTIPLIERS[blind_type]
+```
+
+Where:
+
+```python
+BLIND_MULTIPLIERS = {"small_blind": 1.0, "big_blind": 1.5, "boss_blind": 2.0}
+
+ANTE_BASE_CHIPS = {
+    1: 300,
+    2: 800,
+    3: 2_000,
+    4: 5_000,
+    5: 11_000,
+    6: 20_000,
+    7: 35_000,
+    8: 50_000,
+}
+```
+
+### Blind advancement
+
+- Beating the small blind advances to the big blind of the same ante.
+- Beating the big blind advances to the boss blind of the same ante.
+- Beating the boss blind advances to the small blind of the next ante.
+- Beating the boss blind at Ante 8 (max_ante) wins the run.
+
+### Run rules
+
+- Each new blind starts fresh from the same fixed 52-card deck.
+- On each new blind, reset `hand`, `unseen_deck`, and `discard_pile` from that deck.
+- On each new blind, reset `hands_left = 4`, `discards_left = 4`, and `chips_scored = 0`.
+- A run is lost immediately when any blind is lost.
 
 ---
 
@@ -299,10 +334,12 @@ chips_scored < chips_needed and hands_left == 0
 
 ```python
 {
-    "chips_needed": 100,
+    "chips_needed": 300,
     "chips_scored": 10,
     "hands_left": 1,
     "discards_left": 1,
+    "ante": 1,
+    "blind_type": "small_blind",
     "hand": [
         Card(rank="2", suit="heart", chip_value=2),
         Card(rank="K", suit="heart", chip_value=10),
@@ -339,8 +376,9 @@ State update:
 - move those 5 cards to `discard_pile`
 - decrement `hands_left` from 1 to 0
 - update `chips_scored` from 10 to 810
-- since `chips_scored >= chips_needed`, the round ends in a win
-- no redraw is needed because the round already ended
+- since `chips_scored >= chips_needed`, the blind ends in a win
+- advance to the next blind (big blind of ante 1)
+- no redraw is needed because the blind already ended
 
 ### Example 2: discard action
 

@@ -13,13 +13,15 @@ if str(SRC_PATH) not in sys.path:
     sys.path.insert(0, str(SRC_PATH))
 
 from balatro_mvp import (
+    ANTE_BASE_CHIPS,
     Action,
     BalatroMVPEnvironment,
+    BLIND_MULTIPLIERS,
     Card,
     GameState,
     HAND_SCORES,
-    ROUND_TARGET_PRESETS,
     classify_poker_hand,
+    compute_blind_chips,
     create_standard_deck,
     score_cards,
 )
@@ -45,11 +47,12 @@ def set_state(
     hand_specs: Iterable[CardSpec],
     unseen_prefix_specs: Iterable[CardSpec] = (),
     discard_specs: Iterable[CardSpec] = (),
-    chips_needed: int = 300,
+    chips_needed: int | None = None,
     chips_scored: int = 0,
     hands_left: int = 4,
     discards_left: int = 4,
-    round_index: int = 1,
+    ante: int = 1,
+    blind_type: str = "small_blind",
     is_terminal: bool = False,
     result: str | None = None,
 ) -> GameState:
@@ -59,6 +62,8 @@ def set_state(
     unseen_prefix = build_cards(full_deck, unseen_prefix_specs)
     used_cards = set(hand) | set(discard_pile) | set(unseen_prefix)
     unseen_remainder = [card for card in full_deck if card not in used_cards]
+    if chips_needed is None:
+        chips_needed = compute_blind_chips(ante, blind_type)
     state = GameState(
         full_deck=full_deck,
         hand=hand,
@@ -69,8 +74,9 @@ def set_state(
         hands_left=hands_left,
         discards_left=discards_left,
         target_hand_size=env.target_hand_size,
-        round_index=round_index,
-        max_rounds_to_win=env.max_rounds_to_win,
+        ante=ante,
+        blind_type=blind_type,
+        max_ante=env.max_ante,
         is_terminal=is_terminal,
         result=result,
     )
@@ -95,39 +101,55 @@ class StandardDeckTests(unittest.TestCase):
         self.assertIn(Card(rank="2", suit="club", chip_value=2), deck)
 
 
-class RoundInitializationTests(unittest.TestCase):
-    def test_round_initialization_resets_round_state_for_rounds_one_and_two(self) -> None:
+class BlindInitializationTests(unittest.TestCase):
+    def test_initial_state_is_ante_1_small_blind(self) -> None:
         env = BalatroMVPEnvironment(seed=7)
 
-        round_one_state = env.state
-        self.assertIsNotNone(round_one_state)
-        assert round_one_state is not None
+        state = env.state
+        self.assertIsNotNone(state)
+        assert state is not None
 
-        self.assertEqual(round_one_state.round_index, 1)
-        self.assertEqual(round_one_state.chips_needed, 300)
-        self.assertEqual(round_one_state.chips_scored, 0)
-        self.assertEqual(round_one_state.hands_left, 4)
-        self.assertEqual(round_one_state.discards_left, 4)
-        self.assertEqual(len(round_one_state.hand), 7)
-        self.assertEqual(len(round_one_state.unseen_deck), 45)
-        self.assertEqual(round_one_state.discard_pile, [])
-        self.assertEqual(round_one_state.full_deck, create_standard_deck())
+        self.assertEqual(state.ante, 1)
+        self.assertEqual(state.blind_type, "small_blind")
+        self.assertEqual(state.chips_needed, compute_blind_chips(1, "small_blind"))
+        self.assertEqual(state.chips_scored, 0)
+        self.assertEqual(state.hands_left, 4)
+        self.assertEqual(state.discards_left, 4)
+        self.assertEqual(len(state.hand), 7)
+        self.assertEqual(len(state.unseen_deck), 45)
+        self.assertEqual(state.discard_pile, [])
+        self.assertEqual(state.full_deck, create_standard_deck())
 
-        round_two_state = env.start_round(2)
-        self.assertEqual(round_two_state.round_index, 2)
-        self.assertEqual(round_two_state.chips_needed, 500)
-        self.assertEqual(round_two_state.chips_scored, 0)
-        self.assertEqual(round_two_state.hands_left, 4)
-        self.assertEqual(round_two_state.discards_left, 4)
-        self.assertEqual(len(round_two_state.hand), 7)
-        self.assertEqual(len(round_two_state.unseen_deck), 45)
-        self.assertEqual(round_two_state.discard_pile, [])
+    def test_start_blind_initializes_correct_chip_targets(self) -> None:
+        env = BalatroMVPEnvironment(seed=7)
+
+        # Ante 1 small blind = 300 * 1.0 = 300
+        state = env.start_blind(ante=1, blind_type="small_blind")
+        self.assertEqual(state.chips_needed, 300)
+
+        # Ante 1 big blind = 300 * 1.5 = 450
+        state = env.start_blind(ante=1, blind_type="big_blind")
+        self.assertEqual(state.chips_needed, 450)
+
+        # Ante 1 boss blind = 300 * 2.0 = 600
+        state = env.start_blind(ante=1, blind_type="boss_blind")
+        self.assertEqual(state.chips_needed, 600)
+
+        # Ante 2 small blind = 800 * 1.0 = 800
+        state = env.start_blind(ante=2, blind_type="small_blind")
+        self.assertEqual(state.chips_needed, 800)
+        self.assertEqual(state.chips_scored, 0)
+        self.assertEqual(state.hands_left, 4)
+        self.assertEqual(state.discards_left, 4)
+        self.assertEqual(len(state.hand), 7)
+        self.assertEqual(len(state.unseen_deck), 45)
+        self.assertEqual(state.discard_pile, [])
         self.assertEqual(
-            Counter(round_two_state.hand + round_two_state.unseen_deck),
-            Counter(round_two_state.full_deck),
+            Counter(state.hand + state.unseen_deck),
+            Counter(state.full_deck),
         )
 
-    def test_get_observation_exposes_round_state_without_leaking_draw_order(self) -> None:
+    def test_get_observation_exposes_ante_and_blind_type(self) -> None:
         env = BalatroMVPEnvironment(seed=17)
 
         observation = env.get_observation()
@@ -136,23 +158,13 @@ class RoundInitializationTests(unittest.TestCase):
         self.assertEqual(observation["chips_scored"], 0)
         self.assertEqual(observation["hands_left"], 4)
         self.assertEqual(observation["discards_left"], 4)
-        self.assertEqual(observation["round_index"], 1)
+        self.assertEqual(observation["ante"], 1)
+        self.assertEqual(observation["blind_type"], "small_blind")
         self.assertEqual(observation["target_hand_size"], 7)
         self.assertEqual(len(observation["hand"]), 7)
         self.assertEqual(len(observation["unseen_deck"]), 45)
         self.assertIsInstance(observation["hand"], tuple)
         self.assertIsInstance(observation["unseen_deck"], tuple)
-
-    def test_round_initialization_accepts_easy_round_target_preset(self) -> None:
-        env = BalatroMVPEnvironment(seed=19, round_chip_targets=ROUND_TARGET_PRESETS["easy"])
-
-        round_one_state = env.state
-        self.assertIsNotNone(round_one_state)
-        assert round_one_state is not None
-        self.assertEqual(round_one_state.chips_needed, 150)
-
-        round_two_state = env.start_round(2)
-        self.assertEqual(round_two_state.chips_needed, 250)
 
 
 class LegalActionEnumerationTests(unittest.TestCase):
@@ -287,9 +299,10 @@ class StepTransitionTests(unittest.TestCase):
             build_cards(env.full_deck, [("2", "club"), ("5", "diamond")]),
         )
         self.assertEqual(env.state.hand[-2:], build_cards(env.full_deck, [("A", "spade"), ("K", "heart")]))
-        self.assertEqual(next_obs["round_index"], 1)
+        self.assertEqual(next_obs["ante"], 1)
+        self.assertEqual(next_obs["blind_type"], "small_blind")
 
-    def test_round_one_win_advances_to_round_two_with_fresh_state(self) -> None:
+    def test_small_blind_win_advances_to_big_blind(self) -> None:
         env = BalatroMVPEnvironment(seed=29)
         set_state(
             env,
@@ -303,9 +316,11 @@ class StepTransitionTests(unittest.TestCase):
                 ("8", "club"),
             ],
             chips_scored=280,
+            chips_needed=300,
             hands_left=1,
             discards_left=2,
-            round_index=1,
+            ante=1,
+            blind_type="small_blind",
         )
 
         next_obs, reward, done, info = env.step(Action(type="play", card_indices=(0, 1)))
@@ -317,17 +332,20 @@ class StepTransitionTests(unittest.TestCase):
         self.assertIsNone(info["run_result"])
         self.assertTrue(info["next_round_started"])
         self.assertEqual(info["hand_category"], "pair")
-        self.assertEqual(env.state.round_index, 2)
-        self.assertEqual(env.state.chips_needed, 500)
+        # Advanced to big blind of same ante
+        self.assertEqual(env.state.ante, 1)
+        self.assertEqual(env.state.blind_type, "big_blind")
+        self.assertEqual(env.state.chips_needed, compute_blind_chips(1, "big_blind"))
         self.assertEqual(env.state.chips_scored, 0)
         self.assertEqual(env.state.hands_left, 4)
         self.assertEqual(env.state.discards_left, 4)
         self.assertEqual(env.state.discard_pile, [])
         self.assertEqual(len(env.state.hand), 7)
-        self.assertEqual(next_obs["round_index"], 2)
-        self.assertEqual(next_obs["chips_needed"], 500)
+        self.assertEqual(next_obs["ante"], 1)
+        self.assertEqual(next_obs["blind_type"], "big_blind")
+        self.assertEqual(next_obs["chips_needed"], 450)
 
-    def test_round_loss_sets_terminal_run_loss_and_skips_redraw(self) -> None:
+    def test_blind_loss_sets_terminal_run_loss_and_skips_redraw(self) -> None:
         env = BalatroMVPEnvironment(seed=31)
         set_state(
             env,
@@ -342,7 +360,8 @@ class StepTransitionTests(unittest.TestCase):
             ],
             unseen_prefix_specs=[("A", "spade")],
             hands_left=1,
-            round_index=1,
+            ante=1,
+            blind_type="small_blind",
         )
 
         next_obs, reward, done, info = env.step(Action(type="play", card_indices=(0,)))
@@ -362,8 +381,8 @@ class StepTransitionTests(unittest.TestCase):
         self.assertEqual(len(env.state.unseen_deck), 45)
         self.assertEqual(next_obs["hands_left"], 0)
 
-    def test_passing_round_two_wins_the_run(self) -> None:
-        env = BalatroMVPEnvironment(seed=37)
+    def test_beating_boss_blind_at_max_ante_wins_the_run(self) -> None:
+        env = BalatroMVPEnvironment(seed=37, max_ante=2)
         set_state(
             env,
             hand_specs=[
@@ -376,9 +395,10 @@ class StepTransitionTests(unittest.TestCase):
                 ("3", "club"),
             ],
             chips_scored=0,
-            chips_needed=500,
+            chips_needed=compute_blind_chips(2, "boss_blind"),
             hands_left=1,
-            round_index=2,
+            ante=2,
+            blind_type="boss_blind",
         )
 
         next_obs, reward, done, info = env.step(Action(type="play", card_indices=(0, 1, 2, 3, 4)))
@@ -392,8 +412,41 @@ class StepTransitionTests(unittest.TestCase):
         self.assertEqual(info["hand_category"], "royal_flush")
         self.assertTrue(env.state.is_terminal)
         self.assertEqual(env.state.result, "run_win")
-        self.assertEqual(env.state.round_index, 2)
+        self.assertEqual(env.state.ante, 2)
+        self.assertEqual(env.state.blind_type, "boss_blind")
         self.assertEqual(next_obs["chips_scored"], 800)
+
+    def test_boss_blind_win_advances_to_next_ante_small_blind(self) -> None:
+        env = BalatroMVPEnvironment(seed=41, max_ante=3)
+        set_state(
+            env,
+            hand_specs=[
+                ("K", "heart"),
+                ("Q", "heart"),
+                ("J", "heart"),
+                ("10", "heart"),
+                ("A", "heart"),
+                ("2", "club"),
+                ("3", "club"),
+            ],
+            chips_scored=0,
+            chips_needed=compute_blind_chips(1, "boss_blind"),
+            hands_left=1,
+            ante=1,
+            blind_type="boss_blind",
+        )
+
+        next_obs, reward, done, info = env.step(Action(type="play", card_indices=(0, 1, 2, 3, 4)))
+
+        self.assertFalse(done)
+        self.assertTrue(info["round_ended"])
+        self.assertEqual(info["round_result"], "round_win")
+        self.assertTrue(info["next_round_started"])
+        self.assertEqual(env.state.ante, 2)
+        self.assertEqual(env.state.blind_type, "small_blind")
+        self.assertEqual(env.state.chips_needed, compute_blind_chips(2, "small_blind"))
+        self.assertEqual(next_obs["ante"], 2)
+        self.assertEqual(next_obs["blind_type"], "small_blind")
 
 
 if __name__ == "__main__":

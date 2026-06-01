@@ -1,4 +1,4 @@
-"""Evaluate RLQBot against the heuristic baselines on one named preset."""
+"""Evaluate RLQBot against the heuristic baselines."""
 
 from __future__ import annotations
 
@@ -19,10 +19,10 @@ if str(SRC_PATH) not in sys.path:
 
 from balatro_mvp import (
     BalatroMVPEnvironment,
+    DEFAULT_MAX_ANTE,
     DiscardLowestChipBot,
     LookaheadDiscardBot,
     PrunedSampledLookaheadBot,
-    ROUND_TARGET_PRESETS,
     RLQBot,
     RandomBot,
     StimBot,
@@ -34,10 +34,10 @@ BotFactory = Callable[[random.Random], object]
 RESULTS_DIR = REPO_ROOT / "results" / "rl"
 
 
-def default_output_path_for_preset(preset_name: str) -> Path:
-    """Return the default comparison-results path for one preset."""
+def default_output_path(max_ante: int) -> Path:
+    """Return the default comparison-results path."""
 
-    return RESULTS_DIR / f"{preset_name}_comparison.json"
+    return RESULTS_DIR / f"ante_{max_ante}_comparison.json"
 
 
 def evaluate_bot(
@@ -46,7 +46,7 @@ def evaluate_bot(
     *,
     num_games: int,
     base_seed: int,
-    round_chip_targets: dict[int, int],
+    max_ante: int,
 ) -> dict[str, Any]:
     """Evaluate one bot over a reproducible seeded game batch."""
 
@@ -57,7 +57,7 @@ def evaluate_bot(
 
     for game_index in range(num_games):
         seed = base_seed + game_index
-        env = BalatroMVPEnvironment(seed=seed, round_chip_targets=round_chip_targets)
+        env = BalatroMVPEnvironment(seed=seed, max_ante=max_ante)
         bot = bot_factory(random.Random(seed))
         done = False
         rounds_passed = 0
@@ -96,15 +96,11 @@ def evaluate_bot(
 def print_summary_table(
     bot_results: list[dict[str, Any]],
     *,
-    preset_name: str,
-    round_chip_targets: dict[int, int],
+    max_ante: int,
 ) -> None:
     """Print a compact summary table for the evaluated bots."""
 
-    round_targets_text = ", ".join(
-        f"round {round_index}={target}" for round_index, target in sorted(round_chip_targets.items())
-    )
-    print(f"Preset: {preset_name} ({round_targets_text})")
+    print(f"Max Ante: {max_ante} (Antes 1-{max_ante}, 3 blinds each)")
 
     headers = [
         "Bot",
@@ -143,8 +139,7 @@ def save_results(
     *,
     output_path: Path,
     checkpoint_path: Path,
-    preset_name: str,
-    round_chip_targets: dict[int, int],
+    max_ante: int,
     num_games: int,
     base_seed: int,
     bot_results: list[dict[str, Any]],
@@ -155,9 +150,8 @@ def save_results(
     with output_path.open("w", encoding="utf-8") as output_file:
         json.dump(
             {
-                "preset": preset_name,
+                "max_ante": max_ante,
                 "checkpoint_path": str(checkpoint_path),
-                "round_chip_targets": round_chip_targets,
                 "num_games": num_games,
                 "base_seed": base_seed,
                 "bot_results": bot_results,
@@ -177,16 +171,16 @@ def main() -> None:
     parser.add_argument("--games", type=int, default=25, help="Number of seeded games to run per bot.")
     parser.add_argument("--base-seed", type=int, default=0, help="Starting seed for simulation runs.")
     parser.add_argument(
-        "--preset",
-        choices=sorted(ROUND_TARGET_PRESETS),
-        default="easy",
-        help="Named round-target preset to evaluate.",
+        "--max-ante",
+        type=int,
+        default=DEFAULT_MAX_ANTE,
+        help="Maximum ante to win the run (default 8).",
     )
     parser.add_argument(
         "--output",
         type=Path,
         default=None,
-        help="Optional output JSON path. Defaults to results/rl/<preset>_comparison.json.",
+        help="Optional output JSON path.",
     )
     parser.add_argument(
         "--device",
@@ -220,8 +214,8 @@ def main() -> None:
     if args.pruned_candidate_pool_size <= 0:
         raise ValueError("--pruned-candidate-pool-size must be positive.")
 
-    round_chip_targets = dict(ROUND_TARGET_PRESETS[args.preset])
-    output_path = args.output if args.output is not None else default_output_path_for_preset(args.preset)
+    max_ante = args.max_ante
+    output_path = args.output if args.output is not None else default_output_path(max_ante)
     rl_q_network, _ = load_q_network_from_checkpoint(args.checkpoint, device=args.device)
 
     bot_factories: list[tuple[str, BotFactory]] = [
@@ -256,16 +250,15 @@ def main() -> None:
             bot_factory,
             num_games=args.games,
             base_seed=args.base_seed,
-            round_chip_targets=round_chip_targets,
+            max_ante=max_ante,
         )
         for bot_name, bot_factory in bot_factories
     ]
-    print_summary_table(bot_results, preset_name=args.preset, round_chip_targets=round_chip_targets)
+    print_summary_table(bot_results, max_ante=max_ante)
     save_results(
         output_path=output_path,
         checkpoint_path=args.checkpoint,
-        preset_name=args.preset,
-        round_chip_targets=round_chip_targets,
+        max_ante=max_ante,
         num_games=args.games,
         base_seed=args.base_seed,
         bot_results=bot_results,

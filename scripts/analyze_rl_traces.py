@@ -274,7 +274,7 @@ def render_game(rank: int, game: dict[str, Any], score: int, patterns: list[Patt
         rounds_html += f"""
         <div class="round-block">
           <div class="round-header">
-            Round {r['round_index']} &nbsp;·&nbsp; target: {r['chips_needed']} chips
+            Ante {r.get('ante', r.get('round_index', '?'))} {r.get('blind_type', '')} &nbsp;·&nbsp; target: {r['chips_needed']} chips
             <span class="{result_cls}">{result_label}</span>
           </div>
           <table class="step-table">

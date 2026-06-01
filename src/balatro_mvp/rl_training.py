@@ -10,7 +10,7 @@ from typing import Any, Sequence
 import torch
 from torch import nn
 
-from .environment import BalatroMVPEnvironment, ROUND_TARGET_PRESETS
+from .environment import BalatroMVPEnvironment, DEFAULT_MAX_ANTE
 from .rl import QNetwork, RLQBot, ReplayBuffer, ReplayTransition, build_state_action_feature_tensor
 from .rl_features import STATE_ACTION_FEATURE_DIM
 
@@ -19,7 +19,7 @@ from .rl_features import STATE_ACTION_FEATURE_DIM
 class RLTrainingConfig:
     """Configuration for one RLQBot training run."""
 
-    preset_name: str = "easy"
+    max_ante: int = DEFAULT_MAX_ANTE
     num_episodes: int = 200
     eval_interval: int = 25
     eval_games: int = 20
@@ -59,10 +59,8 @@ class RLQTrainer:
     """Self-contained DQN-style trainer for the Balatro MVP environment."""
 
     def __init__(self, config: RLTrainingConfig) -> None:
-        if config.preset_name not in ROUND_TARGET_PRESETS:
-            raise ValueError(
-                f"Unsupported preset {config.preset_name!r}. Expected one of {sorted(ROUND_TARGET_PRESETS)}."
-            )
+        if config.max_ante < 1:
+            raise ValueError("max_ante must be at least 1.")
         if config.num_episodes <= 0:
             raise ValueError("num_episodes must be positive.")
         if config.batch_size <= 0:
@@ -80,8 +78,8 @@ class RLQTrainer:
 
         self.config = config
         self.device = torch.device(config.device)
-        self.round_chip_targets = dict(ROUND_TARGET_PRESETS[config.preset_name])
-        self.output_dir = Path(config.output_dir) / config.preset_name / f"seed_{config.seed}"
+        self.max_ante = config.max_ante
+        self.output_dir = Path(config.output_dir) / f"ante_{config.max_ante}" / f"seed_{config.seed}"
         self.checkpoint_dir = self.output_dir / "checkpoints"
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
@@ -144,7 +142,7 @@ class RLQTrainer:
 
         for game_index in range(num_games):
             seed = base_seed + game_index
-            env = BalatroMVPEnvironment(seed=seed, round_chip_targets=self.round_chip_targets)
+            env = BalatroMVPEnvironment(seed=seed, max_ante=self.max_ante)
             evaluation_bot = RLQBot(
                 self.policy_network,
                 rng=random.Random(seed),
@@ -192,7 +190,7 @@ class RLQTrainer:
                 **asdict(self.config),
                 "hidden_dims": list(self.config.hidden_dims),
             },
-            "round_chip_targets": self.round_chip_targets,
+            "max_ante": self.max_ante,
             "policy_state_dict": self.policy_network.state_dict(),
             "target_state_dict": self.target_network.state_dict(),
             "optimizer_state_dict": self.optimizer.state_dict(),
@@ -225,7 +223,7 @@ class RLQTrainer:
         """Collect one training episode and add its transitions to replay."""
 
         episode_seed = self.config.seed + episode_index - 1
-        env = BalatroMVPEnvironment(seed=episode_seed, round_chip_targets=self.round_chip_targets)
+        env = BalatroMVPEnvironment(seed=episode_seed, max_ante=self.max_ante)
         done = False
         episode_reward = 0.0
         rounds_passed = 0
@@ -337,7 +335,7 @@ class RLQTrainer:
 
 def default_training_config(
     *,
-    preset_name: str = "easy",
+    max_ante: int = DEFAULT_MAX_ANTE,
     output_dir: str = "results/rl",
     seed: int = 0,
     hidden_dims: Sequence[int] = (128, 64),
@@ -345,7 +343,7 @@ def default_training_config(
     """Build the default RL training configuration used by the CLI script."""
 
     return RLTrainingConfig(
-        preset_name=preset_name,
+        max_ante=max_ante,
         output_dir=output_dir,
         seed=seed,
         hidden_dims=tuple(hidden_dims),
