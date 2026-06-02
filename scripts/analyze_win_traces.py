@@ -119,11 +119,29 @@ def premium_hand_rate(game: dict[str, Any]) -> float:
 # ── Q1: Hand sequence n-grams ─────────────────────────────────────────────────
 
 def q1_ngrams(games: list[dict[str, Any]], n: int = 2) -> dict[str, int]:
+    """Return *all* bigram counts, sorted by frequency (descending)."""
     counts: Counter = Counter()
     for seq in all_play_sequences(games):
         for i in range(len(seq) - n + 1):
             counts[" → ".join(seq[i:i + n])] += 1
-    return dict(counts.most_common(12))
+    return dict(counts.most_common())
+
+
+def q1_ngram_rates(games: list[dict[str, Any]], n: int = 2) -> dict[str, float]:
+    """Like q1_ngrams but returns fraction of winning games containing each bigram."""
+    num_games = len(games)
+    if num_games == 0:
+        return {}
+    per_game: Counter = Counter()
+    for game in games:
+        seen: set[str] = set()
+        for blind in game["blinds"]:
+            seq = [s["hand_type"] for s in blind["steps"] if s["action"]["type"] == "play" and s["hand_type"]]
+            for i in range(len(seq) - n + 1):
+                seen.add(" → ".join(seq[i:i + n]))
+        for bigram in seen:
+            per_game[bigram] += 1
+    return {k: v / num_games for k, v in per_game.most_common(12)}
 
 
 # ── Q2: Hunt aggressiveness ───────────────────────────────────────────────────
@@ -262,10 +280,14 @@ def plot_q1_ngrams(
     import matplotlib.pyplot as plt  # noqa: PLC0415
     import numpy as np
 
-    # Top 8 by RL count
+    # Normalize each bot's counts to % of its total bigrams
+    rl_total = sum(rl_ngrams.values()) or 1
+    sc_total = sum(scripted_ngrams.values()) or 1
+
+    # Top 8 by RL share
     top_keys = list(rl_ngrams.keys())[:8]
-    rl_vals = [rl_ngrams.get(k, 0) for k in top_keys]
-    sc_vals = [scripted_ngrams.get(k, 0) for k in top_keys]
+    rl_vals = [rl_ngrams.get(k, 0) / rl_total * 100 for k in top_keys]
+    sc_vals = [scripted_ngrams.get(k, 0) / sc_total * 100 for k in top_keys]
 
     x = np.arange(len(top_keys))
     w = 0.38
@@ -274,8 +296,8 @@ def plot_q1_ngrams(
     ax.bar(x + w / 2, sc_vals, w, label="PrunedSampledLookahead", color="#6a8fad")
     ax.set_xticks(x)
     ax.set_xticklabels(top_keys, rotation=30, ha="right", fontsize=9)
-    ax.set_ylabel("Frequency across winning games")
-    ax.set_title("Q1 · Most common consecutive hand-type pairs in winning games")
+    ax.set_ylabel("% of all hand-pair transitions")
+    ax.set_title("Q1 · Hand-type bigram distribution in winning games")
     ax.legend()
     fig.tight_layout()
     out = figures_dir / "analysis_q1_ngrams.png"
@@ -296,33 +318,16 @@ def plot_q2_hunt(hunt_data: dict[str, Any], figures_dir: Path) -> Path:
         plt.close(fig)
         return out
 
-    # Bar chart: outcome distribution after 2+ discards
     labels = list(outcome_counts.keys())
     values = list(outcome_counts.values())
     colors = ["#d4a574" if h in PREMIUM_HANDS else "#8a8a8a" for h in labels]
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-
-    axes[0].bar(range(len(labels)), values, color=colors)
-    axes[0].set_xticks(range(len(labels)))
-    axes[0].set_xticklabels(labels, rotation=30, ha="right", fontsize=9)
-    axes[0].set_ylabel("Hunt count")
-    axes[0].set_title("What the bot hunts for\n(outcome after 2+ consecutive discards)")
-
-    # Comfortable vs desperate hunt success
-    cats = ["Comfortable\n(>50% chips left)", "Desperate\n(≤50% chips left)"]
-    rates = [
-        hunt_data["comfortable_premium_rate"] * 100,
-        hunt_data["desperate_premium_rate"] * 100,
-    ]
-    axes[1].bar(cats, rates, color=["#d4a574", "#c0655a"])
-    axes[1].set_ylabel("Premium hand rate after hunt (%)")
-    axes[1].set_ylim(0, 100)
-    axes[1].set_title("Does pressure affect hunt success?")
-    for i, v in enumerate(rates):
-        axes[1].text(i, v + 1, f"{v:.0f}%", ha="center", fontsize=11)
-
-    fig.suptitle("Q2 · Hunt aggressiveness in winning games (RLQBot)", fontsize=12)
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.bar(range(len(labels)), values, color=colors)
+    ax.set_xticks(range(len(labels)))
+    ax.set_xticklabels(labels, rotation=30, ha="right", fontsize=9)
+    ax.set_ylabel("Hunt count")
+    ax.set_title("Q2 · What does the bot hunt for?\n(hand played after 2+ consecutive discards)")
     fig.tight_layout()
     out = figures_dir / "analysis_q2_hunt.png"
     fig.savefig(out, dpi=180, bbox_inches="tight", facecolor=fig.get_facecolor())
@@ -437,6 +442,8 @@ def main() -> None:
     print("\nQ1 — Hand sequence n-grams …")
     rl_ngrams = q1_ngrams(rl_games, n=2)
     sc_ngrams = q1_ngrams(scripted_games, n=2)
+    rl_ngram_rates = q1_ngram_rates(rl_games, n=2)
+    sc_ngram_rates = q1_ngram_rates(scripted_games, n=2)
 
     print("Q2 — Hunt aggressiveness (RL) …")
     hunt = q2_hunt_aggressiveness(rl_games)
@@ -449,8 +456,8 @@ def main() -> None:
 
     # ── Save insights JSON ────────────────────────────────────────────────────
     insights = {
-        "q1_top_ngrams_rl": rl_ngrams,
-        "q1_top_ngrams_scripted": sc_ngrams,
+        "q1_top_ngrams_rl": dict(list(rl_ngrams.items())[:12]),
+        "q1_top_ngrams_scripted": dict(list(sc_ngrams.items())[:12]),
         "q2_hunt_aggressiveness": hunt,
         "q3_bot_comparison": comparison,
         "q4_conservative_vs_aggressive": q4,
