@@ -1,264 +1,126 @@
-# cs348k-card-mechanics
+# Learning to Play Balatro
 
-## Current Status
+CS348K Final Project — Lily (lilyth720@gmail.com)
 
-A simplified Balatro-like simulator with a full agent ladder from random play to DQN-trained RL, plus tooling to generate and analyze per-step win traces.
+A simplified Balatro simulator with a six-agent ladder from random play to DQN-trained RL, plus a trace analysis pipeline that extracts strategy insights from winning games.
 
-### Agent Ladder — Easy Preset (rounds: 150 / 250)
+## Results
 
-| Bot | Win Rate | Avg. Final Chips |
+Evaluated on ante 1 (three blinds: 300 → 450 → 600 chips), 500 games, no jokers or shop.
+
+| Agent | Win Rate |
+|---|---:|
+| RandomBot | 0% |
+| StimBot | 5% |
+| DiscardLowestChipBot | 8% |
+| LookaheadDiscardBot | 14% |
+| PrunedSampledLookaheadBot | 17% |
+| **RLQBot (DQN, reward-shaped)** | **35%** |
+
+RLQBot is trained with a DQN-style Q-network (59-dim state-action features → 128 → 64 → 1) over 500 episodes × 3 seeds. It wins at roughly 2× the rate of the best scripted bot without any hand-crafted strategy encoding.
+
+A human baseline (the author) wins approximately 20% of games under the same rules.
+
+## Strategy Analysis
+
+After training, we ran 500 games each for RLQBot and the best scripted bot, saving full per-step traces for every winning game (177 RL wins, 84 scripted wins). The analysis pipeline detects "hunt sequences" — two or more consecutive discards followed by a play — and uses the hand type played immediately after to infer what the bot was building toward.
+
+Four questions guided the analysis:
+
+### Q1: What hand sequences actually win?
+
+We computed bigrams of consecutive hand types played within winning games. RLQBot's top bigram is **two_pair → flush** (9.4% of all transitions), followed by two_pair → two_pair and pair → flush. The scripted bot's top bigram is **pair → pair** — it grinds the same safe hand repeatedly.
+
+The RL agent learned to bank safe chips with two_pair, then spend discards hunting a flush or straight. The scripted bot, despite having an explicit flush-hunting heuristic, doesn't coordinate plays and discards in this way.
+
+### Q2: What does the bot hunt for?
+
+When the RL bot commits to a hunt (2+ consecutive discards), the outcome is a flush 39% of the time — by far the most common target. Straight is second at 12%. The bot overwhelmingly hunts toward premium hands (flush, straight, full house, or better).
+
+### Q3: How does RL differ from the best scripted bot?
+
+Comparing behavioral statistics across winning games:
+
+| Metric | RLQBot | Scripted |
 |---|---:|---:|
-| RandomBot | 0% | — |
-| StimBot | 5% | — |
-| DiscardLowestChipBot | 8% | — |
-| LookaheadDiscardBot | 23% | — |
-| PrunedSampledLookaheadBot | 26% | 185.9 |
-| **RLQBot** | **54%** | **229.0** |
+| Discard rate | 43% | 59% |
+| Premium hand rate | 45% | 66% |
+| Avg win margin | +120 chips | +107 chips |
 
-### Agent Ladder — Hard Preset (rounds: 300 / 500)
+The scripted bot discards more aggressively and plays more premium hands per game, yet wins with less margin. The RL agent learned restraint — it knows when a two_pair is good enough and doesn't over-hunt when the deck doesn't support it.
 
-| Bot | Win Rate | Avg. Final Chips |
-|---|---:|---:|
-| PrunedSampledLookaheadBot | 3.0% | 204.9 |
-| RLQBot (unshaved reward) | 2.3% | 234.5 |
-| **RLQBot (reward-shaped)** | **3.3%** | **195.5** |
+### Q4: The human takeaway
 
-RLQBot is trained with a DQN-style Q-network (128→64 MLP) over 500 episodes × 3 seeds. On easy mode it clearly dominates. On hard mode the unshaned agent chip-farms but fails to clear round targets; adding a round-win bonus (+300) and round-loss penalty (−75) to the reward function corrects the objective misalignment and lifts win rate above the scripted best.
+The bot's strategy suggests a heuristic for human play: **not flush-or-bust.** Patiently play two pair or better to bank safe points, then use remaining discards to redraw into a flush or other premium hand. Don't discard a two pair to chase a flush from scratch.
 
-### Trace Analysis
+## Limitations and Next Steps
 
-`scripts/generate_rl_win_traces.py` runs RLQBot and saves rich per-step traces for winning games. `scripts/analyze_rl_traces.py` scores games for instructiveness by detecting “hunt” sequences — consecutive discards followed by a play reveal what the agent was building toward. Across 78 easy-preset wins the dominant pattern is premium-hand hunting: the agent frequently burns 2–3 discards to assemble flushes or straights that score 3–4× more than a safe pair play.
+The current analysis conditions only on winning games, which introduces survivorship bias — we don't know whether the same patterns appear in losses or whether losses have distinct signatures worth avoiding.
 
-### Key Files
+Other next steps:
+
+- Analyze losses to identify what to avoid and remove survivorship bias from the win-only analysis
+- Train the bots further (500 episodes is insufficient for reliable convergence; cross-seed variance is high)
+- Discard-aware sequence analysis — move beyond discard-agnostic bigrams to distinguish traces by what was discarded, not just what was played
+- Add jokers and the shop layer, where Balatro's real complexity begins
+
+## Environment
+
+The simulator models a standard 52-card deck with no jokers or shop. Each blind begins with a full deck shuffle, a 7-card opening hand, 4 plays, and 4 discards. Scoring uses a fixed poker-hand lookup table:
+
+```
+high_card: 5    pair: 20       two_pair: 40       three_of_a_kind: 90
+straight: 120   flush: 136     full_house: 150    four_of_a_kind: 728
+```
+
+Score = base_chips × mult (simplified from full Balatro scoring).
+
+The environment exposes a gym-style interface: `get_observation()`, `get_legal_actions()`, `step(action)`. Legal action enumeration and all game logic live in the environment; agents only receive an observation dict and choose from the provided action list.
+
+## DQN Details
+
+The Q-network receives a concatenated state-action feature vector (59 dimensions) and outputs a scalar Q-value. At each step the agent scores all legal actions and picks the highest (or samples uniformly during ε-greedy exploration).
+
+**State features (38):** chips_needed, chips_scored, hands_left, discards_left, rank histogram of hand (13), suit histogram of hand (4), rank histogram of unseen deck (13), suit histogram of unseen deck (4).
+
+**Action features (21):** one-hot play/discard (2), number of selected cards (1), rank histogram of selected cards (13), suit histogram of selected cards (4), immediate score or 0 for discards (1).
+
+**Training:** replay buffer (5k), batch size 64, ε decay 1.0 → 0.05 over 2k steps, target network synced every 100 steps, γ = 0.99, Adam lr = 0.001. Reward shaped with +300 round-win bonus and −75 round-loss penalty.
+
+## Key Files
 
 | Path | Purpose |
 |---|---|
 | `src/balatro_mvp/environment.py` | Core simulator |
 | `src/balatro_mvp/agents.py` | All scripted bots |
-| `src/balatro_mvp/rl_training.py` | DQN trainer + reward shaping config |
+| `src/balatro_mvp/rl_training.py` | DQN trainer + reward shaping |
+| `src/balatro_mvp/rl_features.py` | State-action feature extraction |
 | `scripts/train_rl_qbot.py` | Training entry point |
-| `scripts/generate_rl_win_traces.py` | Win trace generator |
-| `scripts/analyze_rl_traces.py` | Trace analyzer + HTML report |
-| `results/rl_summary/seed_summary.csv` | Per-seed eval results |
-| `results/rl_shaped/` | Reward-shaped hard-mode checkpoints |
+| `scripts/evaluate_rl_qbot.py` | Evaluation runner |
+| `scripts/generate_rl_win_traces.py` | RL win trace generator |
+| `scripts/generate_scripted_win_traces.py` | Scripted win trace generator |
+| `scripts/analyze_win_traces.py` | Q1–Q4 analysis + figure generation |
+| `results/traces/` | Winning game traces (JSON) |
+| `results/figures/` | Analysis figures (PNG) |
 
-## Overview
+## Reproducing Results
 
-This project builds a simplified Balatro-like environment in Python for testing baseline agents and analyzing strategy traces. The immediate goal is to create a reproducible simulator where bots can play under a fixed ruleset, so I can compare policies, inspect their decisions, and learn useful strategies and synergies from successful runs.
+```bash
+# Train
+python scripts/train_rl_qbot.py
 
-The broader idea is to use the bot as a teacher. Rather than relying only on subjective playtesting, I want a framework where strategies can be evaluated quantitatively through repeated simulation.
+# Evaluate
+python scripts/evaluate_rl_qbot.py
 
-## Problem
+# Generate traces
+python scripts/generate_rl_win_traces.py
+python scripts/generate_scripted_win_traces.py
 
-I want to get better at Balatro while staying within the game rules and without cheating. The challenge is that it is hard to reason systematically about what decisions are actually strong, what strategies are robust, and what synergies are worth pursuing across many possible runs.
-
-## MVP Goal
-
-Build a simplified Balatro-like environment that supports interchangeable agents. The first milestone is to run simple baseline bots in a reproducible simulator. A secondary goal is to analyze successful traces to learn useful strategies and patterns.
-
-## MVP Rules and Modeling Choices
-
-- Use a standard 52-card deck.
-- The agent can always see the full multiset of undrawn cards.
-- The agent cannot see the future draw order.
-- The game is turn-based and represented as discrete states.
-- Legal actions are non-empty plays or discards of 1 to 5 cards.
-- A round can end only after a play action, never after a discard.
-- Redraw happens only if the round continues.
-- Scoring is based on a simplified poker-hand lookup table.
-
-## Environment State
-
-Each round maintains three mutually exclusive subsets whose union is the current playing deck:
-
-- `hand`
-- `unseen_deck`
-- `discard_pile`
-
-The environment also tracks:
-
-- `chips_needed`
-- `chips_scored`
-- `hands_left`
-- `discards_left`
-- `round_index`
-
-For the MVP:
-- hand size starts at 7
-- each round starts with `hands_left = 4`
-- each round starts with `discards_left = 4`
-- round 1 target is `300`
-- round 2 target is `500`
-- passing round 2 wins the run
-
-Each new round starts fresh from the same fixed 52-card deck, with a fresh opening hand and reset counters.
-
-## Core Datatypes
-
-```python
-from dataclasses import dataclass
-from typing import Literal
-
-@dataclass(frozen=True)
-class Card:
-    rank: str        # "2"-"10", "J", "Q", "K", "A"
-    suit: str        # "club", "spade", "heart", "diamond"
-    chip_value: int  # kept for MVP even though scoring uses lookup-table hand values
-
-@dataclass(frozen=True)
-class Action:
-    type: Literal["play", "discard"]
-    card_indices: tuple[int, ...]   # indices into current hand, length 1-5
-````
-
-## Bot API
-
-The environment owns game logic. Agents only inspect the observation and choose one action from the legal action list.
-
-```python
-obs = env.get_observation()
-legal_actions = env.get_legal_actions()
-action = agent.act(obs, legal_actions)
-next_obs, reward, done, info = env.step(action)
+# Analyze and generate figures
+python scripts/analyze_win_traces.py
 ```
 
-## Scoring
+## References
 
-For the MVP, played cards are classified into poker-hand categories and scored with a fixed lookup table.
-
-```python
-HAND_SCORES = {
-    "high_card": (5, 1),
-    "pair": (10, 2),
-    "two_pair": (20, 2),
-    "three_of_a_kind": (30, 3),
-    "straight": (30, 4),
-    "flush": (35, 4),
-    "full_house": (40, 4),
-    "four_of_a_kind": (60, 7),
-    "straight_flush": (100, 8),
-    "royal_flush": (100, 8),
-}
-```
-
-For the MVP, score is:
-
-```python
-score = base_chips * mult
-```
-
-This is intentionally simpler than full Balatro scoring.
-
-## Transition Rules
-
-### Play
-
-A play action:
-
-1. validates the selected indices
-2. resolves the selected cards
-3. scores the selected hand
-4. moves played cards to the discard pile
-5. decrements `hands_left`
-6. adds the resulting score to `chips_scored`
-7. checks round win/loss conditions
-8. redraws only if the round continues
-
-### Discard
-
-A discard action:
-
-1. validates the selected indices
-2. moves selected cards to the discard pile
-3. decrements `discards_left`
-4. redraws from `unseen_deck`
-5. never ends the round directly
-
-## Reward Convention
-
-For the naive MVP:
-
-```python
-reward = chips_gained_from_action
-```
-
-This aligns naturally with immediate-score baseline policies and makes debugging easier.
-
-## Baseline Bots
-
-### RandomBot
-
-Chooses uniformly from legal actions. This is mainly for sanity-checking the environment.
-
-### StimBot
-
-A strict immediate-score heuristic bot.
-
-* considers only legal play actions
-* never discards
-* scores each legal play using the current lookup table
-* chooses the highest-scoring play
-* if the best current play is a pair, it plays only those two cards
-* tie-break 1: prefer fewer cards played
-* tie-break 2: if still tied, break ties randomly
-
-### ArchetypeBot
-
-A possible later extension that chases a preferred hand family, such as flushes or pairs.
-
-## Evaluation Plan
-
-### Performance Metrics
-
-* win rate
-* average rounds passed
-* average final chips scored
-* variance across random seeds
-
-### Strategy Metrics
-
-* histogram of hand types scored
-* frequency of different action sizes
-* evidence of dominant or degenerate strategies
-
-### First Outputs
-
-1. table of win rate and average rounds passed by bot
-2. histogram of hand types used by each bot
-3. sample successful traces with short annotations
-
-## Repo Structure
-
-* `README.md` — project overview and current MVP spec summary
-* `cs_348_k_balatro_mvp_spec.md` — detailed implementation spec for the environment and bots
-* `src/` — simulator, environment, scoring, and agent code
-* `tests/` — unit tests
-* `experiments/` — experiment scripts and configs
-* `results/` — saved outputs, plots, and tables
-
-## Suggested Implementation Order
-
-1. Implement `Card`, `Action`, and `GameState`
-2. Implement deck creation and round initialization
-3. Implement `get_observation()`
-4. Implement legal-action enumeration
-5. Implement poker-hand classification and scoring lookup
-6. Implement `step(action)` for play and discard
-7. Implement `RandomBot`
-8. Implement `StimBot`
-9. Run seeded simulations and log traces
-10. Add analysis scripts for metrics and plots
-
-## Current Status
-
-The project is currently in MVP implementation planning. The main focus is now on:
-
-* building the core environment
-* defining legal actions cleanly
-* implementing the scoring logic
-* adding baseline bots
-* producing trace-based evaluation outputs
-
-## Notes
-
-This repository is focused first on the simplified simulator and evaluation harness. More advanced mechanics, richer scoring, or LLM-based agents can be added later, but the current priority is a clean, reproducible MVP.
+1. LocalThunk. *Balatro*. Playstack, 2024.
+2. Mnih et al. "Human-level control through deep reinforcement learning." *Nature*, 2015.

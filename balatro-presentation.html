@@ -1668,7 +1668,8 @@ img, .image-container {
   <div class="slide-content">
     <div>
       <p class="eyebrow reveal">Results</p>
-      <h2 class="game-title reveal">The RL bot <em>already surpasses</em> human baseline</h2>
+      <h2 class="game-title reveal"><span style="color:var(--text-primary);">Training</span> <em>success!</em></h2>
+      <p class="visual-sub reveal" style="margin-top:clamp(8px,1.5vh,16px);">The RL bot surpasses both the best scripted bot and human baseline</p>
     </div>
 
     <div class="perf-chart-area reveal">
@@ -1880,7 +1881,7 @@ img, .image-container {
 
   <div class="slide-content">
     <p class="eyebrow reveal">How we analyzed</p>
-    <h2 class="game-title reveal">From game traces to <em>strategy insights</em></h2>
+    <h2 class="game-title reveal">Filter for wins, count <em>hand sequence patterns</em></h2>
 
     <div class="pipeline reveal">
       <div class="pipe-node">
@@ -1920,7 +1921,7 @@ img, .image-container {
 
   <div class="slide-content visual-slide">
     <p class="eyebrow reveal">Q1 · Hand sequences</p>
-    <h2 class="visual-headline reveal">RL learned to <em>bank chips, then hunt</em> — scripted bots just grind</h2>
+    <h2 class="visual-headline reveal">RL banks chips with <em>safe hands first</em> — and lands more flushes than the bot that greeds for them</h2>
     <p class="visual-sub reveal">top RL bigram: two_pair → flush (104×) &nbsp;·&nbsp; top scripted: pair → pair (27×)</p>
     <div class="visual-fig-wrap reveal">
       <img src="results/figures/analysis_q1_ngrams.png" alt="Hand sequence bigrams: RL vs scripted bot">

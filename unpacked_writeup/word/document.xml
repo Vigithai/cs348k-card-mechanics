@@ -1,0 +1,2478 @@
+<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:cx="http://schemas.microsoft.com/office/drawing/2014/chartex" xmlns:cx1="http://schemas.microsoft.com/office/drawing/2015/9/8/chartex" xmlns:cx2="http://schemas.microsoft.com/office/drawing/2015/10/21/chartex" xmlns:cx3="http://schemas.microsoft.com/office/drawing/2016/5/9/chartex" xmlns:cx4="http://schemas.microsoft.com/office/drawing/2016/5/10/chartex" xmlns:cx5="http://schemas.microsoft.com/office/drawing/2016/5/11/chartex" xmlns:cx6="http://schemas.microsoft.com/office/drawing/2016/5/12/chartex" xmlns:cx7="http://schemas.microsoft.com/office/drawing/2016/5/13/chartex" xmlns:cx8="http://schemas.microsoft.com/office/drawing/2016/5/14/chartex" xmlns:aink="http://schemas.microsoft.com/office/drawing/2016/ink" xmlns:am3d="http://schemas.microsoft.com/office/drawing/2017/model3d" xmlns:w16cex="http://schemas.microsoft.com/office/word/2018/wordml/cex" xmlns:w16cid="http://schemas.microsoft.com/office/word/2016/wordml/cid" xmlns:w16="http://schemas.microsoft.com/office/word/2018/wordml" xmlns:w16sdtdh="http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash" xmlns:w16se="http://schemas.microsoft.com/office/word/2015/wordml/symex" mc:Ignorable="w14 w15 wp14">
+  <w:body>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160" w:before="480"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="1F3864"/>
+          <w:sz w:val="52"/>
+          <w:szCs w:val="52"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Learning to Play Balatro:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="240"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
+          <w:b/>
+          <w:bCs/>
+          <w:color w:val="2E5496"/>
+          <w:sz w:val="40"/>
+          <w:szCs w:val="40"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Reinforcement Learning for Card Game Strategy</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
+          <w:sz w:val="28"/>
+          <w:szCs w:val="28"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Lily</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
+          <w:color w:val="666666"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">lilyth720@gmail.com</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
+          <w:color w:val="666666"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">CS348K — Image Systems and Computational Photography</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="480"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Arial" w:cs="Arial" w:eastAsia="Arial" w:hAnsi="Arial"/>
+          <w:color w:val="666666"/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t xml:space="preserve">June 2026</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">1. Background and Setup</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The Problem</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Balatro is a roguelike deck-building card game in which the player must score chips by playing poker hands against escalating chip targets (&quot;blinds&quot;). Each round, the player is dealt seven cards from a 52-card deck and chooses which subset of 1–5 cards to play (scoring chips via a poker-hand lookup table) or discard (refreshing cards from the deck in hopes of assembling a better hand later). Clearing the chip target advances the run; exhausting your allowed plays without hitting the target ends it.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The game&#x2019;s central strategic tension is the discard decision: a pair scores roughly 20 chips, a flush scores 136+, and a four-of-a-kind can score 728. The gap between hand tiers is enormous, so it is often worth spending multiple discards to &quot;hunt&quot; a premium hand. But discards are a finite resource—each blind gives only four—so burning them on a hand that never comes together is catastrophic. Deciding when to hunt and when to play safe is the core skill.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">This is difficult to reason about analytically because the value of a discard depends on the hidden draw order, the remaining deck composition, and the current chip margin. Human intuition is noisy, and there is no public theoretical analysis of optimal Balatro strategy.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Inputs and Outputs</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">Inputs: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">game state at each decision point — the current hand (7 cards), the multiset of cards remaining in the unseen deck, chips scored so far, chips needed to win the round, hands remaining, and discards remaining.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">Output: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">a single action: either play or discard a chosen subset of 1–5 cards from the current hand.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Goals and Constraints</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The primary goal is to maximize win rate across a two-round run (two blinds). A run is won by clearing both chip targets before exhausting the allowed plays. Hard constraints are that the agent must choose from the legal action set (valid card indices, correct action type), observe only the state visible to a real player (no look-ahead into draw order), and respect the fixed turn structure. The simplified environment omits jokers and the shop so that we can isolate the pure card-mechanics strategy problem.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Research Question</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The project asks: </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:i/>
+          <w:iCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">Can a DQN agent learn a higher-quality card-selection policy than the best hand-crafted heuristic bots, and if so, what strategy does it learn?</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> Equivalently, the falsifiable hypothesis is: the RL agent&#x2019;s win rate on a fixed evaluation set will significantly exceed the best scripted bot&#x2019;s win rate after 500 episodes of training, and analysis of winning game traces will reveal a coherent, learnable strategy.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Technical Crux</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Two aspects made this non-trivial:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Action-space size. Each step has up to ~200 legal actions (all non-empty subsets of 1–5 cards from a 7-card hand, for both play and discard). This makes tabular Q-learning intractable and requires function approximation.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Reward alignment. The obvious reward signal (chips gained per step) encourages chip-farming but not round-winning. An agent maximizing immediate chip gain will greedily play safe weak hands and fail to clear round targets. Getting the reward signal right required explicit shaping with round-win bonuses and round-loss penalties.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:br w:type="page"/>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">2. Approach</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Environment</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">We built a simplified Balatro simulator in Python from scratch. The environment models a 52-card deck with no jokers or shop. Each round begins with a full deck shuffle, a 7-card opening hand, 4 plays, and 4 discards. Round 1 targets 150 chips (easy) or 300 chips (hard); Round 2 targets 250 chips (easy) or 500 chips (hard). Clearing Round 2 wins the run.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The environment exposes a standard gym-style interface: get_observation(), get_legal_actions(), and step(action). Legal action enumeration and all game logic live in the environment; agents only receive an observation dict and choose from the provided legal action list. This clean separation made it straightforward to swap in any policy.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Agent Ladder</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">We implemented a ladder of five scripted bots and one learned agent, in order of increasing sophistication:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">RandomBot: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Selects uniformly at random from all legal actions. Sanity-check baseline; never wins.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">StimBot: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Greedy immediate scorer. Considers only play actions, scores each legal play, always plays the highest-scoring subset. Never discards. Win rate ~5%.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">DiscardLowestChipBot: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Adds a simple discard heuristic: discards the lowest chip-value cards before playing. Win rate ~8%.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">LookaheadDiscardBot: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Evaluates each discard candidate by scoring the best play over several random redraws from the unseen deck. Selects the discard that maximizes expected future score. Win rate ~23%.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">PrunedSampledLookaheadBot: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Improves on the previous bot by pruning the discard search space (grouping cards by suit/rank similarity) and sampling 15 redraws per candidate rather than enumerating. This keeps compute tractable while improving coverage. Win rate ~26% on easy, ~3% on hard.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">RLQBot: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">DQN-trained agent described below. Win rate ~54% on easy.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">DQN Architecture</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">We trained a Deep Q-Network (DQN) to score state-action pairs. Rather than maintaining a Q-table or scoring states alone, the network receives a concatenated state-action feature vector and outputs a single scalar Q-value. At each step the agent scores all legal actions and picks the highest-valued one (greedy exploitation) or samples uniformly (exploration).</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The feature vector has two components:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">State features (observation): chips_needed, chips_scored, hands_left, discards_left, rank histogram of hand (13 values), suit histogram of hand (4 values), rank histogram of unseen deck (13 values), suit histogram of unseen deck (4 values). Total: 38 features.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Action features: one-hot play/discard type (2 values), number of selected cards (1), rank histogram of selected cards (13), suit histogram of selected cards (4), immediate lookup-table score for play actions or 0 for discards (1). Total: 21 features.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The full state-action feature vector has 59 dimensions. The Q-network is a two-hidden-layer MLP: 59 → 128 → 64 → 1, with ReLU activations, trained with Adam (lr=0.001).</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Training Setup</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">We used standard DQN with experience replay and a target network:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Replay buffer capacity: 5,000 transitions</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Batch size: 64, sampled after 100 warmup transitions</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">ε-greedy exploration: ε decayed linearly from 1.0 to 0.05 over 2,000 steps</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Target network synced every 100 gradient steps</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Discount factor γ = 0.99</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Training ran for 500 episodes across 3 independent random seeds</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Reward Shaping</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The initial reward function was simply chips gained per action. This produced a pathological behavior on the hard preset: the unshaved agent chip-farmed (scoring high on individual plays) but failed to clear round targets because it never learned to sacrifice chips now for a better hand later. We diagnosed this by observing that the unshaved hard-mode agent scored more average final chips (234.5) than the scripted best (204.9) yet had a lower win rate (2.3% vs. 3.0%).</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">To correct the objective, we added shaped terms: a </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">round-win bonus of +300</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> and a </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">round-loss penalty of −75</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">. These were applied at round transitions (not per step) so that they aligned terminal behavior without distorting the intermediate chip-gain signal. The shaped agent achieved 3.3% win rate on hard mode, slightly edging past the scripted best.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Trace Analysis Pipeline</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">After training, we generated and analyzed win traces to understand what the agent actually learned. We ran 500 games with both RLQBot and PrunedSampledLookaheadBot, saving the full per-step trace (hand, action, chips_gained) for every winning game. This yielded 177 RL wins and 84 scripted wins.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The key analysis primitive was detecting &quot;hunt sequences&quot;: two or more consecutive discard actions followed immediately by a play. The hand type of the subsequent play reveals what the agent was hunting toward. This let us compare hunting behavior, hunting success rates, and play-sequence patterns across the two agents.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:br w:type="page"/>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">3. Evaluation and Results</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Definition of Success</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Success was defined as: the RLQBot&#x2019;s win rate exceeds PrunedSampledLookaheadBot&#x2019;s win rate (the best scripted agent) on the same evaluation set, evaluated over 100 games per seed across 3 seeds. A secondary goal was for the trace analysis to reveal interpretable strategy differences that explain the win-rate gap.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Experimental Setup</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">All evaluations ran on a MacBook (CPU-only, PyTorch). The environment was the simplified Balatro simulator described above. We evaluated on two presets:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">Easy preset: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Round 1 target = 150 chips, Round 2 target = 250 chips</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">Hard preset: </w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">Round 1 target = 300 chips, Round 2 target = 500 chips</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Each bot was evaluated over 100 games per seed (seeds 0, 1, 2). Results below are averaged across seeds unless otherwise noted.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Agent Ladder Results</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Table 1 shows win rates and average final chips for all agents on the easy preset.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblW w:type="dxa" w:w="9360"/>
+        <w:tblBorders>
+          <w:top w:val="single" w:color="auto" w:sz="4"/>
+          <w:left w:val="single" w:color="auto" w:sz="4"/>
+          <w:bottom w:val="single" w:color="auto" w:sz="4"/>
+          <w:right w:val="single" w:color="auto" w:sz="4"/>
+          <w:insideH w:val="single" w:color="auto" w:sz="4"/>
+          <w:insideV w:val="single" w:color="auto" w:sz="4"/>
+        </w:tblBorders>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="2800"/>
+        <w:gridCol w:w="1600"/>
+        <w:gridCol w:w="2400"/>
+        <w:gridCol w:w="2560"/>
+      </w:tblGrid>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2800"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="999999" w:sz="1"/>
+              <w:left w:val="single" w:color="999999" w:sz="1"/>
+              <w:bottom w:val="single" w:color="999999" w:sz="1"/>
+              <w:right w:val="single" w:color="999999" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="D9E1F2" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Agent</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1600"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="999999" w:sz="1"/>
+              <w:left w:val="single" w:color="999999" w:sz="1"/>
+              <w:bottom w:val="single" w:color="999999" w:sz="1"/>
+              <w:right w:val="single" w:color="999999" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="D9E1F2" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Win Rate</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2400"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="999999" w:sz="1"/>
+              <w:left w:val="single" w:color="999999" w:sz="1"/>
+              <w:bottom w:val="single" w:color="999999" w:sz="1"/>
+              <w:right w:val="single" w:color="999999" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="D9E1F2" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Avg. Final Chips</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2560"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="999999" w:sz="1"/>
+              <w:left w:val="single" w:color="999999" w:sz="1"/>
+              <w:bottom w:val="single" w:color="999999" w:sz="1"/>
+              <w:right w:val="single" w:color="999999" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="D9E1F2" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Avg. Rounds Cleared</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2800"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">RandomBot</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1600"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">0%</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2400"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">38.3</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2560"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">0.0</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2800"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">StimBot</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1600"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">5%</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2400"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">89.0</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2560"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">0.4</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2800"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">DiscardLowestChipBot</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1600"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">8%</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2400"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">124.9</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2560"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">0.6</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2800"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">LookaheadDiscardBot</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1600"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">23%</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2400"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">172.7</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2560"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">0.92</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2800"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">PrunedSampledLookaheadBot</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1600"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">26%</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2400"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">185.9</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2560"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">1.06</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2800"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">RLQBot (reward-shaped)</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="1600"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">54% (±14.7%)</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2400"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">229.0</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2560"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">1.41</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Table 1. Easy preset results (100 games × 3 seeds). RLQBot win rate and chips are mean ± std across seeds.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The RL agent&#x2019;s 54% win rate on easy mode is more than double the best scripted bot&#x2019;s 26%. The gap is not explained by chip accumulation alone: the scripted best already scores reasonably well (185.9 average chips) but fails to clear both rounds consistently. RLQBot&#x2019;s higher average final chips (229.0) and round-clear rate (1.41 vs. 1.06) together suggest it has a fundamentally better policy — not just luck on individual hands.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The std of 14.7% across seeds is notable. It indicates training is sensitive to initialization, which makes sense given only 500 episodes. More training or larger replay buffers would likely reduce variance.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Table 2 shows hard preset results, where targets are twice as high.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblW w:type="dxa" w:w="9360"/>
+        <w:tblBorders>
+          <w:top w:val="single" w:color="auto" w:sz="4"/>
+          <w:left w:val="single" w:color="auto" w:sz="4"/>
+          <w:bottom w:val="single" w:color="auto" w:sz="4"/>
+          <w:right w:val="single" w:color="auto" w:sz="4"/>
+          <w:insideH w:val="single" w:color="auto" w:sz="4"/>
+          <w:insideV w:val="single" w:color="auto" w:sz="4"/>
+        </w:tblBorders>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="3900"/>
+        <w:gridCol w:w="2200"/>
+        <w:gridCol w:w="3260"/>
+      </w:tblGrid>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3900"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="999999" w:sz="1"/>
+              <w:left w:val="single" w:color="999999" w:sz="1"/>
+              <w:bottom w:val="single" w:color="999999" w:sz="1"/>
+              <w:right w:val="single" w:color="999999" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="D9E1F2" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Agent</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2200"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="999999" w:sz="1"/>
+              <w:left w:val="single" w:color="999999" w:sz="1"/>
+              <w:bottom w:val="single" w:color="999999" w:sz="1"/>
+              <w:right w:val="single" w:color="999999" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="D9E1F2" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Win Rate</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3260"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="999999" w:sz="1"/>
+              <w:left w:val="single" w:color="999999" w:sz="1"/>
+              <w:bottom w:val="single" w:color="999999" w:sz="1"/>
+              <w:right w:val="single" w:color="999999" w:sz="1"/>
+            </w:tcBorders>
+            <w:shd w:fill="D9E1F2" w:val="clear"/>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:b/>
+                <w:bCs/>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">Avg. Final Chips</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3900"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">PrunedSampledLookaheadBot</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2200"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">3.0%</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3260"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">204.9</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3900"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">RLQBot (unshaved reward)</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2200"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">2.3%</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3260"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">234.5</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3900"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">RLQBot (reward-shaped)</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="2200"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">3.3%</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:type="dxa" w:w="3260"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:left w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:bottom w:val="single" w:color="CCCCCC" w:sz="1"/>
+              <w:right w:val="single" w:color="CCCCCC" w:sz="1"/>
+            </w:tcBorders>
+            <w:tcMar>
+              <w:top w:type="dxa" w:w="80"/>
+              <w:left w:type="dxa" w:w="120"/>
+              <w:bottom w:type="dxa" w:w="80"/>
+              <w:right w:type="dxa" w:w="120"/>
+            </w:tcMar>
+          </w:tcPr>
+          <w:p>
+            <w:r>
+              <w:rPr>
+                <w:sz w:val="20"/>
+                <w:szCs w:val="20"/>
+              </w:rPr>
+              <w:t xml:space="preserve">195.5</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Table 2. Hard preset results (100 games × 3 seeds).</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">On hard mode all agents struggle — the targets are substantially higher and require hitting premium hands reliably across both rounds. The unshaved RL agent actually chip-farms its way to a higher average final score (234.5) than the scripted best (204.9) yet wins less often (2.3% vs. 3.0%). This is the reward-misalignment failure: the agent learned to score big on individual hands without learning to clear both rounds. After reward shaping the agent&#x2019;s win rate rises to 3.3%, edging past the scripted best, though the difference is small given the sample size. The hard preset is likely beyond the reach of 500 training episodes; the interesting story is on easy mode.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Strategy Analysis: What Did the Agent Learn?</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">To understand the win-rate gap, we analyzed winning game traces. The following four questions guided the analysis.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Q1: Do the agents use different play sequences?</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">We computed bigrams of consecutive hand types within winning games. The RL agent&#x2019;s most common bigram is two_pair → flush (104 occurrences), indicating a deliberate &quot;setup then strike&quot; pattern: bank safe chips with a two_pair, then hunt and land a flush to close the round. The scripted bot&#x2019;s top bigram is pair → pair — it grinds the same safe hand repeatedly.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">This is the clearest evidence that the RL agent discovered a distinct strategy. It plays conservatively to build a chip buffer, then takes a calculated risk to land a high-value hand. The scripted bot, despite having an explicit flush-hunting heuristic, doesn&#x2019;t coordinate its discards and plays in this way.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Q2: What does the bot hunt for?</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">We defined a hunt as two or more consecutive discards followed immediately by a play. Across RL&#x2019;s 177 winning games there were 346 multi-discard hunts. The outcome distribution is dominated by flush (136 hunts, 39%), followed by two_pair (62), pair (52), and straight (42). When the bot commits to a hunt, it lands a premium hand (flush, straight, full house, or better) roughly 56% of the time. The remaining hunts end in a pair or two_pair &#x2014; the bot tried for something better but settled for what the deck gave it. This is a limitation of our intent-detection method: we infer intent from the hand played after the hunt, but when the bot hunts and fails to find its target it still has to play something, so the post-hunt hand underestimates how often the bot was aiming for premium hands.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Q3: Is RL more selective than the scripted bot?</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Comparing behavioral statistics across winning games: the RL agent </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">discards less</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> (43% of actions vs. 59% for scripted), plays </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">fewer premium hands</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> (45% premium rate vs. 66% for scripted), yet wins with </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:b/>
+          <w:bCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">more chip margin</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve"> (+120 chips above target vs. +107 for scripted).</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The scripted bot was explicitly programmed with a flush-hunting bias, so it discards aggressively toward flushes even when the deck composition doesn&#x2019;t warrant it. The RL agent learned restraint: it recognizes when a two_pair is good enough and doesn&#x2019;t over-hunt. This selectivity is why it wins more often despite playing fewer premium hands.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Q4: What&#x2019;s the human takeaway?</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The combined evidence from Q1&#x2013;Q3 suggests a concrete heuristic for human play: not flush-or-bust. Rather than discarding a two pair to chase a flush from scratch, play the two pair to bank safe chips, then spend remaining discards hunting for a flush or other premium hand. The RL agent&#x2019;s dominant bigram (two_pair &#x2192; flush) encodes exactly this pattern &#x2014; and the scripted bot&#x2019;s lower win rate despite a higher premium hand rate shows that over-hunting is counterproductive. Patience and sequencing matter more than raw hand quality.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading2"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Failure Cases and Limitations</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The agent and the analysis have clear limitations:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The trace analysis conditions only on winning games, which introduces survivorship bias. Patterns observed in wins may not distinguish winning from losing behavior &#x2014; the same two_pair &#x2192; flush pattern might appear in losses too, just with worse luck on the draw. Analyzing losses would let us identify what to avoid and would test whether the patterns we found are genuinely predictive of success or just common across all games.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The bigram analysis is discard-agnostic &#x2014; it only looks at the sequence of hand types played, ignoring what was discarded between plays. A discard-aware analysis that distinguishes traces by what was thrown away (not just what was kept) would give a richer picture of agent strategy.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Training variance is high across seeds (std = 14.7%). The best seed achieved ~65% win rate on easy mode; the worst achieved ~40%. This suggests 500 episodes is insufficient to reliably converge and that results are seed-dependent.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Hard mode remains unsolved. The chip targets in hard mode are 2× higher, requiring more consistent premium-hand hits. Even with reward shaping the agent barely edges past the scripted best. We speculate that 500 episodes is far too few for the agent to learn the multi-round coordination required.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The simplified environment is a significant limitation. Real Balatro includes jokers (which create massive score multipliers), the shop, and multi-ante progression. These mechanics change the strategy fundamentally. The results here apply only to the card-mechanics layer.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">The Q-network is very small (128→64 MLP). A deeper or wider network, or one with attention over the card set, might generalize better. We didn&#x2019;t explore architecture variants.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">We did not compare to human play on the same simplified environment (only on real Balatro, which has jokers). A direct controlled comparison on the same environment would be more rigorous.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:r>
+        <w:br w:type="page"/>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">4. Team Responsibilities</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">This was a solo project. All work was performed by Lily (lilyth720@gmail.com), including:</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Designing and implementing the Balatro simulator (environment, scoring, legal action enumeration, round transitions)</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Implementing all scripted agents (RandomBot through PrunedSampledLookaheadBot)</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Designing the state-action feature representation and DQN architecture</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Implementing the DQN trainer with experience replay, target networks, and ε-greedy exploration</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Running all training and evaluation experiments (3 seeds × both presets)</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Diagnosing the reward misalignment problem and implementing reward shaping</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Building the trace analysis pipeline (hunt detection, bigram analysis, behavioral statistics)</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="ListParagraph"/>
+        <w:numPr>
+          <w:ilvl w:val="0"/>
+          <w:numId w:val="2"/>
+        </w:numPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">Writing this report</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="80"/>
+      </w:pPr>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:pStyle w:val="Heading1"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">5. References</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">[1] LocalThunk. </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:i/>
+          <w:iCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">Balatro</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">. Playstack, 2024. https://www.playbalatro.com</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">[2] Mnih, V., Kavukcuoglu, K., Silver, D., et al. &quot;Human-level control through deep reinforcement learning.&quot; </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:i/>
+          <w:iCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">Nature</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">, 518(7540):529–533, 2015.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">[3] Mnih, V., et al. &quot;Playing Atari with Deep Reinforcement Learning.&quot; </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:i/>
+          <w:iCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">arXiv:1312.5602</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">, 2013.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">[4] Sutton, R. S., and Barto, A. G. </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:i/>
+          <w:iCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">Reinforcement Learning: An Introduction</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">. MIT Press, 2018.</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:spacing w:after="160"/>
+      </w:pPr>
+      <w:r>
+        <w:t xml:space="preserve">[5] Ng, A. Y., Harada, D., and Russell, S. &quot;Policy invariance under reward transformations: Theory and application to reward shaping.&quot; </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:i/>
+          <w:iCs/>
+        </w:rPr>
+        <w:t xml:space="preserve">ICML</w:t>
+      </w:r>
+      <w:r>
+        <w:t xml:space="preserve">, 1999.</w:t>
+      </w:r>
+    </w:p>
+    <w:sectPr>
+      <w:headerReference w:type="default" r:id="rId7"/>
+      <w:footerReference w:type="default" r:id="rId8"/>
+      <w:pgSz w:w="12240" w:h="15840" w:orient="portrait"/>
+      <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/>
+      <w:pgNumType/>
+      <w:docGrid w:linePitch="360"/>
+    </w:sectPr>
+  </w:body>
+</w:document>
