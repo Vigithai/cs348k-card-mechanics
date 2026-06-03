@@ -1,6 +1,6 @@
 # Learning to Play Balatro
 
-CS348K Final Project — Lily (lilyth720@gmail.com)
+CS348K Final Project — Vincent Thai
 
 A simplified Balatro simulator with a six-agent ladder from random play to DQN-trained RL, plus a trace analysis pipeline that extracts strategy insights from winning games.
 
